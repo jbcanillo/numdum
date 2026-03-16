@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useContacts } from '../hooks/useContacts';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-import { Reminder } from '../types';
+import { useContacts } from '../../hooks/useContacts';
+import { Reminder } from '../../types';
 
 interface ContactsTabProps {
   onContactSelected: (contact: Contact) => void;

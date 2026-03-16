@@ -1,5 +1,5 @@
 import React from 'react';
-import { useReminders } from '../hooks/useReminders';
+import { useReminders } from '../../hooks/useReminders';
 import ReminderItem from './ReminderItem';
 
 const ReminderList = ({ reminders, loading, error }) => {

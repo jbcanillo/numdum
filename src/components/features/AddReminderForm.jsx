@@ -1,8 +1,8 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/';
 import * as z from 'zod';
-import { useReminders } from '../hooks/useReminders';
+import { useReminders } from '../../hooks/useReminders';
 
 const reminderSchema = z.object({
   title: z.string().min(1, 'Title is required'),

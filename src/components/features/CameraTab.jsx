@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useMediaDevices } from '../hooks/useMediaDevices';
-import { usePhotoLibrary } from '../hooks/usePhotoLibrary';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-import { Reminder } from '../types';
+import { useMediaDevices } from '../../hooks/useMediaDevices';
+import { usePhotoLibrary } from '../../hooks/usePhotoLibrary';
+// import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { Reminder } from '../../types';
 
 interface CameraTabProps {
   onPhotoSelected: (photo: File) => void;
@@ -237,8 +237,8 @@ const usePhotoLibrary = () => ({
   }
 });
 
-const useLocalStorage = () => ({
-  getItem: (key: string) => null,
-  setItem: (key: string, value: string) => {},
-  removeItem: (key: string) => {}
-});
+// const useLocalStorage = () => ({
+//   getItem: (key: string) => null,
+//   setItem: (key: string, value: string) => {},
+//   removeItem: (key: string) => {}
+// });
