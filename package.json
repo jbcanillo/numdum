@@ -15,18 +15,13 @@
     "postcss": "^8.4.0",
     "react-query": "^3.39.3",
     "dayjs": "^1.11.0",
-    "react-native-web": "^0.19.0",
-    "@react-native-async-storage/async-storage": "^1.21.0",
-    "@react-native-community/geolocation": "^2.0.0",
-    "@react-native-community/cameraroll": "^4.0.0",
-    "@react-native-community/contacts": "^4.0.0",
-    "@react-native-community/push-notification-ios": "^6.0.0",
+    "recharts": "^2.5.0",
+    "date-fns": "^2.30.0",
+    "localforage": "^1.9.0",
     "workbox-background-sync": "^6.0.0",
     "workbox-core": "^6.0.0",
     "workbox-routing": "^6.0.0",
-    "workbox-strategies": "^6.0.0",
-    "recharts": "^2.5.0",
-    "date-fns": "^2.30.0"
+    "workbox-strategies": "^6.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
