@@ -18,11 +18,13 @@
 - [x] Calendar component integration
 - [x] Visual reminder indicators
 
+### Tab Features
+- [x] Camera tab - Photo attachments for reminders
+- [x] Contacts tab - Person-based reminders
+
 ## 🔄 **Not Yet Completed**
 
 ### Tab Features
-- [ ] Camera tab - Photo attachments for reminders
-- [ ] Contacts tab - Person-based reminders
 - [ ] Map tab - Location-based reminders
 - [ ] Dashboard tab - Analytics and metrics
 
@@ -94,19 +96,17 @@
 4. **Push Notifications** - Implement browser notifications for reminders
 
 ### High Priority:
-1. **Camera Integration** - Add photo attachment capability
-2. **Contact Selection** - Person-based reminders with contact picker
-3. **Location Reminders** - Geolocation for location-based reminders
-4. **Export Functionality** - CSV/PDF export of reminder data
+1. **Location Reminders** - Geolocation for location-based reminders
+2. **Export Functionality** - CSV/PDF export of reminder data
+3. **PWA Installation** - Make app installable
+4. **Offline Mode** - Work without internet connection
 
 ### Medium Priority:
-1. **PWA Installation** - Make app installable
-2. **Offline Mode** - Work without internet connection
-3. **Smart Reminders** - AI suggestions for optimal reminder times
-4. **Collaboration** - Share reminders with others
+1. **Smart Reminders** - AI suggestions for optimal reminder times
+2. **Collaboration** - Share reminders with others
+3. **Advanced Analytics** - Deep insights and patterns
+4. **Templates** - Pre-built reminder templates
 
 ### Low Priority:
-1. **Advanced Analytics** - Deep insights and patterns
-2. **Templates** - Pre-built reminder templates
-3. **Themes** - Customizable app appearance
-4. **Integration** - Calendar, email, and other app integrations
+1. **Themes** - Customizable app appearance
+2. **Integration** - Calendar, email, and other app integrations
