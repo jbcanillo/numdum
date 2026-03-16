@@ -6,6 +6,7 @@ import { useReminderForm } from '../hooks/useReminderForm';
 import CalendarView from '../components/ui/CalendarView';
 import ReminderList from '../components/features/ReminderList';
 import AddReminderForm from '../components/features/AddReminderForm';
+import CameraTab from '../components/features/CameraTab';
 import BottomNavigation from '../components/layout/BottomNavigation';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
   const sortedReminders = useSortedReminders(filteredReminders);
 
   const [showAddForm, setShowAddForm] = useState(false);
+const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -23,12 +25,14 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <h1 className="text-2xl font-bold text-gray-900">Reminders</h1>
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              + New Reminder
-            </button>
+            {activeTab !== 'camera' && (
+              <button
+                onClick={() => setShowAddForm(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                + New Reminder
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -43,6 +47,12 @@ function App() {
             reminders={sortedReminders}
             loading={loading}
             error={error}
+          />
+        )}
+        {activeTab === 'camera' && (
+          <CameraTab
+            onPhotoSelected={(photo) => setSelectedPhoto(photo)}
+            onPhotoFromLibrary={(photo) => setSelectedPhoto(photo)}
           />
         )}
         {activeTab === 'dashboard' && (
