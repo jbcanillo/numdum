@@ -7,6 +7,7 @@ import CalendarView from '../components/ui/CalendarView';
 import ReminderList from '../components/features/ReminderList';
 import AddReminderForm from '../components/features/AddReminderForm';
 import CameraTab from '../components/features/CameraTab';
+import ContactsTab from '../components/features/ContactsTab';
 import BottomNavigation from '../components/layout/BottomNavigation';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
 
   const [showAddForm, setShowAddForm] = useState(false);
 const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
+const [selectedContact, setSelectedContact] = useState<any>(null);
 
   return (
     <div className="min-h-screen bg-gray-50">
