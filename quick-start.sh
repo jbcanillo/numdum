@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Starting Reminder App..."
+echo "🚀 Starting Numdum Reminder App..."
 
 # Install dependencies
 echo "📦 Installing dependencies..."
