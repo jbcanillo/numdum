@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { useReminders } from '../hooks/useReminders';
-import { useFilteredReminders } from '../hooks/useReminders';
-import { useSortedReminders } from '../hooks/useReminders';
-import { useReminderForm } from '../hooks/useReminderForm';
-import CalendarView from '../components/ui/CalendarView';
-import ReminderList from '../components/features/ReminderList';
-import AddReminderForm from '../components/features/AddReminderForm';
-import CameraTab from '../components/features/CameraTab';
-import ContactsTab from '../components/features/ContactsTab';
-import BottomNavigation from '../components/layout/BottomNavigation';
+import { useReminders } from './hooks/useReminders';
+import { useFilteredReminders } from './hooks/useReminders';
+import { useSortedReminders } from './hooks/useReminders';
+import { useReminderForm } from './hooks/useReminderForm';
+import CalendarView from './components/ui/CalendarView';
+import ReminderList from './components/features/ReminderList';
+import AddReminderForm from './components/features/AddReminderForm';
+import CameraTab from './components/features/CameraTab';
+import ContactsTab from './components/features/ContactsTab';
+import BottomNavigation from './components/layout/BottomNavigation';
 
 function App() {
   const [activeTab, setActiveTab] = useState('calendar');

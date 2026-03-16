@@ -1,5 +1,5 @@
 import React from 'react';
-import { useReminderActions } from '../hooks/useReminders';
+import { useReminderActions } from '../../hooks/useReminders';
 import { formatDistanceToNow } from 'date-fns';
 
 const ReminderItem = ({ reminder }) => {

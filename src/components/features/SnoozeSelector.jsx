@@ -1,5 +1,5 @@
 import React from 'react';
-import { useReminders } from '../hooks/useReminders';
+import { useReminders } from '../../hooks/useReminders';
 
 const SNOOZE_OPTIONS = [
   { label: '15 minutes', value: 15 },
