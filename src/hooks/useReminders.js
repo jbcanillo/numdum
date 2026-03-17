@@ -50,13 +50,26 @@ const useReminders = () => {
     }
   };
 
-  const toggleComplete = async (id) => {
+  const completeReminder = async (id) => {
     try {
       const reminder = await db.toggleComplete(id);
       setReminders(prev => prev.map(r => r.id === reminder.id ? reminder : r));
       return reminder;
     } catch (err) {
-      throw new Error('Failed to toggle reminder');
+      throw new Error('Failed to complete reminder');
+    }
+  };
+
+  const snoozeReminder = async (id, snoozedUntil) => {
+    try {
+      const current = reminders.find(r => r.id === id);
+      if (!current) throw new Error('Reminder not found');
+      const updated = { ...current, snoozedUntil };
+      const saved = await db.updateReminder(updated);
+      setReminders(prev => prev.map(r => r.id === id ? saved : r));
+      return saved;
+    } catch (err) {
+      throw new Error('Failed to snooze reminder');
     }
   };
 
@@ -67,7 +80,8 @@ const useReminders = () => {
     createReminder,
     updateReminder,
     deleteReminder,
-    toggleComplete,
+    completeReminder,
+    snoozeReminder,
   };
 };
 

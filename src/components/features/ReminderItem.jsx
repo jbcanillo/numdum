@@ -1,10 +1,12 @@
 import React from 'react';
-import { useReminderActions } from '../../hooks/useReminders';
+import { useReminders } from '../../hooks/useReminders';
 import { formatDistanceToNow } from 'date-fns';
+import SnoozeSelector from './SnoozeSelector';
 
-const ReminderItem = ({ reminder }) => {
-  const { completeReminder, deleteReminder, snoozeReminder } = useReminderActions();
+const ReminderItem = ({ reminder, onEdit }) => {
+  const { deleteReminder, completeReminder, snoozeReminder } = useReminders();
   const [isExpanded, setIsExpanded] = React.useState(false);
+  const [showSnooze, setShowSnooze] = React.useState(false);
 
   const handleComplete = () => {
     completeReminder(reminder.id);
@@ -15,7 +17,7 @@ const ReminderItem = ({ reminder }) => {
   };
 
   const handleSnooze = () => {
-    snoozeReminder(reminder.id);
+    setShowSnooze(true);
   };
 
   const timeUntil = () => {
@@ -66,23 +68,37 @@ const ReminderItem = ({ reminder }) => {
           <button
             onClick={handleComplete}
             className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            title="Complete"
           >
             <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </button>
+          {onEdit && (
+            <button
+              onClick={() => onEdit(reminder)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              title="Edit"
+            >
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+          )}
           <button
             onClick={handleDelete}
             className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            title="Delete"
           >
             <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v10M4 7h16" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v6M4 7h16" />
             </svg>
           </button>
           {reminder.dueDate && !reminder.completed && (
             <button
               onClick={handleSnooze}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              title="Snooze"
             >
               <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -96,6 +112,12 @@ const ReminderItem = ({ reminder }) => {
           <h4 className="text-sm font-semibold mb-2">Details:</h4>
           <p className="text-sm text-gray-700">{reminder.details}</p>
         </div>
+      )}
+      {showSnooze && (
+        <SnoozeSelector
+          reminderId={reminder.id}
+          onDismiss={() => setShowSnooze(false)}
+        />
       )}
     </div>
   );
