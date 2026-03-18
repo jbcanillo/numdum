@@ -4,7 +4,7 @@ import SnoozeSelector from '../components/features/SnoozeSelector';
 
 const mockSnoozeReminder = jest.fn().mockResolvedValue(undefined);
 
-jest.mock('../../hooks/useReminders', () => ({
+jest.mock('../hooks/useReminders', () => ({
   useReminders: () => ({
     snoozeReminder: mockSnoozeReminder
   })
@@ -36,7 +36,8 @@ describe('SnoozeSelector', () => {
 
     fireEvent.click(screen.getByText('Custom minutes...'));
 
-    expect(screen.getByLabelText(/Snooze for \(minutes\)/i)).toBeInTheDocument();
+    expect(screen.getByText('Snooze for (minutes)')).toBeInTheDocument();
+    expect(screen.getByRole('spinbutton')).toBeInTheDocument();
     expect(screen.getByText('Snooze')).toBeInTheDocument();
     expect(screen.getByText('Back')).toBeInTheDocument();
   });
@@ -46,9 +47,11 @@ describe('SnoozeSelector', () => {
 
     fireEvent.click(screen.getByText('Pick date/time...'));
 
-    expect(screen.getByLabelText(/Snooze until/i)).toBeInTheDocument();
+    expect(screen.getByText('Snooze until')).toBeInTheDocument();
+    expect(screen.getByLabelText('Snooze until')).toBeInTheDocument();
     expect(screen.getByText('Set')).toBeInTheDocument();
-    expect(screen.getByText('Cancel')).toBeInTheDocument();
+    // both Cancel buttons (modal and back) should be present
+    expect(screen.getAllByText('Cancel')).toHaveLength(2);
   });
 
   test('calls snoozeReminder and onDismiss when preset option clicked', async () => {
@@ -66,7 +69,7 @@ describe('SnoozeSelector', () => {
     render(<SnoozeSelector reminderId={reminderId} onDismiss={onDismiss} />);
 
     fireEvent.click(screen.getByText('Custom minutes...'));
-    const input = screen.getByLabelText(/Snooze for \(minutes\)/i);
+    const input = screen.getByRole('spinbutton');
     fireEvent.change(input, { target: { value: '45' } });
     fireEvent.click(screen.getByText('Snooze'));
 
@@ -80,7 +83,7 @@ describe('SnoozeSelector', () => {
     render(<SnoozeSelector reminderId={reminderId} onDismiss={onDismiss} />);
 
     fireEvent.click(screen.getByText('Pick date/time...'));
-    const input = screen.getByLabelText(/Snooze until/i);
+    const input = screen.getByLabelText('Snooze until');
     const dateValue = '2026-03-25T12:00';
     fireEvent.change(input, { target: { value: dateValue } });
     fireEvent.click(screen.getByText('Set'));
@@ -95,7 +98,9 @@ describe('SnoozeSelector', () => {
     render(<SnoozeSelector reminderId={reminderId} onDismiss={onDismiss} />);
 
     fireEvent.click(screen.getByText('Pick date/time...'));
-    fireEvent.click(screen.getByText('Cancel'));
+    const cancelButtons = screen.getAllByRole('button', { name: /Cancel/i });
+    // Click the main Cancel button (the one that dismisses the modal)
+    fireEvent.click(cancelButtons[1]);
 
     expect(onDismiss).toHaveBeenCalled();
     expect(mockSnoozeReminder).not.toHaveBeenCalled();
