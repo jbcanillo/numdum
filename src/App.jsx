@@ -8,6 +8,7 @@ import AddReminderForm from './components/features/AddReminderForm';
 import EditReminderFormModal from './components/features/EditReminderFormModal';
 import CameraTab from './components/features/CameraTab';
 import ContactsTab from './components/features/ContactsTab';
+import Dashboard from './components/features/Dashboard';
 import BottomNavigation from './components/layout/BottomNavigation';
 
 function App() {
@@ -59,12 +60,7 @@ function App() {
             onPhotoFromLibrary={(photo) => setSelectedPhoto(photo)}
           />
         )}
-        {activeTab === 'dashboard' && (
-          <div className="p-4">
-            <h2 className="text-xl font-semibold mb-4">Dashboard - Coming Soon</h2>
-            <p className="text-gray-600">Analytics and metrics will be available here.</p>
-          </div>
-        )}
+        {activeTab === 'dashboard' && <Dashboard />}
       </main>
 
       {/* Bottom Navigation */}

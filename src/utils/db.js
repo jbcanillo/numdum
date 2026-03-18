@@ -4,7 +4,7 @@
 let db = null;
 
 const DB_NAME = 'ReminderAppDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'reminders';
 
 const openDatabase = () => {
@@ -24,7 +24,23 @@ const openDatabase = () => {
       db = request.result;
       // Create object store for reminders
       if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+        // Create index for completed status and completed_at for analytics queries
+        store.createIndex('by_completed', 'completed', { unique: false });
+        store.createIndex('by_completed_at', 'completed_at', { unique: false });
+        store.createIndex('by_due_date', 'dueDate', { unique: false });
+      } else {
+        // Migration from version 1 to 2: add indexes if missing
+        const store = db.result.objectStore(STORE_NAME);
+        if (!store.indexNames.contains('by_completed')) {
+          store.createIndex('by_completed', 'completed', { unique: false });
+        }
+        if (!store.indexNames.contains('by_completed_at')) {
+          store.createIndex('by_completed_at', 'completed_at', { unique: false });
+        }
+        if (!store.indexNames.contains('by_due_date')) {
+          store.createIndex('by_due_date', 'dueDate', { unique: false });
+        }
       }
     };
   });
@@ -109,6 +125,12 @@ const toggleComplete = async (id) => {
       const reminder = getRequest.result;
       if (reminder) {
         reminder.completed = !reminder.completed;
+        // Set or clear completed_at based on new completed state
+        if (reminder.completed) {
+          reminder.completed_at = new Date().toISOString();
+        } else {
+          reminder.completed_at = null;
+        }
         const updateRequest = store.put(reminder);
         
         updateRequest.onsuccess = () => resolve(reminder);
