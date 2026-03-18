@@ -16,9 +16,11 @@ A comprehensive reminder app with calendar UI, phone integrations, PWA capabilit
 
 ### Core Reminder Functionality
 - ✅ Add reminder form with validation
+- ✅ Edit reminder functionality
 - ✅ Reminder list view with filtering
 - ✅ Calendar view with visual indicators
 - ✅ Complete/delete/snooze actions
+- ✅ Improved snooze with datetime picker
 - ✅ Local storage using IndexedDB
 - ✅ Priority levels and repeat options
 - ✅ Loading/error states

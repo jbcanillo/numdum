@@ -8,13 +8,16 @@ const SNOOZE_OPTIONS = [
   { label: '2 hours', value: 120 },
   { label: '4 hours', value: 240 },
   { label: 'Until tomorrow', value: 1440 },
-  { label: 'Custom...', value: 'custom' }
+  { label: 'Custom minutes...', value: 'custom' },
+  { label: 'Pick date/time...', value: 'datetime' }
 ];
 
 const SnoozeSelector = ({ reminderId, onDismiss }) => {
   const { snoozeReminder } = useReminders();
   const [showCustom, setShowCustom] = React.useState(false);
   const [customMinutes, setCustomMinutes] = React.useState(60);
+  const [showDateTime, setShowDateTime] = React.useState(false);
+  const [customDateTime, setCustomDateTime] = React.useState('');
 
   const handleSnooze = async (minutes) => {
     try {
@@ -28,12 +31,23 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
     }
   };
 
+  const handleDateTimeSnooze = async (dateTimeStr) => {
+    try {
+      const snoozeUntil = new Date(dateTimeStr);
+      if (isNaN(snoozeUntil.getTime())) throw new Error('Invalid date');
+      await snoozeReminder(reminderId, snoozeUntil.toISOString());
+      onDismiss();
+    } catch (error) {
+      console.error('Error snoozing reminder:', error);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg p-6 max-w-sm w-full">
         <h2 className="text-xl font-bold mb-4">Snooze Reminder</h2>
         
-        {!showCustom ? (
+        {!showCustom && !showDateTime ? (
           <div className="space-y-2">
             {SNOOZE_OPTIONS.map((option) => (
               <button
@@ -41,6 +55,8 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
                 onClick={() => {
                   if (option.value === 'custom') {
                     setShowCustom(true);
+                  } else if (option.value === 'datetime') {
+                    setShowDateTime(true);
                   } else {
                     handleSnooze(option.value);
                   }
@@ -51,7 +67,8 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
               </button>
             ))}
           </div>
-        ) : (
+        ) : null}
+        {showCustom && (
           <div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
@@ -78,6 +95,38 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Snooze
+              </button>
+            </div>
+          </div>
+        )}
+        {showDateTime && (
+          <div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Snooze until
+              </label>
+              <input
+                type="datetime-local"
+                value={customDateTime}
+                onChange={(e) => setCustomDateTime(e.target.value)}
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex space-x-4">
+              <button
+                onClick={() => {
+                  setShowDateTime(false);
+                  setCustomDateTime('');
+                }}
+                className="flex-1 px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDateTimeSnooze(customDateTime)}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Set
               </button>
             </div>
           </div>

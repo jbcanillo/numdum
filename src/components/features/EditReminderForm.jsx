@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useReminders } from '../../hooks/useReminders';
 
 const editReminderSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -14,19 +13,19 @@ const editReminderSchema = z.object({
 });
 
 const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
-  const { updateReminder, loading } = useReminders();
   const formatDateTimeLocal = (date) => {
     if (!date) return '';
     const d = new Date(date);
     return d.toISOString().slice(0, 16);
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<EditReminderForm>({
+    formState: { errors }
+  } = useForm({
     resolver: zodResolver(editReminderSchema),
     defaultValues: {
       title: reminder.title,
@@ -39,13 +38,14 @@ const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
   });
 
   const onSubmitForm = async (data) => {
+    setIsSubmitting(true);
     try {
-      // Merge with original reminder to preserve id and other fields
       const updatedReminder = { ...reminder, ...data };
-      await updateReminder(updatedReminder);
-      onSubmit(updatedReminder);
+      await onSubmit(updatedReminder);
     } catch (error) {
       console.error('Error updating reminder:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -141,10 +141,10 @@ const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
         </button>
         <button
           type="submit"
-          disabled={loading}
+          disabled={isSubmitting}
           className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? 'Updating...' : 'Update Reminder'}
+          {isSubmitting ? 'Updating...' : 'Update Reminder'}
         </button>
       </div>
     </form>
