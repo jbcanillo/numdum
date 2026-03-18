@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useReminders } from '../../hooks/useReminders';
 
 const reminderSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -13,16 +12,13 @@ const reminderSchema = z.object({
   details: z.string().optional()
 });
 
-type ReminderForm = z.infer<typeof reminderSchema>;
-
 const AddReminderForm = ({ onDismiss, onSubmit }) => {
-  const { createReminder, loading } = useReminders();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    reset
-  } = useForm<ReminderForm>({
+    formState: { errors }
+  } = useForm({
     resolver: zodResolver(reminderSchema),
     defaultValues: {
       dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Default to tomorrow
@@ -32,12 +28,13 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
   });
 
   const onSubmitForm = async (data) => {
+    setIsSubmitting(true);
     try {
-      await createReminder(data);
-      onSubmit(data);
-      reset();
+      await onSubmit(data);
     } catch (error) {
       console.error('Error creating reminder:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -148,10 +145,10 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Creating...' : 'Create Reminder'}
+              {isSubmitting ? 'Creating...' : 'Create Reminder'}
             </button>
           </div>
         </form>
