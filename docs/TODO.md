@@ -55,8 +55,8 @@
 ### Phase 1: Core Features Polish (Week 1)
 - [ ] Fix minor bugs in existing components
 - [ ] Improve form validation and error messages
-- [ ] Add reminder editing functionality
-- [ ] Implement proper snooze with time selection
+- [x] Add reminder editing functionality
+- [x] Implement proper snooze with time selection
 - [ ] Add reminder sharing functionality
 
 ### Phase 2: Analytics Dashboard (Week 2)
@@ -90,10 +90,8 @@
 ## 🚀 **Next Features to Implement**
 
 ### Immediate Next Steps:
-1. **Edit Reminder Functionality** - Allow users to edit existing reminders
-2. **Improved Snooze** - Add time selection for snoozing instead of fixed 1 hour
-3. **Analytics Dashboard** - Build the dashboard with basic metrics
-4. **Push Notifications** - Implement browser notifications for reminders
+1. **Analytics Dashboard** - Build the dashboard with basic metrics
+2. **Push Notifications** - Implement browser notifications for reminders
 
 ### High Priority:
 1. **Location Reminders** - Geolocation for location-based reminders
