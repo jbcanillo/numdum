@@ -16,12 +16,12 @@ export const useReminderForm = (initialValues = {}) => {
     const { name, value } = e.target;
     setValues((prev) => ({ ...prev, [name]: value }));
     setTouched((prev) => ({ ...prev, [name]: true }));
-  }.
+  };
 
   const handleDateChange = (date) => {
     setValues((prev) => ({ ...prev, due_date: date }));
     setTouched((prev) => ({ ...prev, due_date: true }));
-  }.
+  };
 
   const validate = () => {
     try {
@@ -36,7 +36,7 @@ export const useReminderForm = (initialValues = {}) => {
       setErrors(validationErrors);
       return validationErrors;
     }
-  }.
+  };
 
   const isValid = () => {
     try {
@@ -45,13 +45,13 @@ export const useReminderForm = (initialValues = {}) => {
     } catch {
       return false;
     }
-  }.
+  };
 
   const reset = (newValues = {}) => {
     setValues(newValues);
     setErrors({});
     setTouched({});
-  }.
+  };
 
   return {
     values,

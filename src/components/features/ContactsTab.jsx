@@ -1,35 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useContacts } from '../../hooks/useContacts';
-import { Reminder } from '../../types';
 
-interface ContactsTabProps {
-  onContactSelected: (contact: Contact) => void;
-  onReminderCreated: (reminder: Reminder) => void;
-}
-
-export const ContactsTab: React.FC<ContactsTabProps> = ({ onContactSelected, onReminderCreated }) => {
-  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
-  const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
+const ContactsTab = ({ onContactSelected, onReminderCreated }) => {
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [selectedReminder, setSelectedReminder] = useState(null);
   const [showCreateReminder, setShowCreateReminder] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   const { contacts, loading: contactsLoading, error: contactsError } = useContacts();
 
-  const handleContactClick = (contact: Contact) => {
+  const handleContactClick = (contact) => {
     setSelectedContact(contact);
     onContactSelected(contact);
     setShowCreateReminder(true);
   };
 
-  const handleReminderSubmit = async (data: any) => {
+  const handleReminderSubmit = async (data) => {
     if (!selectedContact) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      const reminder: Reminder = {
+      const reminder = {
         id: Date.now().toString(),
         title: data.title,
         description: data.description,
@@ -52,7 +46,7 @@ export const ContactsTab: React.FC<ContactsTabProps> = ({ onContactSelected, onR
     }
   };
 
-  const getContactInitials = (name: string) => {
+  const getContactInitials = (name) => {
     return name
       .split(' ')
       .map((word) => word[0])
@@ -280,12 +274,5 @@ export const ContactsTab: React.FC<ContactsTabProps> = ({ onContactSelected, onR
     </div>
   );
 };
+export default ContactsTab;
 
-// Mock contact interface
-interface Contact {
-  id: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  avatar?: string;
-}

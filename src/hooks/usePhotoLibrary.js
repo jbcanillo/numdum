@@ -1,9 +1,10 @@
+/* global Camera */
 import { useState, useCallback } from 'react';
 
 export const usePhotoLibrary = () => {
-  const [photoLibrary, setPhotoLibrary] = useState<any>(null);
+  const [photoLibrary, setPhotoLibrary] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   const checkPhotoLibraryAccess = useCallback(async () => {
     try {
@@ -79,7 +80,7 @@ export const usePhotoLibrary = () => {
           input.type = 'file';
           input.accept = 'image/*';
           input.onchange = (event) => {
-            const file = (event.target as HTMLInputElement).files?.[0];
+            const file = event.target.files?.[0];
             if (file) {
               resolve({ file, type: file.type });
             } else {
@@ -106,16 +107,3 @@ export const usePhotoLibrary = () => {
     error
   };
 };
-
-// Define Camera object for Cordova compatibility
-declare global {
-  interface Navigator {
-    camera?: {
-      getPicture: (
-        successCallback: (imageData: string) => void,
-        errorCallback: (error: any) => void,
-        options: any
-      ) => void;
-    };
-  }
-}

@@ -1,8 +1,7 @@
 import React from 'react';
-import { useReminders } from '../../hooks/useReminders';
 import ReminderItem from './ReminderItem';
 
-const ReminderList = ({ reminders, loading, error }) => {
+const ReminderList = ({ reminders, loading, error, onEdit }) => {
   if (loading) {
     return (
       <div className="p-8 text-center">
@@ -32,7 +31,7 @@ const ReminderList = ({ reminders, loading, error }) => {
     <div className="p-4">
       <div className="max-w-4xl mx-auto">
         {reminders.map((reminder) => (
-          <ReminderItem key={reminder.id} reminder={reminder} />
+          <ReminderItem key={reminder.id} reminder={reminder} onEdit={onEdit} />
         ))}
       </div>
     </div>

@@ -2,23 +2,24 @@ import { useState } from 'react';
 import { useReminders } from './hooks/useReminders';
 import { useFilteredReminders } from './hooks/useReminders';
 import { useSortedReminders } from './hooks/useReminders';
-import { useReminderForm } from './hooks/useReminderForm';
 import CalendarView from './components/ui/CalendarView';
 import ReminderList from './components/features/ReminderList';
 import AddReminderForm from './components/features/AddReminderForm';
+import EditReminderFormModal from './components/features/EditReminderFormModal';
 import CameraTab from './components/features/CameraTab';
 import ContactsTab from './components/features/ContactsTab';
 import BottomNavigation from './components/layout/BottomNavigation';
 
 function App() {
   const [activeTab, setActiveTab] = useState('calendar');
-  const { reminders, loading, error } = useReminders();
+  const { reminders, loading, error, createReminder, updateReminder } = useReminders();
   const filteredReminders = useFilteredReminders(reminders);
   const sortedReminders = useSortedReminders(filteredReminders);
 
   const [showAddForm, setShowAddForm] = useState(false);
-const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
-const [selectedContact, setSelectedContact] = useState<any>(null);
+  const [editingReminder, setEditingReminder] = useState(null);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [selectedContact, setSelectedContact] = useState(null);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -49,6 +50,7 @@ const [selectedContact, setSelectedContact] = useState<any>(null);
             reminders={sortedReminders}
             loading={loading}
             error={error}
+            onEdit={setEditingReminder}
           />
         )}
         {activeTab === 'camera' && (
@@ -75,6 +77,18 @@ const [selectedContact, setSelectedContact] = useState<any>(null);
           onSubmit={async (data) => {
             await createReminder(data);
             setShowAddForm(false);
+          }}
+        />
+      )}
+
+      {/* Edit Reminder Modal */}
+      {editingReminder && (
+        <EditReminderFormModal
+          reminder={editingReminder}
+          onDismiss={() => setEditingReminder(null)}
+          onSubmit={async (data) => {
+            await updateReminder({ ...editingReminder, ...data });
+            setEditingReminder(null);
           }}
         />
       )}

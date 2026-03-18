@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 export const useContacts = () => {
-  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   const getContacts = useCallback(async () => {
     try {
@@ -11,7 +11,7 @@ export const useContacts = () => {
       setError(null);
 
       // Mock contacts data for web app
-      const mockContacts: Contact[] = [
+      const mockContacts = [
         {
           id: '1',
           name: 'John Doe',
@@ -95,11 +95,3 @@ export const useContacts = () => {
   };
 };
 
-// Define Contact interface
-interface Contact {
-  id: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  avatar?: string;
-}
