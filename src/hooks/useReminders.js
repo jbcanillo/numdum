@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { db } from '../utils/db';
+import db from '../utils/db';
 
 const useReminders = () => {
   const [reminders, setReminders] = useState([]);

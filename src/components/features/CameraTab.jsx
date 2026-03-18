@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useMediaDevices } from '../../hooks/useMediaDevices';
 import { usePhotoLibrary } from '../../hooks/usePhotoLibrary';
-// import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { Reminder } from '../../types';
 
-interface CameraTabProps {
-  onPhotoSelected: (photo: File) => void;
-  onPhotoFromLibrary: (photo: File) => void;
-}
-
-export const CameraTab: React.FC<CameraTabProps> = ({ onPhotoSelected, onPhotoFromLibrary }) => {
+const CameraTab = ({ onPhotoSelected, onPhotoFromLibrary }) => {
   const [isCameraAvailable, setIsCameraAvailable] = useState(false);
   const [isLibraryAvailable, setIsLibraryAvailable] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
-  const [capturedPhoto, setCapturedPhoto] = useState<File | null>(null);
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
+  const [capturedPhoto, setCapturedPhoto] = useState(null);
+  const [photos, setPhotos] = useState([]);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
 
   const { devices } = useMediaDevices();
   const { photoLibrary } = usePhotoLibrary();
@@ -218,27 +211,4 @@ export const CameraTab: React.FC<CameraTabProps> = ({ onPhotoSelected, onPhotoFr
     </div>
   );
 };
-
-// Mock hooks for development
-const useMediaDevices = () => ({
-  devices: [],
-});
-
-const usePhotoLibrary = () => ({
-  photoLibrary: {
-    checkPhotoLibraryAccess: async () => true,
-    openPhotoLibrary: async () => {
-      // Mock photo selection
-      return {
-        file: new Blob([''], { type: 'image/jpeg' }),
-        type: 'image/jpeg'
-      };
-    }
-  }
-});
-
-// const useLocalStorage = () => ({
-//   getItem: (key: string) => null,
-//   setItem: (key: string, value: string) => {},
-//   removeItem: (key: string) => {}
-// });
+export default CameraTab;

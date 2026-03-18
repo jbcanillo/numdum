@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react';
 
 export const useMediaDevices = () => {
-  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [devices, setDevices] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   const getMediaDevices = useCallback(async () => {
     try {
@@ -80,10 +80,3 @@ export const useMediaDevices = () => {
     checkCameraAvailability
   };
 };
-
-// Define Camera object for Cordova compatibility
-declare global {
-  interface Navigator {
-    camera?: any;
-  }
-}

@@ -5,7 +5,7 @@ import { useSortedReminders } from './hooks/useReminders';
 import CalendarView from './components/ui/CalendarView';
 import ReminderList from './components/features/ReminderList';
 import AddReminderForm from './components/features/AddReminderForm';
-import ReminderEditor from './components/features/ReminderEditor';
+import EditReminderFormModal from './components/features/EditReminderFormModal';
 import CameraTab from './components/features/CameraTab';
 import ContactsTab from './components/features/ContactsTab';
 import BottomNavigation from './components/layout/BottomNavigation';
@@ -83,7 +83,7 @@ function App() {
 
       {/* Edit Reminder Modal */}
       {editingReminder && (
-        <ReminderEditor
+        <EditReminderFormModal
           reminder={editingReminder}
           onDismiss={() => setEditingReminder(null)}
           onSubmit={async (data) => {
