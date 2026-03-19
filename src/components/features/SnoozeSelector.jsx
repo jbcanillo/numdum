@@ -71,10 +71,11 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
         {showCustom && (
           <div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
+              <label htmlFor="custom-minutes" className="block text-sm font-medium mb-2">
                 Snooze for (minutes)
               </label>
               <input
+                id="custom-minutes"
                 type="number"
                 min="1"
                 max="1440"
@@ -102,10 +103,11 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
         {showDateTime && (
           <div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
+              <label htmlFor="snooze-datetime" className="block text-sm font-medium mb-2">
                 Snooze until
               </label>
               <input
+                id="snooze-datetime"
                 type="datetime-local"
                 value={customDateTime}
                 onChange={(e) => setCustomDateTime(e.target.value)}

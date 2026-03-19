@@ -6,7 +6,7 @@ const mockCompleteReminder = jest.fn().mockResolvedValue(undefined);
 const mockDeleteReminder = jest.fn().mockResolvedValue(undefined);
 const mockSnoozeReminder = jest.fn().mockResolvedValue(undefined);
 
-jest.mock('../../hooks/useReminders', () => ({
+jest.mock('../hooks/useReminders', () => ({
   useReminders: () => ({
     completeReminder: mockCompleteReminder,
     deleteReminder: mockDeleteReminder,

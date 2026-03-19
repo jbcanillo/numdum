@@ -6,7 +6,7 @@ import * as z from 'zod';
 const editReminderSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  dueDate: z.date().min(new Date(), 'Due date must be in the future'),
+  dueDate: z.coerce.date().min(new Date(), 'Due date must be in the future'),
   priority: z.enum(['low', 'medium', 'high']).default('medium'),
   repeat: z.enum(['never', 'daily', 'weekly', 'monthly', 'yearly']).default('never'),
   details: z.string().optional(),
