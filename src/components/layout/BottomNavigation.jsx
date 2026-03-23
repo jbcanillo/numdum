@@ -5,8 +5,7 @@ import {
   List as ListIcon,
   Camera,
   Users,
-  BarChart3,
-  Plus
+  BarChart3
 } from 'lucide-react';
 
 const BottomNavigation = ({ activeTab, onTabChange }) => {
