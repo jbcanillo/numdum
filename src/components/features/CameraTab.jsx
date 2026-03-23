@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useMediaDevices } from '../../hooks/useMediaDevices';
 import { usePhotoLibrary } from '../../hooks/usePhotoLibrary';
 
 const CameraTab = ({ onPhotoSelected, onPhotoFromLibrary }) => {
@@ -7,34 +6,33 @@ const CameraTab = ({ onPhotoSelected, onPhotoFromLibrary }) => {
   const [isLibraryAvailable, setIsLibraryAvailable] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
-  const [photos, setPhotos] = useState([]);
+  const [photos] = useState([]);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
-  const { devices } = useMediaDevices();
   const { photoLibrary } = usePhotoLibrary();
 
   useEffect(() => {
-    checkDeviceAvailability();
-  }, []);
-
-  const checkDeviceAvailability = async () => {
-    try {
-      const hasCamera = await navigator.mediaDevices.getUserMedia({ video: true });
-      setIsCameraAvailable(true);
-      if (hasCamera) {
-        hasCamera.getTracks().forEach(track => track.stop());
+    const checkDeviceAvailability = async () => {
+      try {
+        const hasCamera = await navigator.mediaDevices.getUserMedia({ video: true });
+        setIsCameraAvailable(true);
+        if (hasCamera) {
+          hasCamera.getTracks().forEach(track => track.stop());
+        }
+      } catch (error) {
+        setIsCameraAvailable(false);
       }
-    } catch (error) {
-      setIsCameraAvailable(false);
-    }
 
-    try {
-      const hasLibrary = await photoLibrary.checkPhotoLibraryAccess();
-      setIsLibraryAvailable(true);
-    } catch (error) {
-      setIsLibraryAvailable(false);
-    }
-  };
+      try {
+        await photoLibrary.checkPhotoLibraryAccess();
+        setIsLibraryAvailable(true);
+      } catch (error) {
+        setIsLibraryAvailable(false);
+      }
+    };
+
+    checkDeviceAvailability();
+  }, [photoLibrary]);
 
   const handleCapture = async () => {
     if (!isCameraAvailable) return;
@@ -110,7 +108,7 @@ const CameraTab = ({ onPhotoSelected, onPhotoFromLibrary }) => {
                 <div className="mt-4">
                   <img
                     src={URL.createObjectURL(capturedPhoto)}
-                    alt="Captured photo"
+                    alt="Capture preview"
                     className="max-w-full h-32 object-contain mx-auto mb-2"
                   />
                   <div className="text-sm text-gray-600">Photo captured!</div>
@@ -147,7 +145,7 @@ const CameraTab = ({ onPhotoSelected, onPhotoFromLibrary }) => {
                 <div className="mt-4">
                   <img
                     src={URL.createObjectURL(selectedPhoto)}
-                    alt="Selected photo"
+                    alt="Library selection"
                     className="max-w-full h-32 object-contain mx-auto mb-2"
                   />
                   <div className="text-sm text-gray-600">Photo selected!</div>
@@ -177,7 +175,7 @@ const CameraTab = ({ onPhotoSelected, onPhotoFromLibrary }) => {
               <div key={index} className="relative">
                 <img
                   src={URL.createObjectURL(photo)}
-                  alt={`Photo ${index + 1}`}
+                  alt={`Thumbnail ${index + 1}`}
                   className="w-full h-16 object-cover rounded"
                 />
                 <button

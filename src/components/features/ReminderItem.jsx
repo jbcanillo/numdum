@@ -5,7 +5,7 @@ import SnoozeSelector from './SnoozeSelector';
 import EditReminderFormModal from './EditReminderFormModal';
 
 const ReminderItem = ({ reminder, onEdit }) => {
-  const { deleteReminder, completeReminder, snoozeReminder } = useReminders();
+  const { deleteReminder, completeReminder } = useReminders();
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [showSnooze, setShowSnooze] = React.useState(false);
   const [showEdit, setShowEdit] = React.useState(false);

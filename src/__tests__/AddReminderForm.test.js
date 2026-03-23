@@ -35,10 +35,10 @@ describe('AddReminderForm', () => {
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledTimes(1);
-      const data = onSubmit.mock.calls[0][0];
-      expect(data.title).toBe('New Reminder');
-      expect(data.dueDate).toBeDefined();
     });
+    const data = onSubmit.mock.calls[0][0];
+    expect(data.title).toBe('New Reminder');
+    expect(data.dueDate).toBeDefined();
   });
 
   test('clicking cancel calls onDismiss', () => {

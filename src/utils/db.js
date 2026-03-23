@@ -144,10 +144,12 @@ const toggleComplete = async (id) => {
   });
 };
 
-export default {
+const remindersDB = {
   getAllReminders,
   createReminder,
   updateReminder,
   deleteReminder,
   toggleComplete
 };
+
+export default remindersDB;

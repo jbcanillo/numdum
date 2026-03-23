@@ -2,7 +2,6 @@
 import { useState, useCallback } from 'react';
 
 export const usePhotoLibrary = () => {
-  const [photoLibrary, setPhotoLibrary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
