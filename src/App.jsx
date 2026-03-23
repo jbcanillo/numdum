@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Plus } from 'lucide-react';
 import { useReminders } from './hooks/useReminders';
 import { useFilteredReminders } from './hooks/useReminders';
 import { useSortedReminders } from './hooks/useReminders';
@@ -21,50 +22,55 @@ function App() {
   const [editingReminder, setEditingReminder] = useState(null);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold text-gray-900">Reminders</h1>
+            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent">
+              Reminders
+            </h1>
             {activeTab !== 'camera' && (
               <button
                 onClick={() => setShowAddForm(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="btn-primary flex items-center gap-2"
               >
-                + New Reminder
+                <Plus size={18} />
+                New Reminder
               </button>
             )}
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1">
-        {activeTab === 'calendar' && (
-          <CalendarView reminders={sortedReminders} />
-        )}
-        {activeTab === 'list' && (
-          <ReminderList
-            reminders={sortedReminders}
-            loading={loading}
-            error={error}
-            onEdit={setEditingReminder}
-          />
-        )}
-        {activeTab === 'camera' && (
-          <CameraTab
-            onPhotoSelected={() => {}}
-            onPhotoFromLibrary={() => {}}
-          />
-        )}
-        {activeTab === 'contacts' && (
-          <ContactsTab
-            onContactSelected={() => {}}
-            onReminderCreated={createReminder}
-          />
-        )}
-        {activeTab === 'dashboard' && <Dashboard />}
+      {/* Main Content with bottom padding for nav */}
+      <main className="pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mt-6">
+        <div className="animate-fadein">
+          {activeTab === 'calendar' && (
+            <CalendarView reminders={sortedReminders} />
+          )}
+          {activeTab === 'list' && (
+            <ReminderList
+              reminders={sortedReminders}
+              loading={loading}
+              error={error}
+              onEdit={setEditingReminder}
+            />
+          )}
+          {activeTab === 'camera' && (
+            <CameraTab
+              onPhotoSelected={() => {}}
+              onPhotoFromLibrary={() => {}}
+            />
+          )}
+          {activeTab === 'contacts' && (
+            <ContactsTab
+              onContactSelected={() => {}}
+              onReminderCreated={createReminder}
+            />
+          )}
+          {activeTab === 'dashboard' && <Dashboard />}
+        </div>
       </main>
 
       {/* Bottom Navigation */}
