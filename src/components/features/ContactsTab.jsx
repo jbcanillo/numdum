@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useContacts } from '../../hooks/useContacts';
 
 const ContactsTab = ({ onContactSelected, onReminderCreated }) => {
@@ -6,7 +6,6 @@ const ContactsTab = ({ onContactSelected, onReminderCreated }) => {
   const [selectedReminder, setSelectedReminder] = useState(null);
   const [showCreateReminder, setShowCreateReminder] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const { contacts, loading: contactsLoading, error: contactsError } = useContacts();
 
@@ -20,8 +19,6 @@ const ContactsTab = ({ onContactSelected, onReminderCreated }) => {
     if (!selectedContact) return;
 
     setLoading(true);
-    setError(null);
-
     try {
       const reminder = {
         id: Date.now().toString(),
@@ -40,7 +37,7 @@ const ContactsTab = ({ onContactSelected, onReminderCreated }) => {
       setSelectedReminder(reminder);
       setShowCreateReminder(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      console.error('Failed to create reminder:', err);
     } finally {
       setLoading(false);
     }
@@ -275,4 +272,3 @@ const ContactsTab = ({ onContactSelected, onReminderCreated }) => {
   );
 };
 export default ContactsTab;
-

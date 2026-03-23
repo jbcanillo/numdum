@@ -19,8 +19,6 @@ function App() {
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingReminder, setEditingReminder] = useState(null);
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
-  const [selectedContact, setSelectedContact] = useState(null);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -56,8 +54,14 @@ function App() {
         )}
         {activeTab === 'camera' && (
           <CameraTab
-            onPhotoSelected={(photo) => setSelectedPhoto(photo)}
-            onPhotoFromLibrary={(photo) => setSelectedPhoto(photo)}
+            onPhotoSelected={() => {}}
+            onPhotoFromLibrary={() => {}}
+          />
+        )}
+        {activeTab === 'contacts' && (
+          <ContactsTab
+            onContactSelected={() => {}}
+            onReminderCreated={() => {}}
           />
         )}
         {activeTab === 'dashboard' && <Dashboard />}

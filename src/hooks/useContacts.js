@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+/* eslint-disable no-unreachable */
 
 export const useContacts = () => {
   const [contacts, setContacts] = useState([]);

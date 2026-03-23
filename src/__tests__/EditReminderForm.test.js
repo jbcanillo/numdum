@@ -56,10 +56,10 @@ describe('EditReminderForm', () => {
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledTimes(1);
-      const submittedData = onSubmit.mock.calls[0][0];
-      expect(submittedData.title).toBe('Updated title');
-      expect(submittedData.dueDate).not.toBe(mockReminder.dueDate);
     });
+    const submittedData = onSubmit.mock.calls[0][0];
+    expect(submittedData.title).toBe('Updated title');
+    expect(submittedData.dueDate).not.toBe(mockReminder.dueDate);
   });
 
   test('clicking cancel calls onDismiss', () => {

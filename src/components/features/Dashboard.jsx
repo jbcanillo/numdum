@@ -12,7 +12,7 @@ const COLORS = ['#10b981', '#f59e0b', '#ef4444']; // green, amber, red for prior
 const Dashboard = () => {
   const { reminders, loading } = useReminders();
   const analytics = useAnalytics(reminders, 30);
-  const { metrics, trend, weekdayStats, hourlyStats, priorityBreakdown, avgTimeToComplete } = analytics;
+  const { metrics, trend, weekdayStats, hourlyStats, avgTimeToComplete } = analytics;
 
   if (loading) {
     return (
