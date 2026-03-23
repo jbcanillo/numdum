@@ -61,7 +61,7 @@ function App() {
         {activeTab === 'contacts' && (
           <ContactsTab
             onContactSelected={() => {}}
-            onReminderCreated={() => {}}
+            onReminderCreated={createReminder}
           />
         )}
         {activeTab === 'dashboard' && <Dashboard />}
