@@ -18,7 +18,7 @@ function App() {
   const filteredReminders = useFilteredReminders(reminders);
   const sortedReminders = useSortedReminders(filteredReminders);
 
-  const { journalEntries, addEntry: addJournalEntry } = useJournal();
+  const { entries: journalEntries, addEntry: addJournalEntry } = useJournal();
 
   const [activeDate, setActiveDate] = useState(new Date());
   const [showAddForm, setShowAddForm] = useState(false);
