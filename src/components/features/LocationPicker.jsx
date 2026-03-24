@@ -18,6 +18,22 @@ const icon = L.icon({
 const LocationPicker = ({ onConfirm, onCancel }) => {
   const [position, setPosition] = useState(null);
 
+  const handleUseGPS = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setPosition({ lat: latitude, lng: longitude });
+      },
+      (err) => {
+        alert('Unable to retrieve your location: ' + err.message);
+      }
+    );
+  };
+
   const MapClickHandler = () => {
     useMapEvents({
       click(e) {
@@ -59,6 +75,13 @@ const LocationPicker = ({ onConfirm, onCancel }) => {
             <MapClickHandler />
             {position && <Marker position={position} icon={icon} />}
           </MapContainer>
+          <button
+            type="button"
+            onClick={handleUseGPS}
+            className="absolute top-4 right-4 z-[400] bg-white px-3 py-1 rounded shadow text-sm hover:bg-gray-50"
+          >
+            Use current location
+          </button>
         </div>
         {position && (
           <div className="p-2 bg-gray-100 text-sm border-t">

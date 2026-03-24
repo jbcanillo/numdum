@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Calendar as CalendarIcon,
   List as ListIcon,
-  BarChart3,
-  BookOpen
+  BarChart3
 } from 'lucide-react';
 
 const BottomNavigation = ({ activeTab, onTabChange }) => {
@@ -13,7 +12,6 @@ const BottomNavigation = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: 'calendar', label: 'Calendar', Icon: CalendarIcon },
     { id: 'list', label: 'List', Icon: ListIcon },
-    { id: 'journal', label: 'Journal', Icon: BookOpen },
     { id: 'dashboard', label: 'Dashboard', Icon: BarChart3 }
   ];
 
