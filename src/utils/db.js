@@ -46,7 +46,7 @@ const openDatabase = () => {
   });
 };
 
-const getDatabase = async () => {
+const getDB = async () => {
   if (!db) {
     await openDatabase();
   }
@@ -55,7 +55,7 @@ const getDatabase = async () => {
 
 // CRUD operations
 const getAllReminders = async () => {
-  const database = await getDatabase();
+  const database = await getDB();
   return new Promise((resolve, reject) => {
     const transaction = database.transaction([STORE_NAME], 'readonly');
     const store = transaction.objectStore(STORE_NAME);
@@ -67,7 +67,7 @@ const getAllReminders = async () => {
 };
 
 const createReminder = async (reminderData) => {
-  const database = await getDatabase();
+  const database = await getDB();
   return new Promise((resolve, reject) => {
     const transaction = database.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
@@ -87,7 +87,7 @@ const createReminder = async (reminderData) => {
 };
 
 const updateReminder = async (reminderData) => {
-  const database = await getDatabase();
+  const database = await getDB();
   return new Promise((resolve, reject) => {
     const transaction = database.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
@@ -100,7 +100,7 @@ const updateReminder = async (reminderData) => {
 };
 
 const deleteReminder = async (id) => {
-  const database = await getDatabase();
+  const database = await getDB();
   return new Promise((resolve, reject) => {
     const transaction = database.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
@@ -113,7 +113,7 @@ const deleteReminder = async (id) => {
 };
 
 const toggleComplete = async (id) => {
-  const database = await getDatabase();
+  const database = await getDB();
   return new Promise((resolve, reject) => {
     const transaction = database.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
@@ -150,6 +150,32 @@ const remindersDB = {
   updateReminder,
   deleteReminder,
   toggleComplete
+};
+
+// Journal entries
+export const getAllJournalEntries = async () => {
+  const db = await getDB();
+  return db.getAll('journal-store');
+};
+
+export const createJournalEntry = async (entry) => {
+  const db = await getDB();
+  entry.id = entry.id || Date.now().toString();
+  entry.createdAt = new Date(entry.createdAt || Date.now());
+  return db.add('journal-store', entry);
+};
+
+export const updateJournalEntry = async (id, changes) => {
+  const db = await getDB();
+  const entry = await db.get('journal-store', id);
+  if (!entry) throw new Error('Entry not found');
+  const updated = { ...entry, ...changes };
+  return db.put('journal-store', updated);
+};
+
+export const deleteJournalEntry = async (id) => {
+  const db = await getDB();
+  return db.delete('journal-store', id);
 };
 
 export default remindersDB;
