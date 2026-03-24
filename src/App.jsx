@@ -8,6 +8,7 @@ import ReminderList from './components/features/ReminderList';
 import AddReminderForm from './components/features/AddReminderForm';
 import EditReminderFormModal from './components/features/EditReminderFormModal';
 import Dashboard from './components/features/Dashboard';
+import JournalTab from './components/features/JournalTab';
 import BottomNavigation from './components/layout/BottomNavigation';
 
 function App() {
@@ -26,7 +27,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent">
-              Reminders
+              Numdum
             </h1>
             {activeTab !== 'camera' && (
               <button
@@ -56,6 +57,7 @@ function App() {
             />
           )}
           {activeTab === 'dashboard' && <Dashboard />}
+          {activeTab === 'journal' && <JournalTab />}
         </div>
       </main>
 

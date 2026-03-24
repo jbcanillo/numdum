@@ -152,4 +152,30 @@ const remindersDB = {
   toggleComplete
 };
 
+// Journal entries
+export const getAllJournalEntries = async () => {
+  const db = await getDB();
+  return db.getAll('journal-store');
+};
+
+export const createJournalEntry = async (entry) => {
+  const db = await getDB();
+  entry.id = entry.id || Date.now().toString();
+  entry.createdAt = new Date(entry.createdAt || Date.now());
+  return db.add('journal-store', entry);
+};
+
+export const updateJournalEntry = async (id, changes) => {
+  const db = await getDB();
+  const entry = await db.get('journal-store', id);
+  if (!entry) throw new Error('Entry not found');
+  const updated = { ...entry, ...changes };
+  return db.put('journal-store', updated);
+};
+
+export const deleteJournalEntry = async (id) => {
+  const db = await getDB();
+  return db.delete('journal-store', id);
+};
+
 export default remindersDB;
