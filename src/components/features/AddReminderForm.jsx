@@ -24,7 +24,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
   const [showContactPicker, setShowContactPicker] = useState(false);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
 
-  const { openPhotoLibrary } = usePhotoLibrary();
+  const { photoLibrary: { openPhotoLibrary } } = usePhotoLibrary();
 
   const {
     register,
