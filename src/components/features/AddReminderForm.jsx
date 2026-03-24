@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { usePhotoLibrary } from '../../hooks/usePhotoLibrary';
+import ContactPicker from './ContactPicker';
+import LocationPicker from './LocationPicker';
 
 const reminderSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -14,6 +17,15 @@ const reminderSchema = z.object({
 
 const AddReminderForm = ({ onDismiss, onSubmit }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Attachment states
+  const [photos, setPhotos] = useState([]); // array of { file, preview }
+  const [location, setLocation] = useState(null); // { lat, lng }
+  const [contact, setContact] = useState(null); // contact object
+  const [showContactPicker, setShowContactPicker] = useState(false);
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+
+  const { openPhotoLibrary } = usePhotoLibrary();
+
   const {
     register,
     handleSubmit,
@@ -21,16 +33,38 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
   } = useForm({
     resolver: zodResolver(reminderSchema),
     defaultValues: {
-      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Default to tomorrow
+      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       priority: 'medium',
       repeat: 'never'
     }
   });
 
+  const handleAddPhoto = async () => {
+    try {
+      const result = await openPhotoLibrary();
+      if (result && result.file) {
+        const preview = URL.createObjectURL(result.file);
+        setPhotos(prev => [...prev, { file: result.file, preview }]);
+      }
+    } catch (err) {
+      console.error('Failed to pick photo:', err);
+    }
+  };
+
+  const removePhoto = (index) => {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
   const onSubmitForm = async (data) => {
     setIsSubmitting(true);
     try {
-      await onSubmit(data);
+      const payload = {
+        ...data,
+        photos: photos.map(p => p.file),
+        location,
+        contact
+      };
+      await onSubmit(payload);
     } catch (error) {
       console.error('Error creating reminder:', error);
     } finally {
@@ -39,7 +73,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Add New Reminder</h2>
         <form onSubmit={handleSubmit(onSubmitForm)}>
@@ -52,7 +86,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
               {...register('title')}
               id="title"
               type="text"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
             {errors.title && (
               <p className="text-red-600 text-sm mt-1">{errors.title.message}</p>
@@ -68,7 +102,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
               {...register('description')}
               id="description"
               rows={3}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
 
@@ -81,7 +115,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
               {...register('dueDate')}
               id="dueDate"
               type="datetime-local"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
             {errors.dueDate && (
               <p className="text-red-600 text-sm mt-1">{errors.dueDate.message}</p>
@@ -96,7 +130,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
             <select
               {...register('priority')}
               id="priority"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="low">Low</option>
               <option value="medium">Medium</option>
@@ -112,7 +146,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
             <select
               {...register('repeat')}
               id="repeat"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="never">Never</option>
               <option value="daily">Daily</option>
@@ -131,8 +165,93 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
               {...register('details')}
               id="details"
               rows={3}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
+          </div>
+
+          {/* Photos */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Photos</label>
+            <button type="button" onClick={handleAddPhoto} className="btn-secondary">
+              Add Photo
+            </button>
+            {photos.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {photos.map((photo, idx) => (
+                  <div key={idx} className="relative">
+                    <img
+                      src={photo.preview}
+                      alt={`Preview ${idx}`}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(idx)}
+                      className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Contact */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Contact</label>
+            {contact ? (
+              <div className="flex items-center justify-between bg-gray-50 p-2 rounded border">
+                <div>
+                  <p className="font-medium">{contact.name}</p>
+                  <p className="text-sm text-gray-600">{contact.email || contact.phone}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setContact(null)}
+                  className="text-red-600 text-sm"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowContactPicker(true)}
+                className="btn-secondary"
+              >
+                Select Contact
+              </button>
+            )}
+          </div>
+
+          {/* Location */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Location</label>
+            {location ? (
+              <div className="flex items-center justify-between bg-gray-50 p-2 rounded border">
+                <div className="text-sm">
+                  <p>
+                    Lat: {location.lat.toFixed(5)}, Lng: {location.lng.toFixed(5)}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setLocation(null)}
+                  className="text-red-600 text-sm"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowLocationPicker(true)}
+                className="btn-secondary"
+              >
+                Pick Location
+              </button>
+            )}
           </div>
 
           <div className="flex space-x-4">
@@ -146,12 +265,33 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Creating...' : 'Create Reminder'}
             </button>
           </div>
         </form>
+
+        {/* Modals */}
+        {showContactPicker && (
+          <ContactPicker
+            onSelect={(c) => {
+              setContact(c);
+              setShowContactPicker(false);
+            }}
+            onClose={() => setShowContactPicker(false)}
+          />
+        )}
+
+        {showLocationPicker && (
+          <LocationPicker
+            onConfirm={(loc) => {
+              if (loc) setLocation({ lat: loc.lat, lng: loc.lng });
+              setShowLocationPicker(false);
+            }}
+            onCancel={() => setShowLocationPicker(false)}
+          />
+        )}
       </div>
     </div>
   );
