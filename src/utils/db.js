@@ -46,7 +46,7 @@ const openDatabase = () => {
   });
 };
 
-const getDatabase = async () => {
+const getDB = async () => {
   if (!db) {
     await openDatabase();
   }
@@ -55,7 +55,7 @@ const getDatabase = async () => {
 
 // CRUD operations
 const getAllReminders = async () => {
-  const database = await getDatabase();
+  const database = await getDB();
   return new Promise((resolve, reject) => {
     const transaction = database.transaction([STORE_NAME], 'readonly');
     const store = transaction.objectStore(STORE_NAME);
@@ -67,7 +67,7 @@ const getAllReminders = async () => {
 };
 
 const createReminder = async (reminderData) => {
-  const database = await getDatabase();
+  const database = await getDB();
   return new Promise((resolve, reject) => {
     const transaction = database.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
@@ -87,7 +87,7 @@ const createReminder = async (reminderData) => {
 };
 
 const updateReminder = async (reminderData) => {
-  const database = await getDatabase();
+  const database = await getDB();
   return new Promise((resolve, reject) => {
     const transaction = database.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
@@ -100,7 +100,7 @@ const updateReminder = async (reminderData) => {
 };
 
 const deleteReminder = async (id) => {
-  const database = await getDatabase();
+  const database = await getDB();
   return new Promise((resolve, reject) => {
     const transaction = database.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
@@ -113,7 +113,7 @@ const deleteReminder = async (id) => {
 };
 
 const toggleComplete = async (id) => {
-  const database = await getDatabase();
+  const database = await getDB();
   return new Promise((resolve, reject) => {
     const transaction = database.transaction([STORE_NAME], 'readwrite');
     const store = transaction.objectStore(STORE_NAME);

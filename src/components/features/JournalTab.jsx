@@ -12,7 +12,7 @@ const MOODS = [
 ];
 
 const JournalTab = () => {
-  const { entries, addEntry, removeEntry } = useJournal();
+  const { entries, loading, addEntry, removeEntry } = useJournal();
   const { openPhotoLibrary } = usePhotoLibrary();
 
   const [text, setText] = useState('');
