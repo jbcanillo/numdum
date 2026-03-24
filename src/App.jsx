@@ -7,8 +7,6 @@ import CalendarView from './components/ui/CalendarView';
 import ReminderList from './components/features/ReminderList';
 import AddReminderForm from './components/features/AddReminderForm';
 import EditReminderFormModal from './components/features/EditReminderFormModal';
-import CameraTab from './components/features/CameraTab';
-import ContactsTab from './components/features/ContactsTab';
 import Dashboard from './components/features/Dashboard';
 import BottomNavigation from './components/layout/BottomNavigation';
 
@@ -55,18 +53,6 @@ function App() {
               loading={loading}
               error={error}
               onEdit={setEditingReminder}
-            />
-          )}
-          {activeTab === 'camera' && (
-            <CameraTab
-              onPhotoSelected={() => {}}
-              onPhotoFromLibrary={() => {}}
-            />
-          )}
-          {activeTab === 'contacts' && (
-            <ContactsTab
-              onContactSelected={() => {}}
-              onReminderCreated={createReminder}
             />
           )}
           {activeTab === 'dashboard' && <Dashboard />}
