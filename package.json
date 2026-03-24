@@ -57,7 +57,7 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "/node_modules/(?!(zod|@hookform/resolvers)/)"
+      "/node_modules/(?!(zod|@hookform/resolvers|react-leaflet|leaflet)/)"
     ]
   }
 }

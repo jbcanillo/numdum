@@ -30,7 +30,7 @@ const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
   const [showContactPicker, setShowContactPicker] = useState(false);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
 
-  const { openPhotoLibrary } = usePhotoLibrary();
+  const { photoLibrary: { openPhotoLibrary } } = usePhotoLibrary();
 
   // Initialize attachment states from reminder
   useEffect(() => {
