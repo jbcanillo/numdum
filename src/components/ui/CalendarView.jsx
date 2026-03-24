@@ -67,7 +67,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange }) =
                   {entry.photos && entry.photos.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
                       {entry.photos.map((photo, idx) => (
-                        <img key={idx} src={URL.createObjectURL(photo)} alt={`Journal photo ${idx}`} className="w-20 h-20 object-cover rounded" />
+                        <img key={idx} src={URL.createObjectURL(photo)} alt={`Journal attachment ${idx + 1}`} className="w-20 h-20 object-cover rounded" />
                       ))}
                     </div>
                   )}
