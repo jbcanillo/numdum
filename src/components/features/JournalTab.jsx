@@ -114,7 +114,7 @@ const JournalTab = () => {
             <div className="flex flex-wrap gap-2 mt-2">
               {photos.map((photo, idx) => (
                 <div key={idx} className="relative">
-                  <img src={photo.preview} alt={`Journal photo ${idx}`} className="w-16 h-16 object-cover rounded" />
+                  <img src={photo.preview} alt={`Journal attachment ${idx}`} className="w-16 h-16 object-cover rounded" />
                   <button type="button" onClick={() => removePhoto(idx)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">×</button>
                 </div>
               ))}
@@ -161,7 +161,7 @@ const JournalTab = () => {
                     <img
                       key={idx}
                       src={URL.createObjectURL(photo)}
-                      alt={`Journal photo ${idx}`}
+                      alt={`Journal attachment ${idx}`}
                       className="w-20 h-20 object-cover rounded"
                     />
                   ))}
