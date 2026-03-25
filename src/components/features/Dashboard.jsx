@@ -20,7 +20,7 @@ const MOOD_COLORS = {
 
 const Dashboard = () => {
   const { reminders, loading } = useReminders();
-  const { entries: journalEntries, loading: journalLoading } = useJournal();
+  const { entries: journalEntries } = useJournal();
   const analytics = useAnalytics(reminders, 30);
   const { metrics, trend, weekdayStats, hourlyStats, avgTimeToComplete } = analytics;
 
