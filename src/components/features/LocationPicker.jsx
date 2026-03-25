@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -15,6 +15,16 @@ const icon = L.icon({
   shadowSize: [41, 41]
 });
 
+const MapController = ({ target }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (target) {
+      map.flyTo(target, 15, { duration: 1 });
+    }
+  }, [target, map]);
+  return null;
+};
+
 const LocationPicker = ({ onConfirm, onCancel }) => {
   const [position, setPosition] = useState(null);
 
@@ -26,7 +36,8 @@ const LocationPicker = ({ onConfirm, onCancel }) => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        setPosition({ lat: latitude, lng: longitude });
+        const posLL = { lat: latitude, lng: longitude };
+        setPosition(posLL);
       },
       (err) => {
         alert('Unable to retrieve your location: ' + err.message);
@@ -67,11 +78,12 @@ const LocationPicker = ({ onConfirm, onCancel }) => {
           </div>
         </div>
         <div className="flex-1 relative">
-          <MapContainer center={[20, 0]} zoom={2} className="h-full w-full">
+          <MapContainer center={position || [20, 0]} zoom={position ? undefined : 2} className="h-full w-full">
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            <MapController target={position} />
             <MapClickHandler />
             {position && <Marker position={position} icon={icon} />}
           </MapContainer>

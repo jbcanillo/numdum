@@ -10,7 +10,8 @@ const MOODS = [
 ];
 
 const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
-  const { openPhotoLibrary } = usePhotoLibrary();
+  const { photoLibrary } = usePhotoLibrary();
+  const { openPhotoLibrary } = photoLibrary;
   const [text, setText] = useState('');
   const [mood, setMood] = useState('😐');
   const [date, setDate] = useState(initialDate ? new Date(initialDate).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16));
