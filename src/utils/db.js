@@ -30,8 +30,8 @@ const openDatabase = () => {
         store.createIndex('by_completed_at', 'completed_at', { unique: false });
         store.createIndex('by_due_date', 'dueDate', { unique: false });
       } else {
-        // Migration from version 1 to 2: add indexes if missing
-        const store = db.result.objectStore(STORE_NAME);
+        // Migration: add indexes if missing
+        const store = db.objectStore(STORE_NAME);
         if (!store.indexNames.contains('by_completed')) {
           store.createIndex('by_completed', 'completed', { unique: false });
         }
