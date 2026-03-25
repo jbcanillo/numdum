@@ -4,7 +4,7 @@
 let db = null;
 
 const DB_NAME = 'ReminderAppDB';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const STORE_NAME = 'reminders';
 
 const openDatabase = () => {
@@ -41,6 +41,11 @@ const openDatabase = () => {
         if (!store.indexNames.contains('by_due_date')) {
           store.createIndex('by_due_date', 'dueDate', { unique: false });
         }
+      }
+      // Create object store for journal entries if it doesn't exist
+      const JOURNAL_STORE = 'journal-store';
+      if (!db.objectStoreNames.contains(JOURNAL_STORE)) {
+        db.createObjectStore(JOURNAL_STORE, { keyPath: 'id' });
       }
     };
   });
