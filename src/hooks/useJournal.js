@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import db from '../utils/db';
+import { getAllJournalEntries, createJournalEntry, updateJournalEntry, deleteJournalEntry } from '../utils/db';
 
 export const useJournal = () => {
   const [entries, setEntries] = useState([]);
@@ -9,7 +9,7 @@ export const useJournal = () => {
   const refresh = useCallback(async () => {
     try {
       setLoading(true);
-      const all = await db.getAllJournalEntries();
+      const all = await getAllJournalEntries();
       all.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setEntries(all);
       setError(null);
@@ -25,17 +25,17 @@ export const useJournal = () => {
   }, [refresh]);
 
   const addEntry = async (entry) => {
-    await db.createJournalEntry(entry);
+    await createJournalEntry(entry);
     await refresh();
   };
 
   const removeEntry = async (id) => {
-    await db.deleteJournalEntry(id);
+    await deleteJournalEntry(id);
     await refresh();
   };
 
   const editEntry = async (id, changes) => {
-    await db.updateJournalEntry(id, changes);
+    await updateJournalEntry(id, changes);
     await refresh();
   };
 

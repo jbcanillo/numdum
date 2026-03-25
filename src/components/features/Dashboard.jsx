@@ -4,13 +4,23 @@ import {
   PieChart, Pie, Cell, BarChart, Bar
 } from 'recharts';
 import { useReminders } from '../../hooks/useReminders';
+import { useJournal } from '../../hooks/useJournal';
 import useAnalytics from '../../hooks/useAnalytics';
 import { exportToCSV, exportToJSON } from '../../utils/export';
 
 const COLORS = ['#10b981', '#f59e0b', '#ef4444']; // green, amber, red for priorities
 
+const MOOD_COLORS = {
+  '😊': '#10b981', // green
+  '😐': '#6b7280', // gray
+  '😔': '#3b82f6', // blue
+  '😠': '#ef4444', // red
+  '😲': '#f59e0b'  // amber
+};
+
 const Dashboard = () => {
   const { reminders, loading } = useReminders();
+  const { entries: journalEntries } = useJournal();
   const analytics = useAnalytics(reminders, 30);
   const { metrics, trend, weekdayStats, hourlyStats, avgTimeToComplete } = analytics;
 
@@ -29,6 +39,25 @@ const Dashboard = () => {
   const handleExportJSON = () => {
     exportToJSON(reminders);
   };
+
+  // Calculate mood distribution from journal entries
+  const moodCounts = {
+    '😊': 0,
+    '😐': 0,
+    '😔': 0,
+    '😠': 0,
+    '😲': 0
+  };
+  journalEntries?.forEach(entry => {
+    if (moodCounts.hasOwnProperty(entry.mood)) {
+      moodCounts[entry.mood]++;
+    }
+  });
+
+  const moodData = Object.entries(moodCounts).map(([mood, count]) => ({
+    name: mood,
+    value: count
+  })).filter(item => item.value > 0);
 
   // Prepare priority distribution data for pie chart
   const priorityData = [
@@ -92,6 +121,10 @@ const Dashboard = () => {
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="text-sm text-gray-500">Snoozed</div>
           <div className="text-3xl font-bold text-purple-600">{metrics.snoozed}</div>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow">
+          <div className="text-sm text-gray-500">Total Journal Entries</div>
+          <div className="text-3xl font-bold text-indigo-600">{journalEntries?.length || 0}</div>
         </div>
       </div>
 
@@ -175,6 +208,32 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* Journal Mood Distribution Chart */}
+      {moodData.length > 0 && (
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-4">Journal Entries by Mood</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={moodData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {moodData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={MOOD_COLORS[entry.name] || '#ccc'} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 };

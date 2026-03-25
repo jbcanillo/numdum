@@ -13,7 +13,8 @@ export const usePhotoLibrary = () => {
       if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
         return true;
       }
-      return false;
+      // Fallback to file input is always available in browsers
+      return true;
     } catch (err) {
       return false;
     }
