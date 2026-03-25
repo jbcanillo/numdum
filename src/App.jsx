@@ -72,6 +72,7 @@ function App() {
           {activeTab === 'list' && (
             <ReminderList
               reminders={sortedReminders}
+              journalEntries={journalEntries}
               loading={loading}
               error={error}
               onEdit={setEditingReminder}
