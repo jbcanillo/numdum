@@ -159,28 +159,61 @@ const remindersDB = {
 
 // Journal entries
 export const getAllJournalEntries = async () => {
-  const db = await getDB();
-  return db.getAll('journal-store');
+  const database = await getDB();
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction(['journal-store'], 'readonly');
+    const store = transaction.objectStore('journal-store');
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
 };
 
 export const createJournalEntry = async (entry) => {
-  const db = await getDB();
-  entry.id = entry.id || Date.now().toString();
-  entry.createdAt = new Date(entry.createdAt || Date.now());
-  return db.add('journal-store', entry);
+  const database = await getDB();
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction(['journal-store'], 'readwrite');
+    const store = transaction.objectStore('journal-store');
+    const entryToAdd = {
+      ...entry,
+      id: entry.id || Date.now().toString(),
+      createdAt: new Date(entry.createdAt || Date.now())
+    };
+    const request = store.add(entryToAdd);
+    request.onsuccess = () => resolve(entryToAdd);
+    request.onerror = () => reject(request.error);
+  });
 };
 
 export const updateJournalEntry = async (id, changes) => {
-  const db = await getDB();
-  const entry = await db.get('journal-store', id);
-  if (!entry) throw new Error('Entry not found');
-  const updated = { ...entry, ...changes };
-  return db.put('journal-store', updated);
+  const database = await getDB();
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction(['journal-store'], 'readwrite');
+    const store = transaction.objectStore('journal-store');
+    const getRequest = store.get(id);
+    getRequest.onsuccess = () => {
+      const entry = getRequest.result;
+      if (!entry) {
+        reject(new Error('Entry not found'));
+        return;
+      }
+      const updated = { ...entry, ...changes };
+      store.put(updated);
+      resolve(updated);
+    };
+    getRequest.onerror = () => reject(getRequest.error);
+  });
 };
 
 export const deleteJournalEntry = async (id) => {
-  const db = await getDB();
-  return db.delete('journal-store', id);
+  const database = await getDB();
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction(['journal-store'], 'readwrite');
+    const store = transaction.objectStore('journal-store');
+    const request = store.delete(id);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
 };
 
 export default remindersDB;
