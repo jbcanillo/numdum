@@ -28,17 +28,17 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm">
+      <header className="sticky top-0 z-30 bg-base-100/80 backdrop-blur-md border-b border-base-200/60 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent">
+            <h1 className="text-2xl font-bold text-primary">
               Numdum
             </h1>
             <div className="flex gap-2">
               {activeTab === 'calendar' && (
                 <button
                   onClick={() => setShowAddJournalForm(true)}
-                  className="btn-secondary flex items-center gap-2"
+                  className="btn btn-outline btn-primary btn-sm flex items-center gap-2"
                 >
                   <BookOpen size={18} />
                   Add Journal
@@ -47,7 +47,7 @@ function App() {
               {activeTab !== 'camera' && (
                 <button
                   onClick={() => setShowAddForm(true)}
-                  className="btn-primary flex items-center gap-2"
+                  className="btn btn-primary btn-sm flex items-center gap-2"
                 >
                   <Plus size={18} />
                   New Reminder

@@ -44,7 +44,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange }) =
           value={activeDate}
           onChange={onDateChange}
           tileContent={tileContent}
-          className="react-calendar"
+          className="react-calendar w-full rounded-box bg-base-100"
           showNavigation={true}
           showWeekNumbers={false}
           minDetail="month"
@@ -58,12 +58,12 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange }) =
             <div className="mb-6">
               <h4 className="text-lg font-medium mb-2">Journal Entries</h4>
               {journalForDay.map(entry => (
-                <div key={entry.id} className="mb-3 p-3 rounded-lg border border-gray-200 bg-gray-50">
+                <div key={entry.id} className="mb-3 p-3 rounded-box border border-base-200 bg-base-100">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-2xl">{entry.mood}</span>
-                    <span className="text-sm text-gray-500">{new Date(entry.date).toLocaleTimeString()}</span>
+                    <span className="text-sm text-base-content/60">{new Date(entry.date).toLocaleTimeString()}</span>
                   </div>
-                  <p className="text-gray-800 whitespace-pre-wrap">{entry.text}</p>
+                  <p className="text-base-content whitespace-pre-wrap">{entry.text}</p>
                   {entry.photos && entry.photos.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
                       {entry.photos.map((photo, idx) => (
@@ -81,10 +81,10 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange }) =
             <div>
               <h4 className="text-lg font-medium mb-2">Reminders</h4>
               {remindersForDay.map(reminder => (
-                <div key={reminder.id} className="mb-4 p-3 rounded-lg border border-gray-200">
-                  <h4 className="font-medium">{reminder.title}</h4>
-                  <p className="text-sm text-gray-600">{reminder.description || 'No description'}</p>
-                  <p className="text-xs text-gray-500 mt-1">
+                <div key={reminder.id} className="mb-4 p-3 rounded-box border border-base-200 bg-base-100">
+                  <h4 className="font-medium text-base-content">{reminder.title}</h4>
+                  <p className="text-sm text-base-content/70">{reminder.description || 'No description'}</p>
+                  <p className="text-xs text-base-content/50 mt-1">
                     {new Date(reminder.dueDate).toLocaleTimeString()}
                   </p>
                 </div>
@@ -93,7 +93,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange }) =
           )}
 
           {remindersForDay.length === 0 && journalForDay.length === 0 && (
-            <p className="text-gray-500 text-center py-4">No entries for this date</p>
+            <p className="text-base-content/50 text-center py-4">No entries for this date</p>
           )}
         </div>
       </div>
