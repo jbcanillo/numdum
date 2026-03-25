@@ -2,16 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design tokens + global styles */
+/* Map custom properties to DaisyUI theme variables for consistency */
 :root {
-  --color-primary: 6366f1; /* indigo-600 */
-  --color-primary-dark: 4f46e5; /* indigo-700 */
-  --color-secondary: 14b8a6; /* teal-500 */
-  --color-surface: #ffffff;
-  --color-background: #f8fafc; /* slate-50 */
-  --color-text: #1e293b; /* slate-800 */
-  --color-text-muted: #64748b; /* slate-500 */
-  --color-border: #e2e8f0; /* slate-200 */
+  --color-primary: var(--p);
+  --color-primary-dark: var(--p);
+  --color-secondary: var(--s);
+  --color-accent: var(--a);
+  --color-surface: var(--c);
+  --color-background: var(--b);
+  --color-text: var(--bc);
+  --color-text-muted: var(--nc);
+  --color-border: var(--border);
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
