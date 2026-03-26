@@ -201,7 +201,10 @@ export const updateJournalEntry = async (id, changes) => {
       store.put(updated);
       resolve(updated);
     };
-    getRequest.onerror = () => reject(getRequest.error);
+    getRequest.onerror = () => {
+      console.error('Update journal entry error:', getRequest.error);
+      reject(getRequest.error);
+    };
   });
 };
 
