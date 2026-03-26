@@ -59,23 +59,25 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg overflow-hidden max-w-4xl w-full">
-        <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="text-xl font-semibold">New Journal Entry</h2>
-          <button type="button" onClick={onDismiss} className="text-2xl leading-none">&times;</button>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-base-100 rounded-box overflow-hidden max-w-4xl w-full shadow-lg">
+        <div className="p-4 border-b border-base-200 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-base-content">New Journal Entry</h2>
+          <button type="button" onClick={onDismiss} className="text-2xl leading-none text-base-content/60 hover:text-base-content">×</button>
         </div>
         <form onSubmit={handleSubmit} className="p-4">
           {/* Mood selection */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Mood</label>
+            <label className="label">
+              <span className="label-text font-medium">Mood</span>
+            </label>
             <div className="flex gap-2">
               {MOODS.map(m => (
                 <button
                   key={m.emoji}
                   type="button"
                   onClick={() => setMood(m.emoji)}
-                  className={`p-2 border rounded-lg text-2xl ${mood === m.emoji ? 'border-primary-500 bg-primary-50' : 'border-gray-300'}`}
+                  className={`btn btn-outline btn-sm ${mood === m.emoji ? 'btn-primary' : ''}`}
                   title={m.label}
                 >
                   {m.emoji}
@@ -86,12 +88,14 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
 
           {/* Text */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Entry</label>
+            <label className="label">
+              <span className="label-text font-medium">Entry</span>
+            </label>
             <textarea
               value={text}
               onChange={e => setText(e.target.value)}
               rows={4}
-              className="w-full border rounded-lg p-2"
+              className="textarea textarea-bordered w-full focus:textarea-primary"
               placeholder="What's on your mind?"
               required
             />
@@ -99,12 +103,14 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
 
           {/* Date */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Date & Time</label>
+            <label className="label">
+              <span className="label-text font-medium">Date & Time</span>
+            </label>
             <input
               type="datetime-local"
               value={date}
               onChange={e => setDate(e.target.value)}
-              className="w-full border rounded-lg p-2"
+              className="input input-bordered w-full focus:input-primary"
               required
             />
           </div>
@@ -112,8 +118,8 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
           {/* Photos */}
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium">Photos</label>
-              <button type="button" onClick={handleAddPhoto} className="btn-secondary text-sm">
+              <label className="label-text font-medium">Photos</label>
+              <button type="button" onClick={handleAddPhoto} className="btn btn-outline btn-sm">
                 Add Photo
               </button>
             </div>
@@ -121,8 +127,8 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
               <div className="flex flex-wrap gap-2 mt-2">
                 {photos.map((photo, idx) => (
                   <div key={idx} className="relative">
-                    <img src={photo.preview} alt={`Journal attachment ${idx}`} className="w-16 h-16 object-cover rounded" />
-                    <button type="button" onClick={() => removePhoto(idx)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">×</button>
+                    <img src={photo.preview} alt={`Journal attachment ${idx}`} className="w-16 h-16 object-cover rounded-box" />
+                    <button type="button" onClick={() => removePhoto(idx)} className="absolute -top-1 -right-1 btn btn-circle btn-error btn-xs text-white">×</button>
                   </div>
                 ))}
               </div>
@@ -130,14 +136,14 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end space-x-2">
-            <button type="button" onClick={onDismiss} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={onDismiss} className="btn btn-outline">
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+              className="btn btn-primary"
             >
               {isSubmitting ? 'Saving...' : 'Save Entry'}
             </button>

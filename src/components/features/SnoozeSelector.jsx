@@ -43,9 +43,9 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-        <h2 className="text-xl font-bold mb-4">Snooze Reminder</h2>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-base-100 rounded-box p-6 max-w-sm w-full shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-base-content">Snooze Reminder</h2>
         
         {!showCustom && !showDateTime ? (
           <div className="space-y-2">
@@ -61,7 +61,7 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
                     handleSnooze(option.value);
                   }
                 }}
-                className="w-full px-4 py-3 text-left border rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-3 text-left border border-base-200 rounded-lg hover:bg-base-200 transition-colors text-base-content"
               >
                 {option.label}
               </button>
@@ -71,8 +71,8 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
         {showCustom && (
           <div>
             <div className="mb-4">
-              <label htmlFor="custom-minutes" className="block text-sm font-medium mb-2">
-                Snooze for (minutes)
+              <label htmlFor="custom-minutes" className="label">
+                <span className="label-text font-medium">Snooze for (minutes)</span>
               </label>
               <input
                 id="custom-minutes"
@@ -81,19 +81,19 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
                 max="1440"
                 value={customMinutes}
                 onChange={(e) => setCustomMinutes(parseInt(e.target.value) || 60)}
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input input-bordered w-full focus:input-primary"
               />
             </div>
-            <div className="flex space-x-4">
+            <div className="flex gap-4">
               <button
                 onClick={() => setShowCustom(false)}
-                className="flex-1 px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors"
+                className="flex-1 btn btn-outline"
               >
                 Back
               </button>
               <button
                 onClick={() => handleSnooze(customMinutes)}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex-1 btn btn-primary"
               >
                 Snooze
               </button>
@@ -103,30 +103,30 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
         {showDateTime && (
           <div>
             <div className="mb-4">
-              <label htmlFor="snooze-datetime" className="block text-sm font-medium mb-2">
-                Snooze until
+              <label htmlFor="snooze-datetime" className="label">
+                <span className="label-text font-medium">Snooze until</span>
               </label>
               <input
                 id="snooze-datetime"
                 type="datetime-local"
                 value={customDateTime}
                 onChange={(e) => setCustomDateTime(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input input-bordered w-full focus:input-primary"
               />
             </div>
-            <div className="flex space-x-4">
+            <div className="flex gap-4">
               <button
                 onClick={() => {
                   setShowDateTime(false);
                   setCustomDateTime('');
                 }}
-                className="flex-1 px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors"
+                className="flex-1 btn btn-outline"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDateTimeSnooze(customDateTime)}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex-1 btn btn-primary"
               >
                 Set
               </button>
@@ -136,7 +136,7 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
         
         <button
           onClick={onDismiss}
-          className="w-full mt-4 px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+          className="w-full mt-4 px-4 py-2 text-base-content/60 hover:text-base-content transition-colors"
         >
           Cancel
         </button>
