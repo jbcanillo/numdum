@@ -219,12 +219,4 @@ export const deleteJournalEntry = async (id) => {
   });
 };
 
-export default remindersDB;error);
-  });
-};
-
-export default remindersDB;request.error);
-  });
-};
-
 export default remindersDB;
