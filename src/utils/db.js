@@ -201,7 +201,10 @@ export const updateJournalEntry = async (id, changes) => {
       store.put(updated);
       resolve(updated);
     };
-    getRequest.onerror = () => reject(getRequest.error);
+    getRequest.onerror = () => {
+      console.error('Update journal entry error:', getRequest.error);
+      reject(getRequest.error);
+    };
   });
 };
 
@@ -213,6 +216,14 @@ export const deleteJournalEntry = async (id) => {
     const request = store.delete(id);
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
+  });
+};
+
+export default remindersDB;error);
+  });
+};
+
+export default remindersDB;request.error);
   });
 };
 
