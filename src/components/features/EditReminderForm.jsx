@@ -104,50 +104,58 @@ const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
     <form onSubmit={handleSubmit(onSubmitForm)}>
       {/* Title */}
       <div className="mb-4">
-        <label htmlFor="title" className="block text-sm font-medium mb-1">Title *</label>
+        <label htmlFor="title" className="label">
+          <span className="label-text font-medium">Title *</span>
+        </label>
         <input
           {...register('title')}
           id="title"
           type="text"
-          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="input input-bordered w-full focus:input-primary"
         />
         {errors.title && (
-          <p className="text-red-600 text-sm mt-1">{errors.title.message}</p>
+          <p className="text-error text-sm mt-1">{errors.title.message}</p>
         )}
       </div>
 
       {/* Description */}
       <div className="mb-4">
-        <label htmlFor="description" className="block text-sm font-medium mb-1">Description</label>
+        <label htmlFor="description" className="label">
+          <span className="label-text font-medium">Description</span>
+        </label>
         <textarea
           {...register('description')}
           id="description"
           rows={3}
-          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="textarea textarea-bordered w-full focus:textarea-primary"
         />
       </div>
 
       {/* Due Date */}
       <div className="mb-4">
-        <label htmlFor="dueDate" className="block text-sm font-medium mb-1">Due Date *</label>
+        <label htmlFor="dueDate" className="label">
+          <span className="label-text font-medium">Due Date *</span>
+        </label>
         <input
           {...register('dueDate')}
           id="dueDate"
           type="datetime-local"
-          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="input input-bordered w-full focus:input-primary"
         />
         {errors.dueDate && (
-          <p className="text-red-600 text-sm mt-1">{errors.dueDate.message}</p>
+          <p className="text-error text-sm mt-1">{errors.dueDate.message}</p>
         )}
       </div>
 
       {/* Priority */}
       <div className="mb-4">
-        <label htmlFor="priority" className="block text-sm font-medium mb-1">Priority</label>
+        <label htmlFor="priority" className="label">
+          <span className="label-text font-medium">Priority</span>
+        </label>
         <select
           {...register('priority')}
           id="priority"
-          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="select select-bordered w-full focus:select-primary"
         >
           <option value="low">Low</option>
           <option value="medium">Medium</option>
@@ -157,11 +165,13 @@ const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
 
       {/* Repeat */}
       <div className="mb-4">
-        <label htmlFor="repeat" className="block text-sm font-medium mb-1">Repeat</label>
+        <label htmlFor="repeat" className="label">
+          <span className="label-text font-medium">Repeat</span>
+        </label>
         <select
           {...register('repeat')}
           id="repeat"
-          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="select select-bordered w-full focus:select-primary"
         >
           <option value="never">Never</option>
           <option value="daily">Daily</option>
@@ -173,19 +183,23 @@ const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
 
       {/* Details */}
       <div className="mb-4">
-        <label htmlFor="details" className="block text-sm font-medium mb-1">Additional Details</label>
+        <label htmlFor="details" className="label">
+          <span className="label-text font-medium">Additional Details</span>
+        </label>
         <textarea
           {...register('details')}
           id="details"
           rows={3}
-          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="textarea textarea-bordered w-full focus:textarea-primary"
         />
       </div>
 
       {/* Photos */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Photos</label>
-        <button type="button" onClick={handleAddPhoto} className="btn-secondary">
+        <label className="label">
+          <span className="label-text font-medium">Photos</span>
+        </label>
+        <button type="button" onClick={handleAddPhoto} className="btn btn-secondary btn-sm">
           Add Photo
         </button>
         {photos.length > 0 && (
@@ -195,12 +209,12 @@ const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
                 <img
                   src={photo.preview}
                   alt={`Preview ${idx}`}
-                  className="w-16 h-16 object-cover rounded"
+                  className="w-16 h-16 object-cover rounded-box"
                 />
                 <button
                   type="button"
                   onClick={() => removePhoto(idx)}
-                  className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                  className="absolute -top-1 -right-1 btn btn-circle btn-error btn-xs text-white"
                 >
                   ×
                 </button>
@@ -212,17 +226,19 @@ const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
 
       {/* Contact */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Contact</label>
+        <label className="label">
+          <span className="label-text font-medium">Contact</span>
+        </label>
         {contact ? (
-          <div className="flex items-center justify-between bg-gray-50 p-2 rounded border">
+          <div className="flex items-center justify-between bg-base-200 p-3 rounded-box border border-base-300">
             <div>
-              <p className="font-medium">{contact.name}</p>
-              <p className="text-sm text-gray-600">{contact.email || contact.phone}</p>
+              <p className="font-medium text-base-content">{contact.name}</p>
+              <p className="text-sm text-base-content/60">{contact.email || contact.phone}</p>
             </div>
             <button
               type="button"
               onClick={() => setContact(null)}
-              className="text-red-600 text-sm"
+              className="btn btn-ghost btn-xs text-error"
             >
               Remove
             </button>
@@ -231,7 +247,7 @@ const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
           <button
             type="button"
             onClick={() => setShowContactPicker(true)}
-            className="btn-secondary"
+            className="btn btn-secondary btn-sm"
           >
             Select Contact
           </button>
@@ -240,10 +256,12 @@ const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
 
       {/* Location */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Location</label>
+        <label className="label">
+          <span className="label-text font-medium">Location</span>
+        </label>
         {location ? (
-          <div className="flex items-center justify-between bg-gray-50 p-2 rounded border">
-            <div className="text-sm">
+          <div className="flex items-center justify-between bg-base-200 p-3 rounded-box border border-base-300">
+            <div className="text-sm text-base-content">
               <p>
                 Lat: {location.lat.toFixed(5)}, Lng: {location.lng.toFixed(5)}
               </p>
@@ -251,7 +269,7 @@ const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
             <button
               type="button"
               onClick={() => setLocation(null)}
-              className="text-red-600 text-sm"
+              className="btn btn-ghost btn-xs text-error"
             >
               Remove
             </button>
@@ -260,25 +278,25 @@ const EditReminderForm = ({ reminder, onDismiss, onSubmit }) => {
           <button
             type="button"
             onClick={() => setShowLocationPicker(true)}
-            className="btn-secondary"
+            className="btn btn-secondary btn-sm"
           >
             Pick Location
           </button>
         )}
       </div>
 
-      <div className="flex space-x-4">
+      <div className="flex gap-4">
         <button
           type="button"
           onClick={onDismiss}
-          className="flex-1 px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors"
+          className="flex-1 btn btn-outline"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 btn btn-primary disabled:btn-disabled disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Updating...' : 'Update Reminder'}
         </button>

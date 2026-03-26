@@ -23,9 +23,9 @@ const EditReminderFormModal = ({ reminder, onDismiss, onSubmit }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">Edit Reminder</h2>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-base-100 rounded-box p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-base-content">Edit Reminder</h2>
         <EditReminderForm
           reminder={reminder}
           onDismiss={handleDismiss}

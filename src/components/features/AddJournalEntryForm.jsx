@@ -59,16 +59,18 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg overflow-hidden max-w-4xl w-full">
-        <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="text-xl font-semibold">New Journal Entry</h2>
-          <button type="button" onClick={onDismiss} className="text-2xl leading-none">&times;</button>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-base-100 rounded-box overflow-hidden max-w-4xl w-full shadow-lg">
+        <div className="p-4 border-b border-base-200 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-base-content">New Journal Entry</h2>
+          <button type="button" onClick={onDismiss} className="text-2xl leading-none text-base-content/60 hover:text-base-content">×</button>
         </div>
         <form onSubmit={handleSubmit} className="p-4">
           {/* Mood selection */}
           <div className="mb-4">
-            <label className="label"><span className="label-text font-medium">Mood</span></label>
+            <label className="label">
+              <span className="label-text font-medium">Mood</span>
+            </label>
             <div className="flex gap-2">
               {MOODS.map(m => (
                 <button
@@ -86,12 +88,14 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
 
           {/* Text */}
           <div className="mb-4">
-            <label className="label"><span className="label-text font-medium">Entry</span></label>
+            <label className="label">
+              <span className="label-text font-medium">Entry</span>
+            </label>
             <textarea
               value={text}
               onChange={e => setText(e.target.value)}
               rows={4}
-              className="textarea textarea-bordered w-full"
+              className="textarea textarea-bordered w-full focus:textarea-primary"
               placeholder="What's on your mind?"
               required
             />
@@ -99,12 +103,14 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
 
           {/* Date */}
           <div className="mb-4">
-            <label className="label"><span className="label-text font-medium">Date & Time</span></label>
+            <label className="label">
+              <span className="label-text font-medium">Date & Time</span>
+            </label>
             <input
               type="datetime-local"
               value={date}
               onChange={e => setDate(e.target.value)}
-              className="input input-bordered w-full"
+              className="input input-bordered w-full focus:input-primary"
               required
             />
           </div>
@@ -121,7 +127,7 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
               <div className="flex flex-wrap gap-2 mt-2">
                 {photos.map((photo, idx) => (
                   <div key={idx} className="relative">
-                    <img src={photo.preview} alt={`Journal attachment ${idx}`} className="w-16 h-16 object-cover rounded" />
+                    <img src={photo.preview} alt={`Journal attachment ${idx}`} className="w-16 h-16 object-cover rounded-box" />
                     <button type="button" onClick={() => removePhoto(idx)} className="absolute -top-1 -right-1 btn btn-circle btn-error btn-xs text-white">×</button>
                   </div>
                 ))}
@@ -130,7 +136,7 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end space-x-2">
+          <div className="flex justify-end gap-2">
             <button type="button" onClick={onDismiss} className="btn btn-outline">
               Cancel
             </button>

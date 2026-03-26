@@ -55,15 +55,15 @@ const LocationPicker = ({ onConfirm, onCancel }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg overflow-hidden max-w-4xl w-full h-[80vh] flex flex-col">
-        <div className="p-4 border-b flex justify-between items-center bg-white">
-          <h3 className="text-lg font-medium">Pick Location</h3>
-          <div className="space-x-2">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-base-100 rounded-box overflow-hidden max-w-4xl w-full h-[80vh] flex flex-col shadow-lg">
+        <div className="p-4 border-b border-base-200 flex justify-between items-center bg-base-100">
+          <h3 className="text-lg font-medium text-base-content">Pick Location</h3>
+          <div className="gap-2 flex">
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="btn btn-outline btn-sm"
             >
               Cancel
             </button>
@@ -71,7 +71,7 @@ const LocationPicker = ({ onConfirm, onCancel }) => {
               type="button"
               onClick={() => onConfirm(position)}
               disabled={!position}
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+              className="btn btn-primary btn-sm disabled:btn-disabled"
             >
               Confirm
             </button>
@@ -90,13 +90,13 @@ const LocationPicker = ({ onConfirm, onCancel }) => {
           <button
             type="button"
             onClick={handleUseGPS}
-            className="absolute top-4 right-4 z-[400] bg-white px-3 py-1 rounded shadow text-sm hover:bg-gray-50"
+            className="absolute top-4 right-4 z-[400] bg-base-100 px-3 py-1 rounded-box shadow text-sm hover:bg-base-200 border border-base-300"
           >
             Use current location
           </button>
         </div>
         {position && (
-          <div className="p-2 bg-gray-100 text-sm border-t">
+          <div className="p-2 bg-base-200 text-sm border-t border-base-300 text-base-content">
             Lat: {position.lat.toFixed(5)}, Lng: {position.lng.toFixed(5)}
           </div>
         )}
