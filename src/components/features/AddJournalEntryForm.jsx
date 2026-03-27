@@ -60,7 +60,7 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-base-100 rounded-box overflow-hidden max-w-4xl w-full shadow-lg">
+      <div className="bg-[var(--bg-elevated)] rounded-box overflow-hidden max-w-4xl w-full shadow-lg">
         <div className="p-4 border-b border-base-200 flex justify-between items-center">
           <h2 className="text-xl font-bold text-base-content">New Journal Entry</h2>
           <button type="button" onClick={onDismiss} className="text-2xl leading-none text-base-content/60 hover:text-base-content">×</button>
