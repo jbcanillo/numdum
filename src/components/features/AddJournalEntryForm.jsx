@@ -9,7 +9,7 @@ const MOODS = [
   { emoji: '😲', label: 'Surprised' }
 ];
 
-const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
+const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate, asPage = false }) => {
   const { photoLibrary } = usePhotoLibrary();
   const { openPhotoLibrary } = photoLibrary;
   const [text, setText] = useState('');
@@ -58,6 +58,106 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
     }
   };
 
+  const formContent = (
+    <form onSubmit={handleSubmit} className="p-4">
+      {/* Mood selection */}
+      <div className="mb-4">
+        <label className="label">
+          <span className="label-text font-medium">Mood</span>
+        </label>
+        <div className="flex gap-2">
+          {MOODS.map(m => (
+            <button
+              key={m.emoji}
+              type="button"
+              onClick={() => setMood(m.emoji)}
+              className={`btn btn-outline btn-sm ${mood === m.emoji ? 'btn-primary' : ''}`}
+              title={m.label}
+            >
+              {m.emoji}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Text */}
+      <div className="mb-4">
+        <label className="label">
+          <span className="label-text font-medium">Entry</span>
+        </label>
+        <textarea
+          value={text}
+          onChange={e => setText(e.target.value)}
+          rows={4}
+          className="textarea textarea-bordered w-full focus:textarea-primary"
+          placeholder="What's on your mind?"
+          required
+        />
+      </div>
+
+      {/* Date */}
+      <div className="mb-4">
+        <label className="label">
+          <span className="label-text font-medium">Date & Time</span>
+        </label>
+        <input
+          type="datetime-local"
+          value={date}
+          onChange={e => setDate(e.target.value)}
+          className="input input-bordered w-full focus:input-primary"
+          required
+        />
+      </div>
+
+      {/* Photos */}
+      <div className="mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <label className="label-text font-medium">Photos</label>
+          <button type="button" onClick={handleAddPhoto} className="btn btn-outline btn-sm">
+            Add Photo
+          </button>
+        </div>
+        {photos.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {photos.map((photo, idx) => (
+              <div key={idx} className="relative">
+                <img src={photo.preview} alt={`Journal attachment ${idx}`} className="w-16 h-16 object-cover rounded-box" />
+                <button type="button" onClick={() => removePhoto(idx)} className="absolute -top-1 -right-1 btn btn-circle btn-error btn-xs text-white">×</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="flex justify-end gap-2">
+        <button type="button" onClick={onDismiss} className="btn btn-outline">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="btn btn-primary"
+        >
+          {isSubmitting ? 'Saving...' : 'Save Entry'}
+        </button>
+      </div>
+    </form>
+  );
+
+  if (asPage) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-[var(--bg-elevated)] rounded-box overflow-hidden shadow-lg mb-6">
+          <div className="p-4 border-b border-base-200 flex justify-between items-center">
+            <h2 className="text-xl font-bold text-base-content">New Journal Entry</h2>
+          </div>
+          {formContent}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--bg-elevated)] rounded-box overflow-hidden max-w-4xl w-full shadow-lg">
@@ -65,90 +165,7 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate }) => {
           <h2 className="text-xl font-bold text-base-content">New Journal Entry</h2>
           <button type="button" onClick={onDismiss} className="text-2xl leading-none text-base-content/60 hover:text-base-content">×</button>
         </div>
-        <form onSubmit={handleSubmit} className="p-4">
-          {/* Mood selection */}
-          <div className="mb-4">
-            <label className="label">
-              <span className="label-text font-medium">Mood</span>
-            </label>
-            <div className="flex gap-2">
-              {MOODS.map(m => (
-                <button
-                  key={m.emoji}
-                  type="button"
-                  onClick={() => setMood(m.emoji)}
-                  className={`btn btn-outline btn-sm ${mood === m.emoji ? 'btn-primary' : ''}`}
-                  title={m.label}
-                >
-                  {m.emoji}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Text */}
-          <div className="mb-4">
-            <label className="label">
-              <span className="label-text font-medium">Entry</span>
-            </label>
-            <textarea
-              value={text}
-              onChange={e => setText(e.target.value)}
-              rows={4}
-              className="textarea textarea-bordered w-full focus:textarea-primary"
-              placeholder="What's on your mind?"
-              required
-            />
-          </div>
-
-          {/* Date */}
-          <div className="mb-4">
-            <label className="label">
-              <span className="label-text font-medium">Date & Time</span>
-            </label>
-            <input
-              type="datetime-local"
-              value={date}
-              onChange={e => setDate(e.target.value)}
-              className="input input-bordered w-full focus:input-primary"
-              required
-            />
-          </div>
-
-          {/* Photos */}
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <label className="label-text font-medium">Photos</label>
-              <button type="button" onClick={handleAddPhoto} className="btn btn-outline btn-sm">
-                Add Photo
-              </button>
-            </div>
-            {photos.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {photos.map((photo, idx) => (
-                  <div key={idx} className="relative">
-                    <img src={photo.preview} alt={`Journal attachment ${idx}`} className="w-16 h-16 object-cover rounded-box" />
-                    <button type="button" onClick={() => removePhoto(idx)} className="absolute -top-1 -right-1 btn btn-circle btn-error btn-xs text-white">×</button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-2">
-            <button type="button" onClick={onDismiss} className="btn btn-outline">
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="btn btn-primary"
-            >
-              {isSubmitting ? 'Saving...' : 'Save Entry'}
-            </button>
-          </div>
-        </form>
+        {formContent}
       </div>
     </div>
   );

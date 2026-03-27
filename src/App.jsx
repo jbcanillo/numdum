@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, BookOpen } from 'lucide-react';
+import { Plus, BookOpen, ArrowLeft } from 'lucide-react';
 import { useReminders } from './hooks/useReminders';
 import { useFilteredReminders } from './hooks/useReminders';
 import { useSortedReminders } from './hooks/useReminders';
@@ -21,9 +21,12 @@ function App() {
   const { entries: journalEntries, addEntry: addJournalEntry } = useJournal();
 
   const [activeDate, setActiveDate] = useState(new Date());
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [showAddJournalForm, setShowAddJournalForm] = useState(false);
   const [editingReminder, setEditingReminder] = useState(null);
+  const [currentPage, setCurrentPage] = useState(null); // 'journal', 'reminder', or null
+
+  const handleAddJournal = () => setCurrentPage('journal');
+  const handleAddReminder = () => setCurrentPage('reminder');
+  const handleBack = () => setCurrentPage(null);
 
   return (
     <div className="app-container min-h-screen">
@@ -31,12 +34,24 @@ function App() {
       <header className="sticky top-0 z-30 bg-[var(--bg-elevated)] border-b border-[var(--border)] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold" style={{ color: 'var(--primary)', letterSpacing: '-0.03em' }}>
-              Numdum
-            </h1>
+            <div className="flex items-center gap-4">
+              {currentPage && (
+                <button
+                  onClick={handleBack}
+                  className="btn btn-ghost btn-sm flex items-center gap-2"
+                  aria-label="Go back"
+                >
+                  <ArrowLeft size={18} />
+                  <span className="hidden sm:inline">Back</span>
+                </button>
+              )}
+              <h1 className="text-2xl font-bold" style={{ color: 'var(--primary)', letterSpacing: '-0.03em' }}>
+                Numdum
+              </h1>
+            </div>
             <div className="flex gap-2">
               <button
-                onClick={() => setShowAddJournalForm(true)}
+                onClick={handleAddJournal}
                 className="btn btn-secondary btn-sm flex items-center gap-2 px-4 py-2"
                 aria-label="Add journal entry"
               >
@@ -44,7 +59,7 @@ function App() {
                 <span className="hidden sm:inline">Add Journal</span>
               </button>
               <button
-                onClick={() => setShowAddForm(true)}
+                onClick={handleAddReminder}
                 className="btn btn-primary btn-sm flex items-center gap-2 px-4 py-2"
                 aria-label="Create new reminder"
               >
@@ -56,42 +71,54 @@ function App() {
         </div>
       </header>
 
-      {/* Main Content with bottom padding for nav */}
+      {/* Main Content */}
       <main className="pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mt-6">
         <div className="animate-fade-in">
-          {activeTab === 'calendar' && (
-            <CalendarView
-              reminders={sortedReminders}
-              journalEntries={journalEntries}
-              activeDate={activeDate}
-              onDateChange={setActiveDate}
+          {currentPage === 'journal' ? (
+            <AddJournalEntryForm
+              onDismiss={handleBack}
+              onSubmit={async (data) => {
+                await addJournalEntry(data);
+                handleBack();
+              }}
+              initialDate={activeDate}
             />
-          )}
-          {activeTab === 'list' && (
-            <ReminderList
-              reminders={sortedReminders}
-              journalEntries={journalEntries}
-              loading={loading}
-              error={error}
-              onEdit={setEditingReminder}
+          ) : currentPage === 'reminder' ? (
+            <AddReminderForm
+              onDismiss={handleBack}
+              onSubmit={async (data) => {
+                await createReminder(data);
+                handleBack();
+              }}
             />
+          ) : (
+            <>
+              {activeTab === 'calendar' && (
+                <CalendarView
+                  reminders={sortedReminders}
+                  journalEntries={journalEntries}
+                  activeDate={activeDate}
+                  onDateChange={setActiveDate}
+                />
+              )}
+              {activeTab === 'list' && (
+                <ReminderList
+                  reminders={sortedReminders}
+                  journalEntries={journalEntries}
+                  loading={loading}
+                  error={error}
+                  onEdit={setEditingReminder}
+                />
+              )}
+              {activeTab === 'dashboard' && <Dashboard />}
+            </>
           )}
-          {activeTab === 'dashboard' && <Dashboard />}
         </div>
       </main>
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-
-      {/* Add Reminder Modal */}
-      {showAddForm && (
-        <AddReminderForm
-          onDismiss={() => setShowAddForm(false)}
-          onSubmit={async (data) => {
-            await createReminder(data);
-            setShowAddForm(false);
-          }}
-        />
+      {!currentPage && (
+        <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
       )}
 
       {/* Edit Reminder Modal */}
@@ -103,18 +130,6 @@ function App() {
             await updateReminder({ ...editingReminder, ...data });
             setEditingReminder(null);
           }}
-        />
-      )}
-
-      {/* Add Journal Entry Modal */}
-      {showAddJournalForm && (
-        <AddJournalEntryForm
-          onDismiss={() => setShowAddJournalForm(false)}
-          onSubmit={async (data) => {
-            await addJournalEntry(data);
-            setShowAddJournalForm(false);
-          }}
-          initialDate={activeDate}
         />
       )}
     </div>
