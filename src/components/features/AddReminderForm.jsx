@@ -17,10 +17,9 @@ const reminderSchema = z.object({
 
 const AddReminderForm = ({ onDismiss, onSubmit, asPage = false }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // Attachment states
-  const [photos, setPhotos] = useState([]); // array of { file, preview }
-  const [location, setLocation] = useState(null); // { lat, lng }
-  const [contact, setContact] = useState(null); // contact object
+  const [photos, setPhotos] = useState([]);
+  const [location, setLocation] = useState(null);
+  const [contact, setContact] = useState(null);
   const [showContactPicker, setShowContactPicker] = useState(false);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
 
@@ -254,6 +253,24 @@ const AddReminderForm = ({ onDismiss, onSubmit, asPage = false }) => {
           </div>
           {formContent}
         </div>
+        {showContactPicker && (
+          <ContactPicker
+            onSelect={contact => {
+              setContact(contact);
+              setShowContactPicker(false);
+            }}
+            onClose={() => setShowContactPicker(false)}
+          />
+        )}
+        {showLocationPicker && (
+          <LocationPicker
+            onConfirm={loc => {
+              setLocation(loc);
+              setShowLocationPicker(false);
+            }}
+            onCancel={() => setShowLocationPicker(false)}
+          />
+        )}
       </div>
     );
   }
@@ -267,6 +284,24 @@ const AddReminderForm = ({ onDismiss, onSubmit, asPage = false }) => {
       >
         {formContent}
       </div>
+      {showContactPicker && (
+        <ContactPicker
+          onSelect={contact => {
+            setContact(contact);
+            setShowContactPicker(false);
+          }}
+          onClose={() => setShowContactPicker(false)}
+        />
+      )}
+      {showLocationPicker && (
+        <LocationPicker
+          onConfirm={loc => {
+            setLocation(loc);
+            setShowLocationPicker(false);
+          }}
+          onCancel={() => setShowLocationPicker(false)}
+        />
+      )}
     </div>
   );
 };
