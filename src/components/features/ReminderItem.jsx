@@ -186,7 +186,7 @@ const ReminderItem = ({ reminder, onEdit }) => {
 
             {reminder.location && (
               <div className="text-sm">
-                <p className="font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}">Location</p>
+                <p className="font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>Location</p>
                 <a
                   href={`https://www.google.com/maps?q=${reminder.location.lat},${reminder.location.lng}`}
                   target="_blank"
@@ -208,7 +208,7 @@ const ReminderItem = ({ reminder, onEdit }) => {
 
             {reminder.contact && (
               <div className="text-sm">
-                <p className="font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}">Contact</p>
+                <p className="font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>Contact</p>
                 <p style={{ color: 'var(--text-primary)' }}>{reminder.contact.name}</p>
                 {reminder.contact.email && <p style={{ color: 'var(--text-secondary)' }}>{reminder.contact.email}</p>}
                 {reminder.contact.phone && <p style={{ color: 'var(--text-secondary)' }}>{reminder.contact.phone}</p>}
@@ -216,7 +216,7 @@ const ReminderItem = ({ reminder, onEdit }) => {
             )}
 
             {(!reminder.details && !reminder.photos?.length && !reminder.location && !reminder.contact) && (
-              <p className="text-sm italic" style={{ color: 'var(--text-muted)' }}">No additional details.</p>
+              <p className="text-sm italic" style={{ color: 'var(--text-muted)' }}>No additional details.</p>
             )}
           </div>
         </div>

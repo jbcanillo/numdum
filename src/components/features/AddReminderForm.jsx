@@ -89,7 +89,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
           {/* Title */}
           <div className="mb-5">
             <label htmlFor="title" className="block mb-2">
-              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}">Title *</span>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Title *</span>
             </label>
             <input
               {...register('title')}
@@ -110,7 +110,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
           {/* Description */}
           <div className="mb-5">
             <label htmlFor="description" className="block mb-2">
-              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}">Description</span>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Description</span>
             </label>
             <textarea
               {...register('description')}
@@ -128,7 +128,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
           {/* Due Date */}
           <div className="mb-5">
             <label htmlFor="dueDate" className="block mb-2">
-              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}">Due Date & Time *</span>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Due Date & Time *</span>
             </label>
             <input
               {...register('dueDate')}
@@ -141,14 +141,14 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
               style={{ boxShadow: 'var(--inner)' }}
             />
             {errors.dueDate && (
-              <p className="text-sm mt-1.5" style={{ color: 'var(--error)' }}">{errors.dueDate.message}</p>
+              <p className="text-sm mt-1.5" style={{ color: 'var(--error)' }}>{errors.dueDate.message}</p>
             )}
           </div>
 
           {/* Priority */}
           <div className="mb-5">
             <label htmlFor="priority" className="block mb-2">
-              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}">Priority</span>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Priority</span>
             </label>
             <div className="relative">
               <select
@@ -175,7 +175,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
           {/* Repeat */}
           <div className="mb-5">
             <label htmlFor="repeat" className="block mb-2">
-              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}">Repeat</span>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Repeat</span>
             </label>
             <div className="relative">
               <select
@@ -204,7 +204,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
           {/* Details */}
           <div className="mb-5">
             <label htmlFor="details" className="block mb-2">
-              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}">Additional Details</span>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Additional Details</span>
             </label>
             <textarea
               {...register('details')}
@@ -222,7 +222,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
           {/* Photos */}
           <div className="mb-5">
             <label className="block mb-2">
-              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}">Photos</span>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Photos</span>
             </label>
             <button
               type="button"
@@ -261,13 +261,13 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
           {/* Contact */}
           <div className="mb-5">
             <label className="block mb-2">
-              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}">Contact</span>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Contact</span>
             </label>
             {contact ? (
               <div className="p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-tertiary)] animate-fade-in">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium" style={{ color: 'var(--text-primary)' }}">{contact.name}</p>
+                    <p className="font-medium" style={{ color: 'var(--text-primary)' }}>{contact.name}</p>
                     <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{contact.email || contact.phone}</p>
                   </div>
                   <button
@@ -298,7 +298,7 @@ const AddReminderForm = ({ onDismiss, onSubmit }) => {
           {/* Location */}
           <div className="mb-6">
             <label className="block mb-2">
-              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}">Location</span>
+              <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Location</span>
             </label>
             {location ? (
               <div className="p-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-tertiary)] animate-fade-in">
