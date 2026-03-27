@@ -1,4 +1,5 @@
 import React from 'react';
+import { BookOpen } from 'lucide-react';
 import ReminderItem from './ReminderItem';
 
 const ReminderList = ({ reminders, journalEntries, loading, error, onEdit }) => {

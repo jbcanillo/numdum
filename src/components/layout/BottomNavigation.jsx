@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Calendar as CalendarIcon,
   List as ListIcon,
-  BarChart3,
-  BookOpen
+  BarChart3
 } from 'lucide-react';
 
 const BottomNavigation = ({ activeTab, onTabChange }) => {
