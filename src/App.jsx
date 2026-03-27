@@ -28,33 +28,29 @@ function App() {
   return (
     <div className="app-container min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-[var(--bg-elevated)]/80 backdrop-blur-md border-b border-[var(--border)] shadow-sm animate-slide-up">
+      <header className="sticky top-0 z-30 bg-[var(--bg-elevated)] border-b border-[var(--border)] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <h1 className="text-2xl font-bold" style={{ color: 'var(--primary)', letterSpacing: '-0.03em' }}>
               Numdum
             </h1>
             <div className="flex gap-2">
-              {activeTab === 'calendar' && (
-                <button
-                  onClick={() => setShowAddJournalForm(true)}
-                  className="btn btn-secondary btn-sm flex items-center gap-2 px-4 py-2"
-                  aria-label="Add journal entry"
-                >
-                  <BookOpen size={18} />
-                  <span className="hidden sm:inline">Add Journal</span>
-                </button>
-              )}
-              {activeTab !== 'camera' && (
-                <button
-                  onClick={() => setShowAddForm(true)}
-                  className="btn btn-primary btn-sm flex items-center gap-2 px-4 py-2"
-                  aria-label="Create new reminder"
-                >
-                  <Plus size={18} />
-                  <span className="hidden sm:inline">New Reminder</span>
-                </button>
-              )}
+              <button
+                onClick={() => setShowAddJournalForm(true)}
+                className="btn btn-secondary btn-sm flex items-center gap-2 px-4 py-2"
+                aria-label="Add journal entry"
+              >
+                <BookOpen size={18} />
+                <span className="hidden sm:inline">Add Journal</span>
+              </button>
+              <button
+                onClick={() => setShowAddForm(true)}
+                className="btn btn-primary btn-sm flex items-center gap-2 px-4 py-2"
+                aria-label="Create new reminder"
+              >
+                <Plus size={18} />
+                <span className="hidden sm:inline">New Reminder</span>
+              </button>
             </div>
           </div>
         </div>
