@@ -26,8 +26,10 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-base-content/50">Loading analytics...</div>
+      <div className="flex items-center justify-center h-64 animate-fade-in">
+        <div className="text-lg font-medium animate-pulse" style={{ color: 'var(--text-muted)' }}>
+          Loading analytics...
+        </div>
       </div>
     );
   }
@@ -57,137 +59,251 @@ const Dashboard = () => {
     { name: 'Low', value: metrics.priorityStats.low }
   ];
 
+  const MetricCard = ({ label, value, subLabel, color = 'var(--text-primary)', bgColor = 'var(--bg-elevated)' }) => (
+    <div 
+      className="p-5 rounded-[var(--radius-lg)] border border-[var(--border)] 
+                bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)] 
+                hover:shadow-[var(--shadow-md)] transition-all duration-300 
+                flex flex-col justify-between animate-fade-in"
+      style={{ '--delay': `${Math.random() * 0.2}s` }}
+    >
+      <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>{label}</div>
+      <div className="text-3xl font-bold mt-2" style={{ color: color }}>{value}</div>
+      {subLabel && (
+        <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{subLabel}</div>
+      )}
+    </div>
+  );
+
+  const ChartCard = ({ title, children, className = '' }) => (
+    <div 
+      className={`p-5 rounded-[var(--radius-lg)] border border-[var(--border)] 
+                  bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)] 
+                  hover:shadow-[var(--shadow-md)] transition-shadow duration-300 animate-fade-in ${className}`}
+    >
+      <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>{title}</h3>
+      {children}
+    </div>
+  );
+
   return (
-    <div className="p-4 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-base-content">Analytics Dashboard</h2>
-        <div className="space-x-2">
-          <button onClick={handleExportCSV} className="btn btn-primary btn-sm" aria-label="Export reminders as CSV">Export CSV</button>
-          <button onClick={handleExportJSON} className="btn btn-secondary btn-sm" aria-label="Export reminders as JSON">Export JSON</button>
+    <div className="p-4 space-y-6 animate-slide-up">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+          Analytics Dashboard
+        </h2>
+        <div className="flex gap-2">
+          <button 
+            onClick={handleExportCSV} 
+            className="btn btn-secondary btn-sm flex items-center gap-2 px-4 py-2"
+            aria-label="Export reminders as CSV"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export CSV
+          </button>
+          <button 
+            onClick={handleExportJSON} 
+            className="btn btn-secondary btn-sm flex items-center gap-2 px-4 py-2"
+            aria-label="Export reminders as JSON"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export JSON
+          </button>
         </div>
       </div>
 
-      {/* Metric Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <div className="text-sm text-base-content/60">Total Reminders</div>
-          <div className="text-3xl font-bold text-base-content">{metrics.total}</div>
-        </div>
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <div className="text-sm text-base-content/60">Completed</div>
-          <div className="text-3xl font-bold text-success">{metrics.completed}</div>
-        </div>
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <div className="text-sm text-base-content/60">Pending</div>
-          <div className="text-3xl font-bold text-warning">{metrics.pending}</div>
-        </div>
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <div className="text-sm text-base-content/60">Completion Rate</div>
-          <div className="text-3xl font-bold text-primary">{metrics.completionRate}%</div>
-        </div>
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <div className="text-sm text-base-content/60">On-Time Completions</div>
-          <div className="text-3xl font-bold text-success">{metrics.onTime}</div>
-        </div>
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <div className="text-sm text-base-content/60">Late Completions</div>
-          <div className="text-3xl font-bold text-error">{metrics.late}</div>
-        </div>
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <div className="text-sm text-base-content/60">Overdue</div>
-          <div className="text-3xl font-bold text-warning">{metrics.overdue}</div>
-        </div>
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <div className="text-sm text-base-content/60">Snoozed</div>
-          <div className="text-3xl font-bold text-accent">{metrics.snoozed}</div>
-        </div>
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <div className="text-sm text-base-content/60">Total Journal Entries</div>
-          <div className="text-3xl font-bold text-info">{journalEntries?.length || 0}</div>
-        </div>
+      {/* Metric Cards Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <MetricCard 
+          label="Total Reminders" 
+          value={metrics.total} 
+        />
+        <MetricCard 
+          label="Completed" 
+          value={metrics.completed} 
+          color="var(--success)"
+        />
+        <MetricCard 
+          label="Pending" 
+          value={metrics.pending} 
+          color="var(--warning)"
+        />
+        <MetricCard 
+          label="Completion Rate" 
+          value={`${metrics.completionRate}%`} 
+          subLabel="of total"
+        />
+        <MetricCard 
+          label="On-Time" 
+          value={metrics.onTime} 
+          color="var(--success)"
+        />
+        <MetricCard 
+          label="Late" 
+          value={metrics.late} 
+          color="var(--error)"
+        />
+        <MetricCard 
+          label="Overdue" 
+          value={metrics.overdue} 
+          color="var(--warning)"
+        />
+        <MetricCard 
+          label="Snoozed" 
+          value={metrics.snoozed} 
+          color="var(--accent)"
+        />
+        <MetricCard 
+          label="Journal Entries" 
+          value={journalEntries?.length || 0} 
+        />
       </div>
 
       {avgTimeToComplete !== null && (
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <div className="text-sm text-base-content/60">Average Time to Complete</div>
-          <div className="text-2xl font-bold text-base-content">{avgTimeToComplete} hours</div>
+        <div 
+          className="p-5 rounded-[var(--radius-lg)] border border-[var(--border)] 
+                    bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)] 
+                    animate-fade-in"
+          style={{ animationDelay: '0.2s' }}
+        >
+          <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>
+            Average Time to Complete
+          </div>
+          <div className="text-2xl font-bold mt-1" style={{ color: 'var(--text-primary)' }}>
+            {avgTimeToComplete} hours
+          </div>
         </div>
       )}
 
-      {/* Charts Row 1 */}
+      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4 text-base-content">Completion Trend (Last 30 Days)</h3>
+        <ChartCard title="Completion Trend (Last 30 Days)">
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={trend}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="label" tick={{ fontSize: 12 }} stroke="var(--text-tertiary)" />
+              <YAxis allowDecimals={false} tick={{ fontSize: 12 }} stroke="var(--text-tertiary)" />
+              <Tooltip 
+                contentStyle={{ 
+                  background: 'var(--bg-elevated)', 
+                  border: '1px solid var(--border)', 
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--text-primary)'
+                }} 
+              />
               <Legend />
-              <Line type="monotone" dataKey="completions" stroke="#3b82f6" strokeWidth={2} />
+              <Line type="monotone" dataKey="completions" stroke="var(--primary)" strokeWidth={2} dot={{ fill: 'var(--primary)', r: 3 }} />
             </LineChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
 
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4 text-base-content">Reminders by Priority</h3>
+        <ChartCard title="Reminders by Priority">
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
-              <Pie data={priorityData} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
+              <Pie 
+                data={priorityData} 
+                cx="50%" 
+                cy="50%" 
+                labelLine={false} 
+                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`} 
+                outerRadius={100} 
+                fill="#8884d8" 
+                dataKey="value"
+              >
                 {priorityData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip 
+                contentStyle={{ 
+                  background: 'var(--bg-elevated)', 
+                  border: '1px solid var(--border)', 
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--text-primary)'
+                }} 
+              />
             </PieChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
       </div>
 
-      {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4 text-base-content">Completions by Day of Week</h3>
+        <ChartCard title="Completions by Day of Week">
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={weekdayStats}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Bar dataKey="completions" fill="#6366f1" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="day" tick={{ fontSize: 12 }} stroke="var(--text-tertiary)" />
+              <YAxis allowDecimals={false} tick={{ fontSize: 12 }} stroke="var(--text-tertiary)" />
+              <Tooltip 
+                contentStyle={{ 
+                  background: 'var(--bg-elevated)', 
+                  border: '1px solid var(--border)', 
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--text-primary)'
+                }} 
+              />
+              <Bar dataKey="completions" fill="var(--accent)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
 
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4 text-base-content">Completions by Hour of Day</h3>
+        <ChartCard title="Completions by Hour of Day">
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={hourlyStats}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="hour" tick={{ fontSize: 12 }} />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Bar dataKey="completions" fill="#8b5cf6" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis dataKey="hour" tick={{ fontSize: 12 }} stroke="var(--text-tertiary)" />
+              <YAxis allowDecimals={false} tick={{ fontSize: 12 }} stroke="var(--text-tertiary)" />
+              <Tooltip 
+                contentStyle={{ 
+                  background: 'var(--bg-elevated)', 
+                  border: '1px solid var(--border)', 
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--text-primary)'
+                }} 
+              />
+              <Bar dataKey="completions" fill="var(--primary)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
       </div>
 
       {moodData.length > 0 && (
-        <div className="bg-base-100 p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4 text-base-content">Journal Entries by Mood</h3>
+        <ChartCard title="Journal Entries by Mood">
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
-              <Pie data={moodData} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
+              <Pie 
+                data={moodData} 
+                cx="50%" 
+                cy="50%" 
+                labelLine={false} 
+                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`} 
+                outerRadius={100} 
+                fill="#8884d8" 
+                dataKey="value"
+              >
                 {moodData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={MOOD_COLORS[entry.name] || '#ccc'} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip 
+                contentStyle={{ 
+                  background: 'var(--bg-elevated)', 
+                  border: '1px solid var(--border)', 
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--text-primary)'
+                }} 
+              />
             </PieChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
       )}
     </div>
   );
