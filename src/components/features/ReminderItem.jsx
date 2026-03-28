@@ -14,7 +14,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
   };
 
   const handleDelete = () => {
-    if (onDelete) {
+    if (onDelete && window.confirm('Are you sure you want to delete this reminder?')) {
       onDelete(reminder.id);
     }
   };

@@ -156,7 +156,11 @@ const JournalTab = () => {
                   <div className="text-2xl">{entry.mood}</div>
                 </div>
                 <button
-                  onClick={() => removeEntry(entry.id)}
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete this journal entry?')) {
+                      removeEntry(entry.id);
+                    }
+                  }}
                   className="btn btn-ghost btn-xs text-error"
                 >
                   Delete

@@ -224,7 +224,11 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
                           )}
                           {onDeleteJournal && (
                             <button
-                              onClick={() => onDeleteJournal(item.id)}
+                              onClick={() => {
+                                if (window.confirm('Are you sure you want to delete this journal entry?')) {
+                                  onDeleteJournal(item.id);
+                                }
+                              }}
                               className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
                                        border-2 hover:scale-110 hover:bg-[var(--error)]/10
                                        border-[var(--error)] text-[var(--error)] bg-[var(--error)]/10"
