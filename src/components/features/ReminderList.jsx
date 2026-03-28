@@ -9,6 +9,8 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
 
   // Filter logic
   const filteredReminders = useMemo(() => {
+    if (filterType === 'journal') return [];
+    
     let filtered = reminders;
 
     // Search filter
@@ -28,7 +30,7 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
     }
 
     return filtered;
-  }, [reminders, searchTerm, dateRange]);
+  }, [reminders, searchTerm, dateRange, filterType]);
 
   const filteredJournal = useMemo(() => {
     if (filterType === 'reminders') return [];
@@ -68,18 +70,6 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
         <div className="text-4xl mb-4">⚠️</div>
         <p className="text-lg font-medium" style={{ color: 'var(--error)' }}>Error loading reminders</p>
         <p className="text-sm mt-2" style={{ color: 'var(--text-muted)' }}>{error.message}</p>
-      </div>
-    );
-  }
-
-  if (combined.length === 0) {
-    return (
-      <div className="p-16 text-center animate-fade-in">
-        <div className="text-6xl mb-4">📭</div>
-        <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No entries found</h3>
-        <p className="max-w-md mx-auto" style={{ color: 'var(--text-tertiary)' }}>
-          Try adjusting your search or filters to find what you're looking for.
-        </p>
       </div>
     );
   }
@@ -163,47 +153,57 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
           )}
         </div>
 
-        {/* Items List */}
-        {combined.map((item) => {
-          if (item.__type === 'reminder') {
-            return (
-              <ReminderItem 
-                key={item.id} 
-                reminder={item} 
-                onEdit={onEdit} 
-                onComplete={onComplete} 
-                onDelete={onDelete}
-                onToggleChecklist={onToggleChecklist}
-              />
-            );
-          } else {
-            return (
-              <div 
-                key={item.id} 
-                className="p-4 border border-[var(--border)] rounded-[var(--radius-lg)] 
-                         bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)] 
-                         hover:shadow-[var(--shadow-md)] transition-all duration-300"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl" role="img" aria-label="Mood">{item.mood}</span>
-                    <span className="font-semibold text-sm flex items-center gap-1" style={{ color: 'var(--text-primary)' }}>
-                      <BookOpen size={14} />
-                      Journal
+        {/* Items List or Empty State */}
+        {combined.length === 0 ? (
+          <div className="p-16 text-center animate-fade-in">
+            <div className="text-6xl mb-4">📭</div>
+            <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No entries found</h3>
+            <p className="max-w-md mx-auto" style={{ color: 'var(--text-tertiary)' }}>
+              Try adjusting your search or filters to find what you're looking for.
+            </p>
+          </div>
+        ) : (
+          combined.map((item) => {
+            if (item.__type === 'reminder') {
+              return (
+                <ReminderItem 
+                  key={item.id} 
+                  reminder={item} 
+                  onEdit={onEdit} 
+                  onComplete={onComplete} 
+                  onDelete={onDelete}
+                  onToggleChecklist={onToggleChecklist}
+                />
+              );
+            } else {
+              return (
+                <div 
+                  key={item.id} 
+                  className="p-4 border border-[var(--border)] rounded-[var(--radius-lg)] 
+                           bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)] 
+                           hover:shadow-[var(--shadow-md)] transition-all duration-300"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl" role="img" aria-label="Mood">{item.mood}</span>
+                      <span className="font-semibold text-sm flex items-center gap-1" style={{ color: 'var(--text-primary)' }}>
+                        <BookOpen size={14} />
+                        Journal
+                      </span>
+                    </div>
+                    <span className="text-xs font-medium px-2 py-1 rounded-full" 
+                      style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
+                      {new Date(item.date).toLocaleDateString()} {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
-                  <span className="text-xs font-medium px-2 py-1 rounded-full" 
-                    style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
-                    {new Date(item.date).toLocaleDateString()} {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
+                  <p className="whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                    {item.text}
+                  </p>
                 </div>
-                <p className="whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                  {item.text}
-                </p>
-              </div>
-            );
-          }
-        })}
+              );
+            }
+          })
+        )}
       </div>
     </div>
   );
