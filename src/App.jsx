@@ -18,13 +18,14 @@ function App() {
   const filteredReminders = useFilteredReminders(reminders);
   const sortedReminders = useSortedReminders(filteredReminders);
 
-  const { entries: journalEntries, addEntry: addJournalEntry } = useJournal();
+  const { entries: journalEntries, addEntry: addJournalEntry, editEntry: editJournalEntry, removeEntry: removeJournalEntry } = useJournal();
 
   const [activeDate, setActiveDate] = useState(new Date());
   const [editingReminder, setEditingReminder] = useState(null);
+  const [editingJournal, setEditingJournal] = useState(null);
   const [currentPage, setCurrentPage] = useState(null); // 'journal', 'reminder', or null
 
-  const handleAddJournal = () => setCurrentPage('journal');
+  const handleAddJournal = () => { setEditingJournal(null); setCurrentPage('journal'); };
   const handleAddReminder = () => setCurrentPage('reminder');
   const handleBack = () => setCurrentPage(null);
 
@@ -50,6 +51,17 @@ function App() {
       );
       await updateReminder({ ...reminder, checklist: updatedChecklist });
     }
+  };
+
+  // Journal action handlers
+  const handleEditJournal = (entry) => {
+    setEditingJournal(entry);
+    setCurrentPage('journal');
+  };
+
+  const handleDeleteJournal = async (id) => {
+    await removeJournalEntry(id);
+    setEditingJournal(null);
   };
 
   return (
@@ -100,9 +112,14 @@ function App() {
         <div className="animate-fade-in">
           {currentPage === 'journal' ? (
             <AddJournalEntryForm
+              entry={editingJournal}
               onDismiss={handleBack}
               onSubmit={async (data) => {
-                await addJournalEntry(data);
+                if (editingJournal) {
+                  await editJournalEntry({ ...data, id: editingJournal.id });
+                } else {
+                  await addJournalEntry(data);
+                }
                 handleBack();
               }}
               initialDate={activeDate}
@@ -139,6 +156,8 @@ function App() {
                   onComplete={handleCompleteReminder}
                   onDelete={handleDeleteReminder}
                   onToggleChecklist={handleToggleChecklist}
+                  onEditJournal={handleEditJournal}
+                  onDeleteJournal={handleDeleteJournal}
                 />
               )}
               {activeTab === 'dashboard' && <Dashboard />}

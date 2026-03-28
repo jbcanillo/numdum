@@ -47,12 +47,12 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
 
   const getStatusStyle = () => {
     if (reminder.completed) {
-      return 'border-[var(--success)]/30 bg-[var(--success)]/5';
+      return 'border-l-4 border-[var(--success)] bg-[var(--bg-elevated)]';
     }
     if (reminder.snoozedUntil) {
-      return 'border-[var(--warning)]/30 bg-[var(--warning)]/5';
+      return 'border-l-4 border-[var(--warning)] bg-[var(--bg-elevated)]';
     }
-    return 'border-[var(--border)] bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)]';
+    return 'border border-[var(--border)] bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)]';
   };
 
   // Determine completion button icon based on completed state
