@@ -89,9 +89,6 @@ const Dashboard = () => {
   return (
     <div className="p-4 space-y-6 animate-slide-up">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-          Analytics Dashboard
-        </h2>
         <div className="flex gap-2">
           <button 
             onClick={handleExportCSV} 
