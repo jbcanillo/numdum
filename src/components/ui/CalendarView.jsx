@@ -3,9 +3,10 @@ import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import ReminderIndicator from './ReminderIndicator';
 import ReminderItem from '../features/ReminderItem';
+import { BookOpen } from 'lucide-react';
 
 // rebuild
-const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onComplete, onToggleChecklist }) => {
+const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onComplete, onToggleChecklist, onEditJournal, onDeleteJournal }) => {
   // Month/year dropdowns will update activeDate directly
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -114,9 +115,6 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
                   </select>
                 </div>
               </div>
-              <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                {activeDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-              </div>
             </div>
             <Calendar
               value={activeDate}
@@ -135,11 +133,10 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
           <div className="animate-slide-up">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>
-                {activeDate.toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                {activeDate.toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric'
                 })}
               </h3>
               <div className="flex gap-2">
@@ -161,7 +158,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
               {journalForDay.length > 0 && (
                 <div className="space-y-3">
                   <h4 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-                    <span>📝</span> Journal Entries
+                    <BookOpen size={20} /> Journal Entries
                   </h4>
                   {journalForDay.map(entry => (
                     <div 
@@ -170,13 +167,48 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
                                bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)] 
                                hover:shadow-[var(--shadow-md)] transition-shadow duration-300"
                     >
-                      <div className="flex items-start justify-between mb-2">
-                        <span className="text-3xl" role="img" aria-label="Mood">{entry.mood}</span>
-                        <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                          {new Date(entry.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-2xl" role="img" aria-label="Mood">{entry.mood}</span>
+                            <span className="text-xs font-medium px-2 py-1 rounded-full" 
+                              style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
+                              {new Date(entry.date).toLocaleDateString()} {new Date(entry.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <p className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-primary)' }}>{entry.text}</p>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          {onEditJournal && (
+                            <button
+                              onClick={() => onEditJournal(entry)}
+                              className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+                                       border-2 hover:scale-110
+                                       bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
+                              title="Edit journal entry"
+                              aria-label="Edit journal entry"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                          )}
+                          {onDeleteJournal && (
+                            <button
+                              onClick={() => onDeleteJournal(entry.id)}
+                              className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+                                       border-2 hover:scale-110 hover:bg-[var(--error)]/10
+                                       border-[var(--error)] text-[var(--error)] bg-[var(--error)]/10"
+                              title="Delete journal entry"
+                              aria-label="Delete journal entry"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v6M4 7h16" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-base whitespace-pre-wrap" style={{ color: 'var(--text-primary)' }}>{entry.text}</p>
                       {entry.photos && entry.photos.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-3">
                           {entry.photos.map((photo, idx) => (

@@ -183,52 +183,51 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
                            bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)] 
                            hover:shadow-[var(--shadow-md)] transition-all duration-300"
                 >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl" role="img" aria-label="Mood">{item.mood}</span>
-                      <span className="font-semibold text-sm flex items-center gap-1" style={{ color: 'var(--text-primary)' }}>
-                        <BookOpen size={14} />
-                        Journal
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium px-2 py-1 rounded-full" 
-                        style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
-                        {new Date(item.date).toLocaleDateString()} {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                      {onEditJournal && (
-                        <button
-                          onClick={() => onEditJournal(item)}
-                          className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
-                                   border-2 hover:scale-110
-                                   bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-                          title="Edit journal entry"
-                          aria-label="Edit journal entry"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </button>
-                      )}
-                      {onDeleteJournal && (
-                        <button
-                          onClick={() => onDeleteJournal(item.id)}
-                          className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
-                                   border-2 hover:scale-110 hover:bg-[var(--error)]/10
-                                   border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--error)] hover:text-[var(--error)]"
-                          title="Delete journal entry"
-                          aria-label="Delete journal entry"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v6M4 7h16" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <p className="whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                    {item.text}
-                  </p>
+                  <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2 flex-wrap">
+                            <BookOpen size={14} style={{ color: 'var(--text-tertiary)' }} />
+                            <span className="text-2xl" role="img" aria-label="Mood">{item.mood}</span>
+                            <span className="text-xs font-medium px-2 py-1 rounded-full" 
+                              style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
+                              {new Date(item.date).toLocaleDateString()} {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <p className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                            {item.text}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          {onEditJournal && (
+                            <button
+                              onClick={() => onEditJournal(item)}
+                              className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+                                       border-2 hover:scale-110
+                                       bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
+                              title="Edit journal entry"
+                              aria-label="Edit journal entry"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                          )}
+                          {onDeleteJournal && (
+                            <button
+                              onClick={() => onDeleteJournal(item.id)}
+                              className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+                                       border-2 hover:scale-110 hover:bg-[var(--error)]/10
+                                       border-[var(--error)] text-[var(--error)] bg-[var(--error)]/10"
+                              title="Delete journal entry"
+                              aria-label="Delete journal entry"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v6M4 7h16" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      </div>
                 </div>
               );
             }

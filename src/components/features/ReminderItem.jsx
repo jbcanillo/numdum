@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
+import { Clock } from 'lucide-react';
 import SnoozeSelector from './SnoozeSelector';
 
 const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklist, compact = false }) => {
@@ -74,6 +75,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <Clock size={16} style={{ color: 'var(--text-tertiary)' }} />
             <h3 className="text-lg font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>
               {reminder.title}
             </h3>
@@ -86,7 +88,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
                   border: '1px solid ' + getPriorityColor('high') + '40'
                 }}
               >
-                High Priority
+                High
               </span>
             )}
             {reminder.priority === 'medium' && (
@@ -189,7 +191,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
               onClick={handleSnooze}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
                        border-2 hover:scale-110
-                       bg-[var(--warning)]/10 border-[var(--warning)] text-[var(--warning)]"
+                       bg-[#8b5cf6]/10 border-[#8b5cf6] text-[#8b5cf6] hover:bg-[#8b5cf6]/20"
               title="Snooze reminder"
               aria-label="Snooze reminder"
             >
