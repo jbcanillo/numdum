@@ -39,7 +39,7 @@ describe('ReminderItem', () => {
 
   test('clicking complete button calls completeReminder', async () => {
     render(<ReminderItem reminder={mockReminder} onEdit={onEdit} />);
-    fireEvent.click(screen.getByTitle('Complete'));
+    fireEvent.click(screen.getByTitle('Mark as complete'));
     await waitFor(() => {
       expect(mockCompleteReminder).toHaveBeenCalledWith(mockReminder.id);
     });
@@ -47,7 +47,7 @@ describe('ReminderItem', () => {
 
   test('clicking delete button calls deleteReminder', async () => {
     render(<ReminderItem reminder={mockReminder} onEdit={onEdit} />);
-    fireEvent.click(screen.getByTitle('Delete'));
+    fireEvent.click(screen.getByTitle('Delete reminder'));
     await waitFor(() => {
       expect(mockDeleteReminder).toHaveBeenCalledWith(mockReminder.id);
     });
@@ -55,18 +55,18 @@ describe('ReminderItem', () => {
 
   test('clicking snooze button opens SnoozeSelector', () => {
     render(<ReminderItem reminder={mockReminder} onEdit={onEdit} />);
-    fireEvent.click(screen.getByTitle('Snooze'));
+    fireEvent.click(screen.getByTitle('Snooze reminder'));
     expect(screen.getByText('Snooze Reminder')).toBeInTheDocument();
   });
 
   test('edit button appears and opens EditReminderFormModal when onEdit provided', () => {
     render(<ReminderItem reminder={mockReminder} onEdit={onEdit} />);
-    fireEvent.click(screen.getByTitle('Edit'));
+    fireEvent.click(screen.getByTitle('Edit reminder'));
     expect(screen.getByText('Edit Reminder')).toBeInTheDocument();
   });
 
   test('edit button does nothing when onEdit is not provided', () => {
     render(<ReminderItem reminder={mockReminder} onEdit={null} />);
-    expect(screen.queryByTitle('Edit')).not.toBeInTheDocument();
+    expect(screen.queryByTitle('Edit reminder')).not.toBeInTheDocument();
   });
 });

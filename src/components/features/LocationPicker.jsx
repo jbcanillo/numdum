@@ -56,7 +56,7 @@ const LocationPicker = ({ onConfirm, onCancel }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-base-100 rounded-box overflow-hidden max-w-4xl w-full h-[80vh] flex flex-col shadow-lg">
+      <div className="bg-[var(--bg-elevated)] rounded-box overflow-hidden max-w-4xl w-full h-[80vh] flex flex-col shadow-lg">
         <div className="p-4 border-b border-base-200 flex justify-between items-center bg-base-100">
           <h3 className="text-lg font-medium text-base-content">Pick Location</h3>
           <div className="gap-2 flex">

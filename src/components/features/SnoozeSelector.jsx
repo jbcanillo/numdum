@@ -44,7 +44,7 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-base-100 rounded-box p-6 max-w-sm w-full shadow-lg">
+      <div className="bg-[var(--bg-elevated)] rounded-box p-6 max-w-sm w-full shadow-lg">
         <h2 className="text-2xl font-bold mb-6 text-base-content">Snooze Reminder</h2>
         
         {!showCustom && !showDateTime ? (
