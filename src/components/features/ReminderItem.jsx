@@ -1,25 +1,31 @@
-import React from 'react';
-import { useReminders } from '../../hooks/useReminders';
+import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import SnoozeSelector from './SnoozeSelector';
-import EditReminderFormModal from './EditReminderFormModal';
 
-const ReminderItem = ({ reminder, onEdit }) => {
-  const { deleteReminder, completeReminder } = useReminders();
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  const [showSnooze, setShowSnooze] = React.useState(false);
-  const [showEdit, setShowEdit] = React.useState(false);
+const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklist, compact = false }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showSnooze, setShowSnooze] = useState(false);
 
   const handleComplete = () => {
-    completeReminder(reminder.id);
+    if (onComplete) {
+      onComplete(reminder.id);
+    }
   };
 
   const handleDelete = () => {
-    deleteReminder(reminder.id);
+    if (onDelete) {
+      onDelete(reminder.id);
+    }
   };
 
   const handleSnooze = () => {
     setShowSnooze(true);
+  };
+
+  const handleToggleChecklist = (itemId) => {
+    if (onToggleChecklist) {
+      onToggleChecklist(reminder.id, itemId);
+    }
   };
 
   const timeUntil = () => {
@@ -32,22 +38,33 @@ const ReminderItem = ({ reminder, onEdit }) => {
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high': return 'var(--error)';
-      case 'medium': return 'var(--warning)';
-      case 'low': return 'var(--primary)';
+      case 'high': return '#ef4444'; // red-500
+      case 'medium': return '#f59e0b'; // amber-500
+      case 'low': return '#6366f1'; // indigo-500
       default: return 'var(--text-tertiary)';
     }
   };
 
   const getStatusStyle = () => {
     if (reminder.completed) {
-      return 'border-[var(--success)]/30 bg-[var(--success)]/5';
+      return 'border-l-4 border-[var(--success)] bg-[var(--bg-elevated)]';
     }
     if (reminder.snoozedUntil) {
-      return 'border-[var(--warning)]/30 bg-[var(--warning)]/5';
+      return 'border-l-4 border-[var(--warning)] bg-[var(--bg-elevated)]';
     }
-    return 'border-[var(--border)] bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)]';
+    return 'border border-[var(--border)] bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)]';
   };
+
+  // Determine completion button icon based on completed state
+  const CompletionIcon = reminder.completed ? (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    </svg>
+  ) : (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  );
 
   return (
     <div 
@@ -64,11 +81,36 @@ const ReminderItem = ({ reminder, onEdit }) => {
               <span 
                 className="px-2 py-0.5 text-xs font-semibold rounded-full"
                 style={{ 
-                  backgroundColor: 'var(--error) + 15',
-                  color: getPriorityColor('high')
+                  backgroundColor: getPriorityColor('high') + '20',
+                  color: getPriorityColor('high'),
+                  border: '1px solid ' + getPriorityColor('high') + '40'
                 }}
               >
                 High Priority
+              </span>
+            )}
+            {reminder.priority === 'medium' && (
+              <span 
+                className="px-2 py-0.5 text-xs font-semibold rounded-full"
+                style={{ 
+                  backgroundColor: getPriorityColor('medium') + '20',
+                  color: getPriorityColor('medium'),
+                  border: '1px solid ' + getPriorityColor('medium') + '40'
+                }}
+              >
+                Medium
+              </span>
+            )}
+            {reminder.priority === 'low' && (
+              <span 
+                className="px-2 py-0.5 text-xs font-semibold rounded-full"
+                style={{ 
+                  backgroundColor: getPriorityColor('low') + '20',
+                  color: getPriorityColor('low'),
+                  border: '1px solid ' + getPriorityColor('low') + '40'
+                }}
+              >
+                Low
               </span>
             )}
           </div>
@@ -101,21 +143,20 @@ const ReminderItem = ({ reminder, onEdit }) => {
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={handleComplete}
-            disabled={reminder.completed}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
-                     border-2 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
-                     bg-[var(--success)]/10 border-[var(--success)] text-[var(--success)]"
-            title={reminder.completed ? 'Already completed' : 'Mark as complete'}
-            aria-label="Complete reminder"
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+                     border-2 hover:scale-110
+                     ${reminder.completed 
+                       ? 'bg-[var(--success)] border-[var(--success)] text-white' 
+                       : 'bg-[var(--bg-elevated)] border-[var(--success)] text-[var(--success)] hover:bg-[var(--success)]/10'}`}
+            title={reminder.completed ? 'Mark as incomplete' : 'Mark as complete'}
+            aria-label={reminder.completed ? 'Mark reminder as incomplete' : 'Mark reminder as complete'}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+            {CompletionIcon}
           </button>
           
-          {onEdit && (
+          {!compact && onEdit && (
             <button
-              onClick={() => setShowEdit(true)}
+              onClick={() => onEdit(reminder)}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
                        border-2 hover:scale-110
                        bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
@@ -128,20 +169,22 @@ const ReminderItem = ({ reminder, onEdit }) => {
             </button>
           )}
 
-          <button
-            onClick={handleDelete}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
-                     border-2 hover:scale-110 hover:bg-[var(--error)]/10
-                     border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--error)] hover:text-[var(--error)]"
-            title="Delete reminder"
-            aria-label="Delete reminder"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v6M4 7h16" />
-            </svg>
-          </button>
+          {!compact && (
+            <button
+              onClick={handleDelete}
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+                       border-2 hover:scale-110
+                       border-[var(--error)] text-[var(--error)] bg-[var(--error)]/10 hover:bg-[var(--error)]/20"
+              title="Delete reminder"
+              aria-label="Delete reminder"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v6M4 7h16" />
+              </svg>
+            </button>
+          )}
 
-          {reminder.dueDate && !reminder.completed && (
+          {!compact && reminder.dueDate && !reminder.completed && (
             <button
               onClick={handleSnooze}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
@@ -215,32 +258,39 @@ const ReminderItem = ({ reminder, onEdit }) => {
               </div>
             )}
 
-            {(!reminder.details && !reminder.photos?.length && !reminder.location && !reminder.contact) && (
+            {reminder.checklist && reminder.checklist.length > 0 && (
+              <div>
+                <p className="text-sm font-medium mb-2" style={{ color: 'var(--text-tertiary)' }}>Checklist</p>
+                <ul className="space-y-2">
+                  {reminder.checklist.map((item) => (
+                    <li key={item.id} className="flex items-start gap-2">
+                      <input
+                        type="checkbox"
+                        checked={item.completed}
+                        onChange={() => handleToggleChecklist(item.id)}
+                        className="mt-1 rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)] cursor-pointer"
+                      />
+                      <span className={`text-sm ${item.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}`}>
+                        {item.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {(!reminder.details && !reminder.photos?.length && !reminder.location && !reminder.contact && !reminder.checklist?.length) && (
               <p className="text-sm italic" style={{ color: 'var(--text-muted)' }}>No additional details.</p>
             )}
           </div>
         </div>
       )}
 
-      {/* Modals */}
+      {/* Snooze Modal */}
       {showSnooze && (
         <SnoozeSelector
           reminderId={reminder.id}
           onDismiss={() => setShowSnooze(false)}
-        />
-      )}
-      {showEdit && (
-        <EditReminderFormModal
-          reminder={reminder}
-          onDismiss={() => {
-            setShowEdit(false);
-            if (onEdit) onEdit(null);
-          }}
-          onSubmit={(data) => {
-            if (onEdit) {
-              onEdit({ ...reminder, ...data });
-            }
-          }}
         />
       )}
     </div>

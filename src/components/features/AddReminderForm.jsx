@@ -22,6 +22,7 @@ const AddReminderForm = ({ onDismiss, onSubmit, asPage = false }) => {
   const [contact, setContact] = useState(null);
   const [showContactPicker, setShowContactPicker] = useState(false);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [checklist, setChecklist] = useState([{ id: Date.now(), text: '', completed: false }]);
 
   const { photoLibrary: { openPhotoLibrary } } = usePhotoLibrary();
 
@@ -54,14 +55,38 @@ const AddReminderForm = ({ onDismiss, onSubmit, asPage = false }) => {
     setPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
+  // Checklist handlers
+  const addChecklistItem = () => {
+    setChecklist(prev => [...prev, { id: Date.now(), text: '', completed: false }]);
+  };
+
+  const removeChecklistItem = (id) => {
+    setChecklist(prev => prev.filter(item => item.id !== id));
+  };
+
+  const toggleChecklistItem = (id) => {
+    setChecklist(prev => prev.map(item => 
+      item.id === id ? { ...item, completed: !item.completed } : item
+    ));
+  };
+
+  const updateChecklistItemText = (id, text) => {
+    setChecklist(prev => prev.map(item => 
+      item.id === id ? { ...item, text } : item
+    ));
+  };
+
   const onSubmitForm = async (data) => {
     setIsSubmitting(true);
     try {
+      // Filter out empty checklist items
+      const validChecklist = checklist.filter(item => item.text.trim() !== '');
       const payload = {
         ...data,
         photos: photos.map(p => p.file),
         location,
-        contact
+        contact,
+        checklist: validChecklist
       };
       await onSubmit(payload);
     } catch (error) {
@@ -173,6 +198,40 @@ const AddReminderForm = ({ onDismiss, onSubmit, asPage = false }) => {
                    focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
           placeholder="Any extra information..."
         />
+      </div>
+
+      {/* Checklist */}
+      <div className="mb-5">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Checklist</span>
+          <button type="button" onClick={addChecklistItem} className="btn btn-outline btn-sm">
+            Add Item
+          </button>
+        </div>
+        <div className="space-y-2">
+          {checklist.map((item) => (
+            <div key={item.id} className="flex items-center gap-2 p-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-elevated)]">
+              <input
+                type="checkbox"
+                checked={item.completed}
+                onChange={() => toggleChecklistItem(item.id)}
+                className="rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+              />
+              <input
+                type="text"
+                value={item.text}
+                onChange={(e) => updateChecklistItemText(item.id, e.target.value)}
+                placeholder="Checklist item..."
+                className="flex-1 px-2 py-1 bg-transparent border-none focus:outline-none text-[var(--text-primary)]"
+              />
+              <button type="button" onClick={() => removeChecklistItem(item.id)} className="text-[var(--error)] hover:text-[var(--error)] px-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Photos */}

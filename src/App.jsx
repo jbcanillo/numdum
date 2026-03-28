@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Plus, BookOpen, ArrowLeft } from 'lucide-react';
+import { useState, useEffect } from 'react'; // rebuild
+import { Clock, BookOpen, ArrowLeft, Sun, Moon } from 'lucide-react';
 import { useReminders } from './hooks/useReminders';
 import { useFilteredReminders } from './hooks/useReminders';
 import { useSortedReminders } from './hooks/useReminders';
@@ -14,19 +14,80 @@ import BottomNavigation from './components/layout/BottomNavigation';
 
 function App() {
   const [activeTab, setActiveTab] = useState('calendar');
-  const { reminders, loading, error, createReminder, updateReminder } = useReminders();
+  const [darkMode, setDarkMode] = useState(() => {
+    // Check system preference or localStorage
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('darkMode');
+      if (saved) return JSON.parse(saved);
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+
+  const { reminders, loading, error, createReminder, updateReminder, deleteReminder, completeReminder } = useReminders();
   const filteredReminders = useFilteredReminders(reminders);
   const sortedReminders = useSortedReminders(filteredReminders);
 
-  const { entries: journalEntries, addEntry: addJournalEntry } = useJournal();
+  const { entries: journalEntries, addEntry: addJournalEntry, editEntry: editJournalEntry, removeEntry: removeJournalEntry } = useJournal();
 
   const [activeDate, setActiveDate] = useState(new Date());
   const [editingReminder, setEditingReminder] = useState(null);
+  const [editingJournal, setEditingJournal] = useState(null);
   const [currentPage, setCurrentPage] = useState(null); // 'journal', 'reminder', or null
 
-  const handleAddJournal = () => setCurrentPage('journal');
+  // Toggle dark mode and update DOM
+  useEffect(() => {
+    const root = document.documentElement;
+    if (darkMode) {
+      root.setAttribute('data-theme', 'modern-mint-dark');
+    } else {
+      root.setAttribute('data-theme', 'modern-mint');
+    }
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(prev => !prev);
+  };
+
+  const handleAddJournal = () => { setEditingJournal(null); setCurrentPage('journal'); };
   const handleAddReminder = () => setCurrentPage('reminder');
   const handleBack = () => setCurrentPage(null);
+
+  // Reminder action handlers
+  const handleEditReminder = (reminder) => {
+    setEditingReminder(reminder);
+  };
+
+  const handleDeleteReminder = async (id) => {
+    await deleteReminder(id);
+    setEditingReminder(null);
+  };
+
+  const handleCompleteReminder = async (id) => {
+    await completeReminder(id);
+  };
+
+  const handleToggleChecklist = async (reminderId, itemId) => {
+    const reminder = reminders.find(r => r.id === reminderId);
+    if (reminder && reminder.checklist) {
+      const updatedChecklist = reminder.checklist.map(item => 
+        item.id === itemId ? { ...item, completed: !item.completed } : item
+      );
+      await updateReminder({ ...reminder, checklist: updatedChecklist });
+    }
+  };
+
+  // Journal action handlers
+  const handleEditJournal = (entry) => {
+    setEditingJournal(entry);
+    setCurrentPage('journal');
+  };
+
+  const handleDeleteJournal = async (id) => {
+    await removeJournalEntry(id);
+    setEditingJournal(null);
+  };
 
   return (
     <div className="app-container min-h-screen">
@@ -49,21 +110,32 @@ function App() {
                 Numdum
               </h1>
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={toggleDarkMode}
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+                         border-2 border-[var(--border)] hover:scale-110
+                         bg-[var(--bg-elevated)] text-[var(--text-primary)]"
+                title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
               <button
                 onClick={handleAddJournal}
                 className="btn btn-secondary btn-sm flex items-center gap-2 px-4 py-2"
-                aria-label="Add journal entry"
+                aria-label="New journal entry"
               >
                 <BookOpen size={18} />
-                <span className="hidden sm:inline">Add Journal</span>
+                <span className="hidden sm:inline">New Journal</span>
               </button>
               <button
                 onClick={handleAddReminder}
                 className="btn btn-primary btn-sm flex items-center gap-2 px-4 py-2"
                 aria-label="Create new reminder"
               >
-                <Plus size={18} />
+                <Clock size={18} />
                 <span className="hidden sm:inline">New Reminder</span>
               </button>
             </div>
@@ -76,9 +148,14 @@ function App() {
         <div className="animate-fade-in">
           {currentPage === 'journal' ? (
             <AddJournalEntryForm
+              entry={editingJournal}
               onDismiss={handleBack}
               onSubmit={async (data) => {
-                await addJournalEntry(data);
+                if (editingJournal) {
+                  await editJournalEntry({ ...data, id: editingJournal.id });
+                } else {
+                  await addJournalEntry(data);
+                }
                 handleBack();
               }}
               initialDate={activeDate}
@@ -101,6 +178,8 @@ function App() {
                   journalEntries={journalEntries}
                   activeDate={activeDate}
                   onDateChange={setActiveDate}
+                  onComplete={handleCompleteReminder}
+                  onToggleChecklist={handleToggleChecklist}
                 />
               )}
               {activeTab === 'list' && (
@@ -109,7 +188,12 @@ function App() {
                   journalEntries={journalEntries}
                   loading={loading}
                   error={error}
-                  onEdit={setEditingReminder}
+                  onEdit={handleEditReminder}
+                  onComplete={handleCompleteReminder}
+                  onDelete={handleDeleteReminder}
+                  onToggleChecklist={handleToggleChecklist}
+                  onEditJournal={handleEditJournal}
+                  onDeleteJournal={handleDeleteJournal}
                 />
               )}
               {activeTab === 'dashboard' && <Dashboard />}
