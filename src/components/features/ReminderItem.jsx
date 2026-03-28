@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
+import { Clock, Calendar as CalendarIcon } from 'lucide-react';
 import SnoozeSelector from './SnoozeSelector';
 
 const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklist, compact = false }) => {
@@ -47,7 +48,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
 
   const getStatusStyle = () => {
     if (reminder.completed) {
-      return 'border-l-4 border-[var(--success)] bg-[var(--bg-elevated)]';
+      return 'border border-[var(--border)] bg-[var(--bg-elevated)] opacity-75';
     }
     if (reminder.snoozedUntil) {
       return 'border-l-4 border-[var(--warning)] bg-[var(--bg-elevated)]';
@@ -74,6 +75,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <Clock size={16} style={{ color: 'var(--text-tertiary)' }} />
             <h3 className="text-lg font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>
               {reminder.title}
             </h3>
@@ -86,7 +88,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
                   border: '1px solid ' + getPriorityColor('high') + '40'
                 }}
               >
-                High Priority
+                High
               </span>
             )}
             {reminder.priority === 'medium' && (
@@ -114,6 +116,20 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
               </span>
             )}
           </div>
+          {reminder.dueDate && (
+            <div className="flex items-center gap-2 text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+              <CalendarIcon size={12} />
+              <span>
+                {new Date(reminder.dueDate).toLocaleDateString('en-US', { 
+                  month: 'short', 
+                  day: 'numeric',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </span>
+            </div>
+          )}
           {reminder.description && (
             <p className="text-sm mb-3 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
               {reminder.description}
@@ -127,17 +143,19 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
               }}>
               {reminder.completed ? '✓ Completed' : timeUntil()}
             </span>
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="text-sm font-medium transition-colors px-2 py-1 rounded"
-              style={{ 
-                color: 'var(--primary)',
-                backgroundColor: 'var(--primary-light)'
-              }}
-              aria-expanded={isExpanded}
-            >
-              {isExpanded ? 'Hide Details' : 'Show Details'}
-            </button>
+            {!compact && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-sm font-medium transition-colors px-2 py-1 rounded"
+                style={{ 
+                  color: 'var(--primary)',
+                  backgroundColor: 'var(--primary-light)'
+                }}
+                aria-expanded={isExpanded}
+              >
+                {isExpanded ? 'Hide Details' : 'Show Details'}
+              </button>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-1 flex-shrink-0">
@@ -189,7 +207,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
               onClick={handleSnooze}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
                        border-2 hover:scale-110
-                       bg-[var(--warning)]/10 border-[var(--warning)] text-[var(--warning)]"
+                       bg-[#8b5cf6]/10 border-[#8b5cf6] text-[#8b5cf6] hover:bg-[#8b5cf6]/20"
               title="Snooze reminder"
               aria-label="Snooze reminder"
             >

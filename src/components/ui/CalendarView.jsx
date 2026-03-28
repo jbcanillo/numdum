@@ -2,9 +2,11 @@ import React from 'react';
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import ReminderIndicator from './ReminderIndicator';
+import ReminderItem from '../features/ReminderItem';
+import { BookOpen, Clock } from 'lucide-react';
 
 // rebuild
-const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onComplete, onToggleChecklist }) => {
+const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onComplete, onToggleChecklist, onEditJournal, onDeleteJournal }) => {
   // Month/year dropdowns will update activeDate directly
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -64,7 +66,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
       <div className="flex flex-col items-center justify-center gap-0.5 mt-1">
         {dayReminders.length > 0 && <ReminderIndicator count={dayReminders.length} />}
         {dayJournal.length > 0 && (
-          <span className="text-[10px] font-semibold" style={{ color: 'var(--success)' }}>{dayJournal.length}</span>
+          <div className="w-2 h-2 rounded-full bg-orange-500" title={`${dayJournal.length} journal entries`} />
         )}
       </div>
     );
@@ -113,9 +115,6 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
                   </select>
                 </div>
               </div>
-              <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                {activeDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-              </div>
             </div>
             <Calendar
               value={activeDate}
@@ -134,11 +133,10 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
           <div className="animate-slide-up">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>
-                {activeDate.toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                {activeDate.toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric'
                 })}
               </h3>
               <div className="flex gap-2">
@@ -147,9 +145,11 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
                   {remindersForDay.length} reminders
                 </span>
                 {journalForDay.length > 0 && (
-                  <span className="px-3 py-1 text-sm font-medium rounded-full" 
-                    style={{ backgroundColor: 'var(--success) + 20', color: 'var(--success)' }}>
-                    {journalForDay.length} journal entries
+                  <span 
+                    className="px-3 py-1 text-sm font-medium rounded-full" 
+                    style={{ backgroundColor: '#ffedd5', color: '#c2410c', marginTop: '6px' }}
+                  >
+                    {journalForDay.length} journal {journalForDay.length === 1 ? 'entry' : 'entries'}
                   </span>
                 )}
               </div>
@@ -160,7 +160,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
               {journalForDay.length > 0 && (
                 <div className="space-y-3">
                   <h4 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-                    <span>📝</span> Journal Entries
+                    <BookOpen size={20} /> Journal Entries
                   </h4>
                   {journalForDay.map(entry => (
                     <div 
@@ -169,13 +169,19 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
                                bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)] 
                                hover:shadow-[var(--shadow-md)] transition-shadow duration-300"
                     >
-                      <div className="flex items-start justify-between mb-2">
-                        <span className="text-3xl" role="img" aria-label="Mood">{entry.mood}</span>
-                        <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                          {new Date(entry.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
+                      <div className="flex items-start">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-2xl" role="img" aria-label="Mood">{entry.mood}</span>
+                            <span className="text-xs font-medium px-2 py-1 rounded-full" 
+                              style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
+                              {new Date(entry.date).toLocaleDateString()} {new Date(entry.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <p className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-primary)' }}>{entry.text}</p>
+                        </div>
+
                       </div>
-                      <p className="text-base whitespace-pre-wrap" style={{ color: 'var(--text-primary)' }}>{entry.text}</p>
                       {entry.photos && entry.photos.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-3">
                           {entry.photos.map((photo, idx) => (
@@ -197,7 +203,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
               {remindersForDay.length > 0 && (
                 <div className="space-y-3">
                   <h4 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-                    <span>⏰</span> Reminders
+                    <Clock size={20} /> Reminders
                   </h4>
                   {remindersForDay.map(reminder => (
                     <ReminderItem 
@@ -205,7 +211,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
                       reminder={reminder}
                       onComplete={onComplete}
                       onToggleChecklist={onToggleChecklist}
-                      compact={false}
+                      compact={true}
                     />
                   ))}
                 </div>

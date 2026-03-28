@@ -39,9 +39,9 @@ function App() {
   useEffect(() => {
     const root = document.documentElement;
     if (darkMode) {
-      root.setAttribute('data-theme', 'modern-mint-dark');
+      root.classList.add('dark');
     } else {
-      root.setAttribute('data-theme', 'modern-mint');
+      root.classList.remove('dark');
     }
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
   }, [darkMode]);
@@ -92,7 +92,7 @@ function App() {
   return (
     <div className="app-container min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-[var(--bg-elevated)] border-b border-[var(--border)] shadow-sm">
+      <header className="sticky top-0 z-30 glass border-b border-[var(--border)] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
@@ -152,7 +152,7 @@ function App() {
               onDismiss={handleBack}
               onSubmit={async (data) => {
                 if (editingJournal) {
-                  await editJournalEntry({ ...data, id: editingJournal.id });
+                  await editJournalEntry(editingJournal.id, data);
                 } else {
                   await addJournalEntry(data);
                 }
@@ -180,6 +180,8 @@ function App() {
                   onDateChange={setActiveDate}
                   onComplete={handleCompleteReminder}
                   onToggleChecklist={handleToggleChecklist}
+                  onEditJournal={handleEditJournal}
+                  onDeleteJournal={handleDeleteJournal}
                 />
               )}
               {activeTab === 'list' && (
