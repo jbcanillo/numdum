@@ -2,7 +2,7 @@ import React from 'react';
 import { BookOpen } from 'lucide-react';
 import ReminderItem from './ReminderItem';
 
-const ReminderList = ({ reminders, journalEntries, loading, error, onEdit }) => {
+const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onComplete, onDelete }) => {
   if (loading) {
     return (
       <div className="p-12 text-center animate-fade-in">
@@ -50,7 +50,7 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit }) => 
 
         {combined.map((item) => {
           if (item.__type === 'reminder') {
-            return <ReminderItem key={item.id} reminder={item} onEdit={onEdit} />;
+            return <ReminderItem key={item.id} reminder={item} onEdit={onEdit} onComplete={onComplete} onDelete={onDelete} />;
           } else {
             return (
               <div 

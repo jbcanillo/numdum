@@ -1,21 +1,21 @@
-import React from 'react';
-import { useReminders } from '../../hooks/useReminders';
+import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import SnoozeSelector from './SnoozeSelector';
-import EditReminderFormModal from './EditReminderFormModal';
 
-const ReminderItem = ({ reminder, onEdit }) => {
-  const { deleteReminder, completeReminder } = useReminders();
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  const [showSnooze, setShowSnooze] = React.useState(false);
-  const [showEdit, setShowEdit] = React.useState(false);
+const ReminderItem = ({ reminder, onEdit, onComplete, onDelete }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showSnooze, setShowSnooze] = useState(false);
 
   const handleComplete = () => {
-    completeReminder(reminder.id);
+    if (onComplete) {
+      onComplete(reminder.id);
+    }
   };
 
   const handleDelete = () => {
-    deleteReminder(reminder.id);
+    if (onDelete) {
+      onDelete(reminder.id);
+    }
   };
 
   const handleSnooze = () => {
@@ -48,6 +48,17 @@ const ReminderItem = ({ reminder, onEdit }) => {
     }
     return 'border-[var(--border)] bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)]';
   };
+
+  // Determine completion button icon based on completed state
+  const CompletionIcon = reminder.completed ? (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    </svg>
+  ) : (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  );
 
   return (
     <div 
@@ -101,21 +112,18 @@ const ReminderItem = ({ reminder, onEdit }) => {
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={handleComplete}
-            disabled={reminder.completed}
             className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
-                     border-2 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed
+                     border-2 hover:scale-110
                      bg-[var(--success)]/10 border-[var(--success)] text-[var(--success)]"
-            title={reminder.completed ? 'Already completed' : 'Mark as complete'}
-            aria-label="Complete reminder"
+            title={reminder.completed ? 'Mark as incomplete' : 'Mark as complete'}
+            aria-label={reminder.completed ? 'Mark reminder as incomplete' : 'Mark reminder as complete'}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+            {CompletionIcon}
           </button>
           
           {onEdit && (
             <button
-              onClick={() => setShowEdit(true)}
+              onClick={() => onEdit(reminder)}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
                        border-2 hover:scale-110
                        bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
@@ -215,32 +223,40 @@ const ReminderItem = ({ reminder, onEdit }) => {
               </div>
             )}
 
-            {(!reminder.details && !reminder.photos?.length && !reminder.location && !reminder.contact) && (
+            {reminder.checklist && reminder.checklist.length > 0 && (
+              <div>
+                <p className="text-sm font-medium mb-2" style={{ color: 'var(--text-tertiary)' }}>Checklist</p>
+                <ul className="space-y-2">
+                  {reminder.checklist.map((item) => (
+                    <li key={item.id} className="flex items-start gap-2">
+                      <input
+                        type="checkbox"
+                        checked={item.completed}
+                        disabled
+                        className="mt-1 rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                        readOnly
+                      />
+                      <span className={`text-sm ${item.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}`}>
+                        {item.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {(!reminder.details && !reminder.photos?.length && !reminder.location && !reminder.contact && !reminder.checklist?.length) && (
               <p className="text-sm italic" style={{ color: 'var(--text-muted)' }}>No additional details.</p>
             )}
           </div>
         </div>
       )}
 
-      {/* Modals */}
+      {/* Snooze Modal */}
       {showSnooze && (
         <SnoozeSelector
           reminderId={reminder.id}
           onDismiss={() => setShowSnooze(false)}
-        />
-      )}
-      {showEdit && (
-        <EditReminderFormModal
-          reminder={reminder}
-          onDismiss={() => {
-            setShowEdit(false);
-            if (onEdit) onEdit(null);
-          }}
-          onSubmit={(data) => {
-            if (onEdit) {
-              onEdit({ ...reminder, ...data });
-            }
-          }}
         />
       )}
     </div>

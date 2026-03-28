@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, BookOpen, ArrowLeft } from 'lucide-react';
+import { Clock, BookOpen, ArrowLeft } from 'lucide-react';
 import { useReminders } from './hooks/useReminders';
 import { useFilteredReminders } from './hooks/useReminders';
 import { useSortedReminders } from './hooks/useReminders';
@@ -14,7 +14,7 @@ import BottomNavigation from './components/layout/BottomNavigation';
 
 function App() {
   const [activeTab, setActiveTab] = useState('calendar');
-  const { reminders, loading, error, createReminder, updateReminder } = useReminders();
+  const { reminders, loading, error, createReminder, updateReminder, deleteReminder, completeReminder } = useReminders();
   const filteredReminders = useFilteredReminders(reminders);
   const sortedReminders = useSortedReminders(filteredReminders);
 
@@ -27,6 +27,25 @@ function App() {
   const handleAddJournal = () => setCurrentPage('journal');
   const handleAddReminder = () => setCurrentPage('reminder');
   const handleBack = () => setCurrentPage(null);
+
+  // Reminder action handlers
+  const handleEditReminder = (reminder) => {
+    setEditingReminder(reminder);
+  };
+
+  const handleUpdateReminder = async (data) => {
+    await updateReminder(data);
+    setEditingReminder(null);
+  };
+
+  const handleDeleteReminder = async (id) => {
+    await deleteReminder(id);
+    setEditingReminder(null);
+  };
+
+  const handleCompleteReminder = async (id) => {
+    await completeReminder(id);
+  };
 
   return (
     <div className="app-container min-h-screen">
@@ -63,7 +82,7 @@ function App() {
                 className="btn btn-primary btn-sm flex items-center gap-2 px-4 py-2"
                 aria-label="Create new reminder"
               >
-                <Plus size={18} />
+                <Clock size={18} />
                 <span className="hidden sm:inline">New Reminder</span>
               </button>
             </div>
@@ -101,6 +120,9 @@ function App() {
                   journalEntries={journalEntries}
                   activeDate={activeDate}
                   onDateChange={setActiveDate}
+                  onComplete={handleCompleteReminder}
+                  onEdit={handleEditReminder}
+                  onDelete={handleDeleteReminder}
                 />
               )}
               {activeTab === 'list' && (
@@ -109,7 +131,9 @@ function App() {
                   journalEntries={journalEntries}
                   loading={loading}
                   error={error}
-                  onEdit={setEditingReminder}
+                  onEdit={handleEditReminder}
+                  onComplete={handleCompleteReminder}
+                  onDelete={handleDeleteReminder}
                 />
               )}
               {activeTab === 'dashboard' && <Dashboard />}
