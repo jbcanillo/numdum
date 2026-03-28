@@ -3,7 +3,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Clock, Calendar as CalendarIcon } from 'lucide-react';
 import SnoozeSelector from './SnoozeSelector';
 
-const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklist, compact = false }) => {
+const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklist, compact = false, showExpandButton = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showSnooze, setShowSnooze] = useState(false);
 
@@ -14,7 +14,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
   };
 
   const handleDelete = () => {
-    if (onDelete) {
+    if (onDelete && window.confirm('Are you sure you want to delete this reminder?')) {
       onDelete(reminder.id);
     }
   };
@@ -143,7 +143,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
               }}>
               {reminder.completed ? '✓ Completed' : timeUntil()}
             </span>
-            {!compact && (
+            {(!compact || showExpandButton) && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="text-sm font-medium transition-colors px-2 py-1 rounded"

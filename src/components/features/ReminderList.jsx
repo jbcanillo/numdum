@@ -79,9 +79,9 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
       <div className="max-w-4xl mx-auto space-y-4">
         {/* Search and Filters */}
         <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--radius-lg)] p-4 shadow-[var(--shadow-sm)]">
-          <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex flex-col gap-4">
             {/* Search */}
-            <div className="flex-1 relative">
+            <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="text"
@@ -94,63 +94,65 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
               />
             </div>
 
-            {/* Type Filter */}
-            <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="px-4 py-2 rounded-[var(--radius-md)] border border-[var(--border)] 
-                         bg-[var(--bg-elevated)] text-[var(--text-primary)] 
-                         focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
-              >
-                <option value="all">All Types</option>
-                <option value="reminders">Reminders Only</option>
-                <option value="journal">Journal Only</option>
-              </select>
-            </div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              {/* Type Filter */}
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Filter className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
+                <select
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                  className="flex-1 sm:flex-none px-4 py-2 rounded-[var(--radius-md)] border border-[var(--border)] 
+                           bg-[var(--bg-elevated)] text-[var(--text-primary)] 
+                           focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                >
+                  <option value="all">All Types</option>
+                  <option value="reminders">Reminders Only</option>
+                  <option value="journal">Journal Only</option>
+                </select>
+              </div>
 
-            {/* Date Range */}
-            <div className="flex items-center gap-2">
-              <CalendarIcon className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
-              <input
-                type="date"
-                placeholder="Start date"
-                value={dateRange.start}
-                onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                className="px-3 py-2 rounded-[var(--radius-md)] border border-[var(--border)] 
-                         bg-[var(--bg-elevated)] text-[var(--text-primary)] 
-                         focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
-              />
-              <span style={{ color: 'var(--text-muted)' }}>to</span>
-              <input
-                type="date"
-                placeholder="End date"
-                value={dateRange.end}
-                onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                className="px-3 py-2 rounded-[var(--radius-md)] border border-[var(--border)] 
-                         bg-[var(--bg-elevated)] text-[var(--text-primary)] 
-                         focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
-              />
+              {/* Date Range */}
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <CalendarIcon className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
+                <input
+                  type="date"
+                  placeholder="Start date"
+                  value={dateRange.start}
+                  onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                  className="flex-1 sm:flex-none px-3 py-2 rounded-[var(--radius-md)] border border-[var(--border)] 
+                           bg-[var(--bg-elevated)] text-[var(--text-primary)] 
+                           focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                />
+                <span style={{ color: 'var(--text-muted)' }}>to</span>
+                <input
+                  type="date"
+                  placeholder="End date"
+                  value={dateRange.end}
+                  onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                  className="flex-1 sm:flex-none px-3 py-2 rounded-[var(--radius-md)] border border-[var(--border)] 
+                           bg-[var(--bg-elevated)] text-[var(--text-primary)] 
+                           focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                />
+              </div>
             </div>
+            {(searchTerm || dateRange.start || dateRange.end || filterType !== 'all') && (
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                  Showing {combined.length} items
+                </span>
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setFilterType('all');
+                    setDateRange({ start: '', end: '' });
+                  }}
+                  className="text-sm" style={{ color: 'var(--primary)' }}
+                >
+                  Clear filters
+                </button>
+              </div>
+            )}
           </div>
-          {(searchTerm || dateRange.start || dateRange.end || filterType !== 'all') && (
-            <div className="mt-3 flex items-center justify-between">
-              <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                Showing {combined.length} items
-              </span>
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setFilterType('all');
-                  setDateRange({ start: '', end: '' });
-                }}
-                className="text-sm" style={{ color: 'var(--primary)' }}
-              >
-                Clear filters
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Items List or Empty State */}
@@ -188,10 +190,18 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
                           <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <BookOpen size={14} style={{ color: 'var(--text-tertiary)' }} />
                             <span className="text-2xl" role="img" aria-label="Mood">{item.mood}</span>
-                            <span className="text-xs font-medium px-2 py-1 rounded-full" 
-                              style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
-                              {new Date(item.date).toLocaleDateString()} {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
+                            <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-muted)' }}>
+                              <CalendarIcon size={12} />
+                              <span>
+                                {new Date(item.date).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </span>
+                            </div>
                           </div>
                           <p className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                             {item.text}
@@ -214,7 +224,11 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
                           )}
                           {onDeleteJournal && (
                             <button
-                              onClick={() => onDeleteJournal(item.id)}
+                              onClick={() => {
+                                if (window.confirm('Are you sure you want to delete this journal entry?')) {
+                                  onDeleteJournal(item.id);
+                                }
+                              }}
                               className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
                                        border-2 hover:scale-110 hover:bg-[var(--error)]/10
                                        border-[var(--error)] text-[var(--error)] bg-[var(--error)]/10"
