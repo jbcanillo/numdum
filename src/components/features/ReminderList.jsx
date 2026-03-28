@@ -189,10 +189,18 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
                           <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <BookOpen size={14} style={{ color: 'var(--text-tertiary)' }} />
                             <span className="text-2xl" role="img" aria-label="Mood">{item.mood}</span>
-                            <span className="text-xs font-medium px-2 py-1 rounded-full" 
-                              style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
-                              {new Date(item.date).toLocaleDateString()} {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
+                            <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-muted)' }}>
+                              <CalendarIcon size={12} />
+                              <span>
+                                {new Date(item.date).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </span>
+                            </div>
                           </div>
                           <p className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                             {item.text}
