@@ -106,9 +106,14 @@ function App() {
                   <span className="hidden sm:inline">Back</span>
                 </button>
               )}
-              <h1 className="text-2xl font-bold" style={{ color: 'var(--primary)', letterSpacing: '-0.03em' }}>
-                Numdum
-              </h1>
+              <h1 className="text-2xl font-bold" style={{ 
+                background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                color: 'transparent',
+                letterSpacing: '-0.03em'
+              }}>Numdum</h1>
             </div>
             <div className="flex items-center gap-2">
               {/* Dark Mode Toggle */}

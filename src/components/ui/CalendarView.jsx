@@ -85,10 +85,13 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
         {/* Calendar Section */}
         <div className="lg:w-1/2">
           <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--radius-lg)] p-4 shadow-[var(--shadow-sm)] mb-4">
-            {/* Current date display on top */}
+            {/* Current date display on top - shows today's date fixed */}
             <div className="text-center mb-4">
               <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                {activeDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                {(() => {
+                  const today = new Date();
+                  return today.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+                })()}
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
@@ -201,6 +204,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
                       onComplete={onComplete}
                       onToggleChecklist={onToggleChecklist}
                       compact={true}
+                      showExpandButton={true}
                     />
                   ))}
                 </div>
