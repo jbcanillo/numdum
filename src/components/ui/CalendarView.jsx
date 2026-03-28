@@ -88,7 +88,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
             {/* Current date display on top */}
             <div className="text-center mb-4">
               <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                {activeDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                {activeDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
@@ -137,36 +137,12 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
         {/* Selected Date Section */}
         <div className="lg:w-1/2 overflow-y-auto max-h-[70vh]">
           <div className="animate-slide-up">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>
-                {activeDate.toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </h3>
-              <div className="flex gap-2">
-                <span className="px-3 py-1 text-sm font-medium rounded-full" 
-                  style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary)' }}>
-                  {remindersForDay.length} reminders
-                </span>
-                {journalForDay.length > 0 && (
-                  <span 
-                    className="px-3 py-1 text-sm font-medium rounded-full" 
-                    style={{ backgroundColor: '#ffedd5', color: '#c2410c', marginTop: '6px' }}
-                  >
-                    {journalForDay.length} journal {journalForDay.length === 1 ? 'entry' : 'entries'}
-                  </span>
-                )}
-              </div>
-            </div>
-
             <div className="space-y-4">
               {/* Journal Entries */}
               {journalForDay.length > 0 && (
                 <div className="space-y-3">
                   <h4 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-                    <BookOpen size={20} /> Journal Entries
+                    <BookOpen size={20} /> Journal Entries ({journalForDay.length})
                   </h4>
                   {journalForDay.map(entry => (
                     <div 
@@ -216,7 +192,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
               {remindersForDay.length > 0 && (
                 <div className="space-y-3">
                   <h4 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-                    <Clock size={20} /> Reminders
+                    <Clock size={20} /> Reminders ({remindersForDay.length})
                   </h4>
                   {remindersForDay.map(reminder => (
                     <ReminderItem 
