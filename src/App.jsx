@@ -82,6 +82,7 @@ function App() {
                 handleBack();
               }}
               initialDate={activeDate}
+              asPage={true}
             />
           ) : currentPage === 'reminder' ? (
             <AddReminderForm
@@ -90,6 +91,7 @@ function App() {
                 await createReminder(data);
                 handleBack();
               }}
+              asPage={true}
             />
           ) : (
             <>
