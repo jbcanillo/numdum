@@ -3,7 +3,7 @@ import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import ReminderIndicator from './ReminderIndicator';
 import ReminderItem from '../features/ReminderItem';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Clock } from 'lucide-react';
 
 // rebuild
 const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onComplete, onToggleChecklist, onEditJournal, onDeleteJournal }) => {
@@ -145,10 +145,11 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
                   {remindersForDay.length} reminders
                 </span>
                 {journalForDay.length > 0 && (
-                  <span className="px-3 py-1 text-sm font-medium rounded-full" 
-                    style={{ backgroundColor: 'var(--success) + 20', color: 'var(--success)' }}>
-                    {journalForDay.length} journal entries
-                  </span>
+                  <span 
+                    className="inline-block w-3 h-3 rounded-full align-middle" 
+                    style={{ backgroundColor: '#fbbf24', marginTop: '6px' }}
+                    title={`${journalForDay.length} journal entries`}
+                  />
                 )}
               </div>
             </div>
@@ -230,7 +231,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
               {remindersForDay.length > 0 && (
                 <div className="space-y-3">
                   <h4 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-                    <span>⏰</span> Reminders
+                    <Clock size={20} /> Reminders
                   </h4>
                   {remindersForDay.map(reminder => (
                     <ReminderItem 
@@ -238,7 +239,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
                       reminder={reminder}
                       onComplete={onComplete}
                       onToggleChecklist={onToggleChecklist}
-                      compact={false}
+                      compact={true}
                     />
                   ))}
                 </div>

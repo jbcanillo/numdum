@@ -48,7 +48,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
 
   const getStatusStyle = () => {
     if (reminder.completed) {
-      return 'border-l-4 border-[var(--success)] bg-[var(--bg-elevated)]';
+      return 'border border-[var(--border)] bg-[var(--bg-elevated)] opacity-75';
     }
     if (reminder.snoozedUntil) {
       return 'border-l-4 border-[var(--warning)] bg-[var(--bg-elevated)]';
@@ -120,6 +120,22 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
             <p className="text-sm mb-3 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
               {reminder.description}
             </p>
+          )}
+          {reminder.dueDate && (
+            <div className="flex items-center gap-2 mb-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>
+                {new Date(reminder.dueDate).toLocaleDateString('en-US', { 
+                  month: 'short', 
+                  day: 'numeric',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </span>
+            </div>
           )}
           <div className="flex items-center justify-between flex-wrap gap-2">
             <span className="text-xs font-medium px-2 py-1 rounded" 
