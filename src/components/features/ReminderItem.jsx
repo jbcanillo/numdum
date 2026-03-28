@@ -38,9 +38,9 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high': return 'var(--error)';
-      case 'medium': return 'var(--warning)';
-      case 'low': return 'var(--primary)';
+      case 'high': return '#ef4444'; // red-500
+      case 'medium': return '#f59e0b'; // amber-500
+      case 'low': return '#6366f1'; // indigo-500
       default: return 'var(--text-tertiary)';
     }
   };
@@ -81,11 +81,36 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
               <span 
                 className="px-2 py-0.5 text-xs font-semibold rounded-full"
                 style={{ 
-                  backgroundColor: 'var(--error) + 15',
-                  color: getPriorityColor('high')
+                  backgroundColor: getPriorityColor('high') + '20',
+                  color: getPriorityColor('high'),
+                  border: '1px solid ' + getPriorityColor('high') + '40'
                 }}
               >
                 High Priority
+              </span>
+            )}
+            {reminder.priority === 'medium' && (
+              <span 
+                className="px-2 py-0.5 text-xs font-semibold rounded-full"
+                style={{ 
+                  backgroundColor: getPriorityColor('medium') + '20',
+                  color: getPriorityColor('medium'),
+                  border: '1px solid ' + getPriorityColor('medium') + '40'
+                }}
+              >
+                Medium
+              </span>
+            )}
+            {reminder.priority === 'low' && (
+              <span 
+                className="px-2 py-0.5 text-xs font-semibold rounded-full"
+                style={{ 
+                  backgroundColor: getPriorityColor('low') + '20',
+                  color: getPriorityColor('low'),
+                  border: '1px solid ' + getPriorityColor('low') + '40'
+                }}
+              >
+                Low
               </span>
             )}
           </div>
@@ -118,9 +143,11 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={handleComplete}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
                      border-2 hover:scale-110
-                     bg-[var(--success)]/10 border-[var(--success)] text-[var(--success)]"
+                     ${reminder.completed 
+                       ? 'bg-[var(--success)] border-[var(--success)] text-white' 
+                       : 'bg-[var(--bg-elevated)] border-[var(--success)] text-[var(--success)] hover:bg-[var(--success)]/10'}`}
             title={reminder.completed ? 'Mark as incomplete' : 'Mark as complete'}
             aria-label={reminder.completed ? 'Mark reminder as incomplete' : 'Mark reminder as complete'}
           >
@@ -146,8 +173,8 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
             <button
               onClick={handleDelete}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
-                       border-2 hover:scale-110 hover:bg-[var(--error)]/10
-                       border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--error)] hover:text-[var(--error)]"
+                       border-2 hover:scale-110
+                       border-[var(--error)] text-[var(--error)] bg-[var(--error)]/10 hover:bg-[var(--error)]/20"
               title="Delete reminder"
               aria-label="Delete reminder"
             >

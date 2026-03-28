@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Clock, BookOpen, ArrowLeft } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Clock, BookOpen, ArrowLeft, Sun, Moon } from 'lucide-react';
 import { useReminders } from './hooks/useReminders';
 import { useFilteredReminders } from './hooks/useReminders';
 import { useSortedReminders } from './hooks/useReminders';
@@ -14,6 +14,16 @@ import BottomNavigation from './components/layout/BottomNavigation';
 
 function App() {
   const [activeTab, setActiveTab] = useState('calendar');
+  const [darkMode, setDarkMode] = useState(() => {
+    // Check system preference or localStorage
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('darkMode');
+      if (saved) return JSON.parse(saved);
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+
   const { reminders, loading, error, createReminder, updateReminder, deleteReminder, completeReminder } = useReminders();
   const filteredReminders = useFilteredReminders(reminders);
   const sortedReminders = useSortedReminders(filteredReminders);
@@ -24,6 +34,21 @@ function App() {
   const [editingReminder, setEditingReminder] = useState(null);
   const [editingJournal, setEditingJournal] = useState(null);
   const [currentPage, setCurrentPage] = useState(null); // 'journal', 'reminder', or null
+
+  // Toggle dark mode and update DOM
+  useEffect(() => {
+    const root = document.documentElement;
+    if (darkMode) {
+      root.setAttribute('data-theme', 'modern-mint-dark');
+    } else {
+      root.setAttribute('data-theme', 'modern-mint');
+    }
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(prev => !prev);
+  };
 
   const handleAddJournal = () => { setEditingJournal(null); setCurrentPage('journal'); };
   const handleAddReminder = () => setCurrentPage('reminder');
@@ -85,14 +110,25 @@ function App() {
                 Numdum
               </h1>
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={toggleDarkMode}
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+                         border-2 border-[var(--border)] hover:scale-110
+                         bg-[var(--bg-elevated)] text-[var(--text-primary)]"
+                title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
               <button
                 onClick={handleAddJournal}
                 className="btn btn-secondary btn-sm flex items-center gap-2 px-4 py-2"
-                aria-label="Add journal entry"
+                aria-label="New journal entry"
               >
                 <BookOpen size={18} />
-                <span className="hidden sm:inline">Add Journal</span>
+                <span className="hidden sm:inline">New Journal</span>
               </button>
               <button
                 onClick={handleAddReminder}
