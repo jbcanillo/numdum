@@ -6,7 +6,6 @@ import {
 import { useReminders } from '../../hooks/useReminders';
 import { useJournal } from '../../hooks/useJournal';
 import useAnalytics from '../../hooks/useAnalytics';
-import { exportToCSV, exportToJSON } from '../../utils/export';
 
 const COLORS = ['#10b981', '#f59e0b', '#ef4444']; // green, amber, red for priorities
 
@@ -33,14 +32,6 @@ const Dashboard = () => {
       </div>
     );
   }
-
-  const handleExportCSV = () => {
-    exportToCSV(reminders);
-  };
-
-  const handleExportJSON = () => {
-    exportToJSON(reminders);
-  };
 
   const moodCounts = { '😊': 0, '😐': 0, '😔': 0, '😠': 0, '😲': 0 };
   journalEntries?.forEach(entry => {
@@ -88,35 +79,6 @@ const Dashboard = () => {
 
   return (
     <div className="p-4 space-y-6 animate-slide-up">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex gap-2">
-          <button 
-            onClick={handleExportCSV} 
-            className="btn btn-secondary btn-sm flex items-center gap-2 px-4 py-2"
-            aria-label="Export reminders as CSV"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            Export CSV
-          </button>
-          <button 
-            onClick={handleExportJSON} 
-            className="btn btn-secondary btn-sm flex items-center gap-2 px-4 py-2"
-            aria-label="Export reminders as JSON"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            Export JSON
-          </button>
-        </div>
-      </div>
-
       {/* Metric Cards Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <MetricCard 
