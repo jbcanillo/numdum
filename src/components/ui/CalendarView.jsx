@@ -127,6 +127,7 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
             </div>
             <Calendar
               value={activeDate}
+              activeStartDate={activeDate}
               onChange={onDateChange}
               tileContent={tileContent}
               className={calendarClassName}
