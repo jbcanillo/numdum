@@ -212,3 +212,4 @@ html {
 .dark .glass {
   background: rgba(0, 0, 0, 0.3);
 }
+  --success: #22c55e; /* green-500 */
