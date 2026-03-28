@@ -92,7 +92,7 @@ function App() {
   return (
     <div className="app-container min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-[var(--bg-elevated)] border-b border-[var(--border)] shadow-sm">
+      <header className="sticky top-0 z-30 glass border-b border-[var(--border)] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">

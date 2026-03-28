@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Clock } from 'lucide-react';
+import { Clock, Calendar as CalendarIcon } from 'lucide-react';
 import SnoozeSelector from './SnoozeSelector';
 
 const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklist, compact = false }) => {
@@ -116,16 +116,9 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
               </span>
             )}
           </div>
-          {reminder.description && (
-            <p className="text-sm mb-3 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              {reminder.description}
-            </p>
-          )}
           {reminder.dueDate && (
-            <div className="flex items-center gap-2 mb-2 text-xs" style={{ color: 'var(--text-muted)' }}>
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+            <div className="flex items-center gap-2 text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+              <CalendarIcon size={12} />
               <span>
                 {new Date(reminder.dueDate).toLocaleDateString('en-US', { 
                   month: 'short', 
@@ -137,6 +130,11 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
               </span>
             </div>
           )}
+          {reminder.description && (
+            <p className="text-sm mb-3 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              {reminder.description}
+            </p>
+          )}
           <div className="flex items-center justify-between flex-wrap gap-2">
             <span className="text-xs font-medium px-2 py-1 rounded" 
               style={{ 
@@ -145,17 +143,19 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
               }}>
               {reminder.completed ? '✓ Completed' : timeUntil()}
             </span>
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="text-sm font-medium transition-colors px-2 py-1 rounded"
-              style={{ 
-                color: 'var(--primary)',
-                backgroundColor: 'var(--primary-light)'
-              }}
-              aria-expanded={isExpanded}
-            >
-              {isExpanded ? 'Hide Details' : 'Show Details'}
-            </button>
+            {!compact && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-sm font-medium transition-colors px-2 py-1 rounded"
+                style={{ 
+                  color: 'var(--primary)',
+                  backgroundColor: 'var(--primary-light)'
+                }}
+                aria-expanded={isExpanded}
+              >
+                {isExpanded ? 'Hide Details' : 'Show Details'}
+              </button>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-1 flex-shrink-0">
