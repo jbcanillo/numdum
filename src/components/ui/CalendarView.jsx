@@ -3,7 +3,7 @@ import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import ReminderIndicator from './ReminderIndicator';
 import ReminderItem from '../features/ReminderItem';
-import { BookOpen, Clock } from 'lucide-react';
+import { BookOpen, Clock, Calendar as CalendarIcon } from 'lucide-react';
 
 // rebuild
 const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onComplete, onToggleChecklist, onEditJournal, onDeleteJournal }) => {
@@ -85,6 +85,12 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
         {/* Calendar Section */}
         <div className="lg:w-1/2">
           <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--radius-lg)] p-4 shadow-[var(--shadow-sm)] mb-4">
+            {/* Current date display on top */}
+            <div className="text-center mb-4">
+              <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                {activeDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </div>
+            </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
               <div className="flex items-center gap-4">
                 <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
@@ -171,16 +177,23 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
                     >
                       <div className="flex items-start">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <span className="text-2xl" role="img" aria-label="Mood">{entry.mood}</span>
-                            <span className="text-xs font-medium px-2 py-1 rounded-full" 
-                              style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
-                              {new Date(entry.date).toLocaleDateString()} {new Date(entry.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
+                            <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-muted)' }}>
+                              <CalendarIcon size={12} />
+                              <span>
+                                {new Date(entry.date).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </span>
+                            </div>
                           </div>
                           <p className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-primary)' }}>{entry.text}</p>
                         </div>
-
                       </div>
                       {entry.photos && entry.photos.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-3">
