@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useJournal } from '../../hooks/useJournal';
 import { usePhotoLibrary } from '../../hooks/usePhotoLibrary';
-import { format } from 'date-fns';
+import { Calendar as CalendarIcon } from 'lucide-react';
 
 const MOODS = [
   { emoji: '😊', label: 'Great' },
@@ -152,7 +152,18 @@ const JournalTab = () => {
             <div key={entry.id} className="bg-base-100 rounded-box p-6 border border-base-200 shadow">
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <div className="text-lg font-semibold text-base-content">{format(new Date(entry.date), 'PPP p')}</div>
+                  <div className="flex items-center gap-2 text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
+                    <CalendarIcon size={12} />
+                    <span>
+                      {new Date(entry.date).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </span>
+                  </div>
                   <div className="text-2xl">{entry.mood}</div>
                 </div>
                 <button

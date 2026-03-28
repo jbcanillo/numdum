@@ -165,7 +165,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
                      border-2 hover:scale-110
                      ${reminder.completed 
                        ? 'bg-[var(--success)] border-[var(--success)] text-white' 
-                       : 'bg-[var(--bg-elevated)] border-[var(--success)] text-[var(--success)] hover:bg-[var(--success)]/10'}`}
+                       : 'bg-[var(--success)]/10 border-[var(--success)] text-[var(--success)] hover:bg-[var(--success)]/20'}`}
             title={reminder.completed ? 'Mark as incomplete' : 'Mark as complete'}
             aria-label={reminder.completed ? 'Mark reminder as incomplete' : 'Mark reminder as complete'}
           >
