@@ -33,11 +33,6 @@ function App() {
     setEditingReminder(reminder);
   };
 
-  const handleUpdateReminder = async (data) => {
-    await updateReminder(data);
-    setEditingReminder(null);
-  };
-
   const handleDeleteReminder = async (id) => {
     await deleteReminder(id);
     setEditingReminder(null);
