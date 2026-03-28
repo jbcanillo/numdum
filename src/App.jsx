@@ -42,6 +42,16 @@ function App() {
     await completeReminder(id);
   };
 
+  const handleToggleChecklist = async (reminderId, itemId) => {
+    const reminder = reminders.find(r => r.id === reminderId);
+    if (reminder && reminder.checklist) {
+      const updatedChecklist = reminder.checklist.map(item => 
+        item.id === itemId ? { ...item, completed: !item.completed } : item
+      );
+      await updateReminder({ ...reminder, checklist: updatedChecklist });
+    }
+  };
+
   return (
     <div className="app-container min-h-screen">
       {/* Header */}
@@ -116,8 +126,7 @@ function App() {
                   activeDate={activeDate}
                   onDateChange={setActiveDate}
                   onComplete={handleCompleteReminder}
-                  onEdit={handleEditReminder}
-                  onDelete={handleDeleteReminder}
+                  onToggleChecklist={handleToggleChecklist}
                 />
               )}
               {activeTab === 'list' && (
@@ -129,6 +138,7 @@ function App() {
                   onEdit={handleEditReminder}
                   onComplete={handleCompleteReminder}
                   onDelete={handleDeleteReminder}
+                  onToggleChecklist={handleToggleChecklist}
                 />
               )}
               {activeTab === 'dashboard' && <Dashboard />}

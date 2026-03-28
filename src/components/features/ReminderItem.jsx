@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import SnoozeSelector from './SnoozeSelector';
 
-const ReminderItem = ({ reminder, onEdit, onComplete, onDelete }) => {
+const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklist, compact = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showSnooze, setShowSnooze] = useState(false);
 
@@ -20,6 +20,12 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete }) => {
 
   const handleSnooze = () => {
     setShowSnooze(true);
+  };
+
+  const handleToggleChecklist = (itemId) => {
+    if (onToggleChecklist) {
+      onToggleChecklist(reminder.id, itemId);
+    }
   };
 
   const timeUntil = () => {
@@ -121,7 +127,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete }) => {
             {CompletionIcon}
           </button>
           
-          {onEdit && (
+          {!compact && onEdit && (
             <button
               onClick={() => onEdit(reminder)}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
@@ -136,20 +142,22 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete }) => {
             </button>
           )}
 
-          <button
-            onClick={handleDelete}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
-                     border-2 hover:scale-110 hover:bg-[var(--error)]/10
-                     border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--error)] hover:text-[var(--error)]"
-            title="Delete reminder"
-            aria-label="Delete reminder"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v6M4 7h16" />
-            </svg>
-          </button>
+          {!compact && (
+            <button
+              onClick={handleDelete}
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+                       border-2 hover:scale-110 hover:bg-[var(--error)]/10
+                       border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--error)] hover:text-[var(--error)]"
+              title="Delete reminder"
+              aria-label="Delete reminder"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v6M4 7h16" />
+              </svg>
+            </button>
+          )}
 
-          {reminder.dueDate && !reminder.completed && (
+          {!compact && reminder.dueDate && !reminder.completed && (
             <button
               onClick={handleSnooze}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
@@ -232,9 +240,8 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete }) => {
                       <input
                         type="checkbox"
                         checked={item.completed}
-                        disabled
-                        className="mt-1 rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)]"
-                        readOnly
+                        onChange={() => handleToggleChecklist(item.id)}
+                        className="mt-1 rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)] cursor-pointer"
                       />
                       <span className={`text-sm ${item.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}`}>
                         {item.text}

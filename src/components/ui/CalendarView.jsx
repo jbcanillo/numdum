@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import ReminderIndicator from './ReminderIndicator';
+import ReminderItem from '../features/ReminderItem';
 
-const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onComplete, onEdit, onDelete }) => {
+const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onComplete, onToggleChecklist }) => {
+  const [viewDate, setViewDate] = useState(activeDate);
+
+  // Sync viewDate with activeDate
+  React.useEffect(() => {
+    setViewDate(activeDate);
+  }, [activeDate]);
+
   const getRemindersForDate = (date) => {
     return reminders.filter(reminder => {
       const reminderDate = new Date(reminder.dueDate);
@@ -36,8 +44,42 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
     );
   };
 
+  const handleDateChange = (date) => {
+    setViewDate(date);
+    if (onDateChange) {
+      onDateChange(date);
+    }
+  };
+
   const remindersForDay = getRemindersForDate(activeDate);
   const journalForDay = getJournalForDate(activeDate);
+
+  // Generate month/year options
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const currentYear = viewDate.getFullYear();
+  const currentMonth = viewDate.getMonth();
+
+  const handleMonthChange = (e) => {
+    const newMonth = parseInt(e.target.value);
+    const newDate = new Date(viewDate);
+    newDate.setMonth(newMonth);
+    setViewDate(newDate);
+  };
+
+  const handleYearChange = (e) => {
+    const newYear = parseInt(e.target.value);
+    const newDate = new Date(viewDate);
+    newDate.setFullYear(newYear);
+    setViewDate(newDate);
+  };
+
+  // Generate year range (current year - 5 to + 5)
+  const currentYearNow = new Date().getFullYear();
+  const years = Array.from({ length: 11 }, (_, i) => currentYearNow - 5 + i);
 
   // Custom styling for react-calendar
   const calendarClassName = `react-calendar w-full 
@@ -47,13 +89,49 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
   return (
     <div className="p-4 animate-fade-in">
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* Calendar Controls */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--radius-lg)] p-4 shadow-[var(--shadow-sm)]">
+          <div className="flex items-center gap-4">
+            <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
+              Calendar
+            </h2>
+            <div className="flex items-center gap-2">
+              <select
+                value={currentMonth}
+                onChange={handleMonthChange}
+                className="px-3 py-2 rounded-[var(--radius-md)] border border-[var(--border)] 
+                         bg-[var(--bg-elevated)] text-[var(--text-primary)] 
+                         focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+              >
+                {months.map((month, index) => (
+                  <option key={index} value={index}>{month}</option>
+                ))}
+              </select>
+              <select
+                value={currentYear}
+                onChange={handleYearChange}
+                className="px-3 py-2 rounded-[var(--radius-md)] border border-[var(--border)] 
+                         bg-[var(--bg-elevated)] text-[var(--text-primary)] 
+                         focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+              >
+                {years.map(year => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
+            {new Date(viewDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+          </div>
+        </div>
+
         {/* Calendar */}
         <Calendar
           value={activeDate}
-          onChange={onDateChange}
+          onChange={handleDateChange}
           tileContent={tileContent}
           className={calendarClassName}
-          showNavigation={true}
+          showNavigation={false}
           showWeekNumbers={false}
           minDetail="month"
         />
@@ -128,109 +206,13 @@ const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onC
                   <span>⏰</span> Reminders
                 </h4>
                 {remindersForDay.map(reminder => (
-                  <div 
-                    key={reminder.id}
-                    className={`p-4 border rounded-[var(--radius-lg)] 
-                             bg-[var(--bg-elevated)] shadow-[var(--shadow-sm)] 
-                             hover:shadow-[var(--shadow-md)] transition-shadow duration-300
-                             ${reminder.completed ? 'border-[var(--success)]/30 bg-[var(--success)]/5' : 'border-[var(--border)]'}`}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h5 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>
-                            {reminder.title}
-                          </h5>
-                          {reminder.priority === 'high' && (
-                            <span 
-                              className="px-2 py-0.5 text-xs font-semibold rounded-full"
-                              style={{ 
-                                backgroundColor: 'var(--error) + 15',
-                                color: 'var(--error)'
-                              }}
-                            >
-                              High
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>
-                          {reminder.description || 'No description'}
-                        </p>
-                        <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-muted)' }}>
-                          <span>🕐</span>
-                          <span>{new Date(reminder.dueDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                          {reminder.completed && (
-                            <span className="px-2 py-0.5 rounded" style={{ backgroundColor: 'var(--success) + 15', color: 'var(--success)' }}>
-                              ✓ Completed
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <button
-                          onClick={() => onComplete?.(reminder.id)}
-                          className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
-                                   border-2 hover:scale-110
-                                   bg-[var(--success)]/10 border-[var(--success)] text-[var(--success)]"
-                          title={reminder.completed ? 'Mark as incomplete' : 'Mark as complete'}
-                          aria-label={reminder.completed ? 'Mark reminder as incomplete' : 'Mark reminder as complete'}
-                        >
-                          {reminder.completed ? (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          ) : (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          )}
-                        </button>
-                        {onEdit && (
-                          <button
-                            onClick={() => onEdit(reminder)}
-                            className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
-                                     border-2 hover:scale-110
-                                     bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary)]"
-                            title="Edit reminder"
-                            aria-label="Edit reminder"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                          </button>
-                        )}
-                        {onDelete && (
-                          <button
-                            onClick={() => onDelete(reminder.id)}
-                            className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
-                                     border-2 hover:scale-110 hover:bg-[var(--error)]/10
-                                     border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--error)] hover:text-[var(--error)]"
-                            title="Delete reminder"
-                            aria-label="Delete reminder"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v6M4 7h16" />
-                            </svg>
-                          </button>
-                        )}
-                        {!reminder.completed && (
-                          <button
-                            onClick={() => {/* Snooze handled in ReminderItem; maybe not here */}}
-                            className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
-                                     border-2 hover:scale-110
-                                     bg-[var(--warning)]/10 border-[var(--warning)] text-[var(--warning)]"
-                            title="Snooze not available in calendar view"
-                            aria-label="Snooze not available"
-                            disabled
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                  <ReminderItem 
+                    key={reminder.id} 
+                    reminder={reminder} 
+                    onComplete={onComplete}
+                    onToggleChecklist={onToggleChecklist}
+                    compact={true}
+                  />
                 ))}
               </div>
             )}
