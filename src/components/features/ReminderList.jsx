@@ -135,23 +135,24 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
                 />
               </div>
             </div>
-          {(searchTerm || dateRange.start || dateRange.end || filterType !== 'all') && (
-            <div className="mt-3 flex items-center justify-between">
-              <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                Showing {combined.length} items
-              </span>
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setFilterType('all');
-                  setDateRange({ start: '', end: '' });
-                }}
-                className="text-sm" style={{ color: 'var(--primary)' }}
-              >
-                Clear filters
-              </button>
-            </div>
-          )}
+            {(searchTerm || dateRange.start || dateRange.end || filterType !== 'all') && (
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                  Showing {combined.length} items
+                </span>
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setFilterType('all');
+                    setDateRange({ start: '', end: '' });
+                  }}
+                  className="text-sm" style={{ color: 'var(--primary)' }}
+                >
+                  Clear filters
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Items List or Empty State */}
