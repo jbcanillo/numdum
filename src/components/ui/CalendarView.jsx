@@ -2,6 +2,7 @@ import React from 'react';
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import ReminderIndicator from './ReminderIndicator';
+import ReminderItem from '../features/ReminderItem';
 
 // rebuild
 const CalendarView = ({ reminders, journalEntries, activeDate, onDateChange, onComplete, onToggleChecklist }) => {
