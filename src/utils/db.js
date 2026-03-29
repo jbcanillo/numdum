@@ -149,12 +149,24 @@ const toggleComplete = async (id) => {
   });
 };
 
+const deleteAllReminders = async () => {
+  const database = await getDB();
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction([STORE_NAME], 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.clear();
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+};
+
 const remindersDB = {
   getAllReminders,
   createReminder,
   updateReminder,
   deleteReminder,
-  toggleComplete
+  toggleComplete,
+  deleteAllReminders
 };
 
 // Journal entries
@@ -215,6 +227,17 @@ export const deleteJournalEntry = async (id) => {
     const store = transaction.objectStore('journal-store');
     const request = store.delete(id);
     request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+};
+
+export const deleteAllJournalEntries = async () => {
+  const database = await getDB();
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction(['journal-store'], 'readwrite');
+    const store = transaction.objectStore('journal-store');
+    const request = store.clear();
+    request.onsuccess = () => resolve();
     request.onerror = () => reject(request.error);
   });
 };
