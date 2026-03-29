@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'; // rebuild
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Clock, BookOpen, ArrowLeft, Sun, Moon } from 'lucide-react';
 import { useReminders } from './hooks/useReminders';
 import { useFilteredReminders } from './hooks/useReminders';
@@ -13,9 +14,19 @@ import AddJournalEntryForm from './components/features/AddJournalEntryForm';
 import BottomNavigation from './components/layout/BottomNavigation';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('calendar');
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Derive activeTab from route path
+  const getTabFromPath = (path) => {
+    if (path === '/' || path === '') return 'calendar';
+    // Remove leading slash
+    const tab = path.replace(/^\//, '');
+    return ['calendar', 'list', 'stat'].includes(tab) ? tab : 'calendar';
+  };
+  
+  const activeTab = getTabFromPath(location.pathname);
   const [darkMode, setDarkMode] = useState(() => {
-    // Check system preference or localStorage
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('darkMode');
       if (saved) return JSON.parse(saved);
@@ -34,6 +45,11 @@ function App() {
   const [editingReminder, setEditingReminder] = useState(null);
   const [editingJournal, setEditingJournal] = useState(null);
   const [currentPage, setCurrentPage] = useState(null); // 'journal', 'reminder', or null
+
+  // Sync tab changes from BottomNavigation
+  const handleTabChange = (tabId) => {
+    navigate(`/${tabId}`);
+  };
 
   // Toggle dark mode and update DOM
   useEffect(() => {
@@ -54,7 +70,6 @@ function App() {
   const handleAddReminder = () => setCurrentPage('reminder');
   const handleBack = () => setCurrentPage(null);
 
-  // Reminder action handlers
   const handleEditReminder = (reminder) => {
     setEditingReminder(reminder);
   };
@@ -203,7 +218,7 @@ function App() {
                   onDeleteJournal={handleDeleteJournal}
                 />
               )}
-              {activeTab === 'dashboard' && <Dashboard />}
+              {activeTab === 'stat' && <Dashboard />}
             </>
           )}
         </div>
@@ -211,7 +226,7 @@ function App() {
 
       {/* Bottom Navigation */}
       {!currentPage && (
-        <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+        <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
       )}
 
       {/* Edit Reminder Modal */}

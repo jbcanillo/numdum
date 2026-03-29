@@ -3,6 +3,8 @@ import { format, subDays, startOfDay, isWithinInterval, parseISO } from 'date-fn
 
 /**
  * Calculate core metrics from reminders array
+ * @param {Array<Object>} reminders - Array of reminder objects
+ * @returns {Object} Metrics object with totals, counts, and rates
  */
 export const getMetrics = (reminders = []) => {
   const total = reminders.length;
@@ -48,6 +50,9 @@ export const getMetrics = (reminders = []) => {
 
 /**
  * Generate daily completion trend data for the last N days
+ * @param {Array<Object>} reminders - Array of reminder objects
+ * @param {number} [days=30] - Number of days to include
+ * @returns {Array<{date: string, label: string, completions: number}>} Trend data
  */
 export const getTrendData = (reminders = [], days = 30) => {
   const endDate = startOfDay(new Date());
@@ -83,6 +88,8 @@ export const getTrendData = (reminders = [], days = 30) => {
 
 /**
  * Get completion by day of week (0=Sunday, 6=Saturday)
+ * @param {Array<Object>} reminders - Array of reminder objects
+ * @returns {Array<{day: string, completions: number}>} Stats per weekday
  */
 export const getWeekdayStats = (reminders = []) => {
   const counts = Array(7).fill(0);
@@ -100,6 +107,8 @@ export const getWeekdayStats = (reminders = []) => {
 
 /**
  * Get completion by hour of day (0-23)
+ * @param {Array<Object>} reminders - Array of reminder objects
+ * @returns {Array<{hour: number, completions: number}>} Stats per hour
  */
 export const getHourlyStats = (reminders = []) => {
   const counts = Array(24).fill(0);
@@ -114,6 +123,8 @@ export const getHourlyStats = (reminders = []) => {
 
 /**
  * Get priority distribution among completed vs pending
+ * @param {Array<Object>} reminders - Array of reminder objects
+ * @returns {{completed: {high: number, medium: number, low: number}, pending: {high: number, medium: number, low: number}}}
  */
 export const getPriorityBreakdown = (reminders = []) => {
   const byStatus = {
@@ -133,6 +144,8 @@ export const getPriorityBreakdown = (reminders = []) => {
 
 /**
  * Estimate avg time from creation to completion (in hours)
+ * @param {Array<Object>} reminders - Array of reminder objects
+ * @returns {number|null} Average hours, or null if no completed reminders with timestamps
  */
 export const getAvgTimeToComplete = (reminders = []) => {
   const times = reminders
