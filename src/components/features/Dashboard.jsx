@@ -288,12 +288,21 @@ const Dashboard = () => {
                     <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                       Backup File
                     </label>
-                    <input
-                      type="file"
-                      accept=".json.enc,.enc"
-                      onChange={handleFileChange}
-                      className="w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[var(--primary)] file:text-white hover:file:bg-[var(--primary-dark)]"
-                    />
+                    <div className="relative">
+                      <input
+                        id="backup-file-input"
+                        type="file"
+                        accept=".json.enc,.enc"
+                        onChange={handleFileChange}
+                        className="sr-only"
+                      />
+                      <label
+                        htmlFor="backup-file-input"
+                        className="flex items-center justify-center w-full px-4 py-3 rounded-lg border-2 border-dashed border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-primary)] cursor-pointer hover:border-[var(--primary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+                      >
+                        {restoreFile ? restoreFile.name : 'Choose file…'}
+                      </label>
+                    </div>
                   </div>
                 )}
 

@@ -3,9 +3,10 @@
 
 let db = null;
 
-const DB_NAME = 'ReminderAppDB';
+const DB_NAME = 'Numdum';
 const DB_VERSION = 3;
 const STORE_NAME = 'reminders';
+const JOURNAL_STORE = 'journals';
 
 const openDatabase = () => {
   return new Promise((resolve, reject) => {
@@ -43,7 +44,6 @@ const openDatabase = () => {
         }
       }
       // Create object store for journal entries if it doesn't exist
-      const JOURNAL_STORE = 'journal-store';
       if (!db.objectStoreNames.contains(JOURNAL_STORE)) {
         db.createObjectStore(JOURNAL_STORE, { keyPath: 'id' });
       }
@@ -173,8 +173,8 @@ const remindersDB = {
 export const getAllJournalEntries = async () => {
   const database = await getDB();
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction(['journal-store'], 'readonly');
-    const store = transaction.objectStore('journal-store');
+    const transaction = database.transaction([JOURNAL_STORE], 'readonly');
+    const store = transaction.objectStore(JOURNAL_STORE);
     const request = store.getAll();
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -184,8 +184,8 @@ export const getAllJournalEntries = async () => {
 export const createJournalEntry = async (entry) => {
   const database = await getDB();
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction(['journal-store'], 'readwrite');
-    const store = transaction.objectStore('journal-store');
+    const transaction = database.transaction([JOURNAL_STORE], 'readwrite');
+    const store = transaction.objectStore(JOURNAL_STORE);
     const entryToAdd = {
       ...entry,
       id: entry.id || Date.now().toString(),
@@ -200,8 +200,8 @@ export const createJournalEntry = async (entry) => {
 export const updateJournalEntry = async (id, changes) => {
   const database = await getDB();
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction(['journal-store'], 'readwrite');
-    const store = transaction.objectStore('journal-store');
+    const transaction = database.transaction([JOURNAL_STORE], 'readwrite');
+    const store = transaction.objectStore(JOURNAL_STORE);
     const getRequest = store.get(id);
     getRequest.onsuccess = () => {
       const entry = getRequest.result;
@@ -223,8 +223,8 @@ export const updateJournalEntry = async (id, changes) => {
 export const deleteJournalEntry = async (id) => {
   const database = await getDB();
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction(['journal-store'], 'readwrite');
-    const store = transaction.objectStore('journal-store');
+    const transaction = database.transaction([JOURNAL_STORE], 'readwrite');
+    const store = transaction.objectStore(JOURNAL_STORE);
     const request = store.delete(id);
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -234,8 +234,8 @@ export const deleteJournalEntry = async (id) => {
 export const deleteAllJournalEntries = async () => {
   const database = await getDB();
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction(['journal-store'], 'readwrite');
-    const store = transaction.objectStore('journal-store');
+    const transaction = database.transaction([JOURNAL_STORE], 'readwrite');
+    const store = transaction.objectStore(JOURNAL_STORE);
     const request = store.clear();
     request.onsuccess = () => resolve();
     request.onerror = () => reject(request.error);
