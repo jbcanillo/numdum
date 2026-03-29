@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, BarChart, Bar
@@ -36,6 +36,29 @@ const Dashboard = () => {
   const [backupSuccess, setBackupSuccess] = useState(false);
   const [restoreSuccess, setRestoreSuccess] = useState(false);
   const [processing, setProcessing] = useState(false);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (dialogOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [dialogOpen]);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 'Escape' && dialogOpen) {
+        handleCloseDialog();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [dialogOpen]);
 
   if (loading) {
     return (
@@ -247,9 +270,15 @@ const Dashboard = () => {
 
       {/* Password / File Dialog */}
       {dialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) handleCloseDialog(); }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="backup-dialog-title"
+        >
           <div className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-elevated)] shadow-lg max-w-md w-full p-6 animate-fade-in">
-            <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+            <h2 id="backup-dialog-title" className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
               {dialogMode === 'backup' ? 'Backup Your Data' : 'Restore from Backup'}
             </h2>
             
