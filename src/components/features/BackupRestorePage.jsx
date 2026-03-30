@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
 import remindersDB from '../../utils/db';
 import { createJournalEntry, deleteAllJournalEntries } from '../../utils/db';
 import { downloadBackup, restoreFromFile } from '../../utils/backupRestore';
