@@ -20,7 +20,7 @@ const MOOD_COLORS = {
   '😲': '#f59e0b'  // amber
 };
 
-const Dashboard = () => {
+const Stat = () => {
   const { reminders, loading } = useReminders();
   const { entries: journalEntries } = useJournal();
   const analytics = useAnalytics(reminders, 30);
@@ -566,4 +566,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Stat;

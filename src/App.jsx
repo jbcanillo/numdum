@@ -9,7 +9,7 @@ import CalendarView from './components/ui/CalendarView';
 import ReminderList from './components/features/ReminderList';
 import AddReminderForm from './components/features/AddReminderForm';
 import EditReminderFormModal from './components/features/EditReminderFormModal';
-import Dashboard from './components/features/Dashboard';
+import Stat from './components/features/Stat';
 import AddJournalEntryForm from './components/features/AddJournalEntryForm';
 import BottomNavigation from './components/layout/BottomNavigation';
 
@@ -218,7 +218,7 @@ function App() {
                   onDeleteJournal={handleDeleteJournal}
                 />
               )}
-              {activeTab === 'stat' && <Dashboard />}
+              {activeTab === 'stat' && <Stat />}
             </>
           )}
         </div>
