@@ -95,7 +95,7 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
             </div>
 
             {/* Type Filter */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-1">
               <Filter className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
               <select
                 value={filterType}

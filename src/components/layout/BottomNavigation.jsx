@@ -12,7 +12,7 @@ const BottomNavigation = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: 'calendar', label: 'Calendar', Icon: CalendarIcon },
     { id: 'list', label: 'List', Icon: ListIcon },
-    { id: 'dashboard', label: 'Stats', Icon: BarChart3 }
+    { id: 'stat', label: 'Stats', Icon: BarChart3 }
   ];
 
   const handleTabChange = (tabId) => {
