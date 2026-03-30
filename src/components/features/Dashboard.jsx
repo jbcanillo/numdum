@@ -277,7 +277,7 @@ const Dashboard = () => {
           aria-modal="true"
           aria-labelledby="backup-dialog-title"
         >
-          <div className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-elevated)] shadow-lg max-w-md w-full p-6 animate-fade-in">
+          <div className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-elevated)] shadow-lg max-w-md w-full max-h-[85vh] overflow-y-auto p-4 sm:p-6 animate-fade-in">
             <h2 id="backup-dialog-title" className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
               {dialogMode === 'backup' ? 'Backup Your Data' : 'Restore from Backup'}
             </h2>
