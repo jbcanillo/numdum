@@ -12,6 +12,7 @@ import EditReminderFormModal from './components/features/EditReminderFormModal';
 import Stat from './components/features/Stat';
 import AddJournalEntryForm from './components/features/AddJournalEntryForm';
 import BottomNavigation from './components/layout/BottomNavigation';
+import BackupRestorePage from './components/features/BackupRestorePage';
 
 function App() {
   const location = useLocation();
@@ -48,6 +49,7 @@ function App() {
 
   // Sync tab changes from BottomNavigation
   const handleTabChange = (tabId) => {
+    setCurrentPage(null);
     navigate(`/${tabId}`);
   };
 
@@ -68,6 +70,8 @@ function App() {
 
   const handleAddJournal = () => { setEditingJournal(null); setCurrentPage('journal'); };
   const handleAddReminder = () => setCurrentPage('reminder');
+  const handleOpenBackup = () => setCurrentPage({ type: 'backup-restore', mode: 'backup' });
+  const handleOpenRestore = () => setCurrentPage({ type: 'backup-restore', mode: 'restore' });
   const handleBack = () => setCurrentPage(null);
 
   const handleEditReminder = (reminder) => {
@@ -166,7 +170,13 @@ function App() {
       {/* Main Content */}
       <main className="pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mt-6">
         <div className="animate-fade-in">
-          {currentPage === 'journal' ? (
+          {/* Backup/Restore full page */}
+          {currentPage && typeof currentPage === 'object' && currentPage.type === 'backup-restore' ? (
+            <BackupRestorePage
+              mode={currentPage.mode}
+              onBack={handleBack}
+            />
+          ) : currentPage === 'journal' ? (
             <AddJournalEntryForm
               entry={editingJournal}
               onDismiss={handleBack}
@@ -218,7 +228,7 @@ function App() {
                   onDeleteJournal={handleDeleteJournal}
                 />
               )}
-              {activeTab === 'stat' && <Stat />}
+              {activeTab === 'stat' && <Stat onOpenBackup={handleOpenBackup} onOpenRestore={handleOpenRestore} />}
             </>
           )}
         </div>
