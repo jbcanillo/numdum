@@ -1,8 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import Stat from '../components/features/Stat';
 
-// Mock hooks
 const mockUseReminders = {
   reminders: [],
   loading: false
@@ -19,6 +18,9 @@ const mockUseAnalytics = {
   hourlyStats: [],
   avgTimeToComplete: null
 };
+
+const mockOnOpenBackup = jest.fn();
+const mockOnOpenRestore = jest.fn();
 
 jest.mock('../utils/db', () => ({
   deleteAllReminders: jest.fn(),
@@ -52,54 +54,27 @@ describe('Stat', () => {
   });
 
   test('renders backup and restore buttons', () => {
-    render(<Stat />);
-    expect(screen.getByText('Backup Data')).toBeInTheDocument();
-    expect(screen.getByText('Restore Data')).toBeInTheDocument();
+    render(<Stat onOpenBackup={mockOnOpenBackup} onOpenRestore={mockOnOpenRestore} />);
+    expect(screen.getByText('Backup')).toBeInTheDocument();
+    expect(screen.getByText('Restore')).toBeInTheDocument();
   });
 
-  test('opens backup dialog when Backup Data clicked', () => {
-    render(<Stat />);
-    fireEvent.click(screen.getByText('Backup Data'));
-    expect(screen.getByText('Backup Your Data')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Enter password')).toBeInTheDocument();
+  test('calls onOpenBackup when Backup button clicked', () => {
+    render(<Stat onOpenBackup={mockOnOpenBackup} onOpenRestore={mockOnOpenRestore} />);
+    fireEvent.click(screen.getByText('Backup'));
+    expect(mockOnOpenBackup).toHaveBeenCalledTimes(1);
   });
 
-  test('opens restore dialog when Restore Data clicked', () => {
-    render(<Stat />);
-    fireEvent.click(screen.getByText('Restore Data'));
-    expect(screen.getByText('Restore from Backup')).toBeInTheDocument();
-    expect(screen.getByText('Select your encrypted backup file')).toBeInTheDocument();
-  });
-
-  test('backup requires password', async () => {
-    render(<Stat />);
-    fireEvent.click(screen.getByText('Backup Data'));
-    fireEvent.click(screen.getByText('Download Backup'));
-    await waitFor(() => {
-      expect(screen.getByText('Password is required')).toBeInTheDocument();
-    });
-  });
-
-  test('restore requires file and password', async () => {
-    render(<Stat />);
-    fireEvent.click(screen.getByText('Restore Data'));
-    fireEvent.click(screen.getByText('Continue'));
-    await waitFor(() => {
-      expect(screen.getByText('Please select a backup file')).toBeInTheDocument();
-    });
-  });
-
-  test('closes dialog on Cancel', () => {
-    render(<Stat />);
-    fireEvent.click(screen.getByText('Backup Data'));
-    fireEvent.click(screen.getByText('Cancel'));
-    expect(screen.queryByText('Backup Your Data')).not.toBeInTheDocument();
+  test('calls onOpenRestore when Restore button clicked', () => {
+    render(<Stat onOpenBackup={mockOnOpenBackup} onOpenRestore={mockOnOpenRestore} />);
+    fireEvent.click(screen.getByText('Restore'));
+    expect(mockOnOpenRestore).toHaveBeenCalledTimes(1);
   });
 
   test('renders metric cards', () => {
     const metrics = { total: 5, completed: 3, pending: 2, completionRate: 60, priorityStats: { high: 1, medium: 2, low: 2 }, overdue: 0, snoozed: 0, onTime: 2, late: 1 };
     mockUseAnalytics.metrics = metrics;
-    render(<Stat />);
+    render(<Stat onOpenBackup={mockOnOpenBackup} onOpenRestore={mockOnOpenRestore} />);
     expect(screen.getByText('Total Reminders')).toBeInTheDocument();
     expect(screen.getByText('5')).toBeInTheDocument();
     expect(screen.getByText('Completed')).toBeInTheDocument();
@@ -110,14 +85,14 @@ describe('Stat', () => {
 
   test('shows journal entries count', () => {
     mockUseJournal.entries = [{ id: '1', title: 'Entry' }, { id: '2', title: 'Entry2' }];
-    render(<Stat />);
+    render(<Stat onOpenBackup={mockOnOpenBackup} onOpenRestore={mockOnOpenRestore} />);
     expect(screen.getByText('Journal Entries')).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
   });
 
   test('displays average time to complete when available', () => {
     mockUseAnalytics.avgTimeToComplete = 12.5;
-    render(<Stat />);
+    render(<Stat onOpenBackup={mockOnOpenBackup} onOpenRestore={mockOnOpenRestore} />);
     expect(screen.getByText('Average Time to Complete')).toBeInTheDocument();
     expect(screen.getByText('12.5 hours')).toBeInTheDocument();
   });
