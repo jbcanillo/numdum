@@ -48,7 +48,11 @@ const Toast = ({ toast, onClose }) => {
   };
 
   return (
-    <div className={`${base} ${types[toast.type] || types.info}`}>
+    <div
+      className={`${base} ${types[toast.type] || types.info}`}
+      role="alert"
+      aria-live="assertive"
+    >
       <span>{toast.message}</span>
       <button onClick={onClose} className="ml-2 text-white hover:opacity-80" aria-label="Dismiss">
         ×
