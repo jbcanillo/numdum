@@ -15,7 +15,7 @@ const reminderSchema = z.object({
   details: z.string().optional()
 });
 
-const AddReminderForm = ({ onDismiss, onSubmit, asPage = false }) => {
+const AddReminderForm = ({ onDismiss, onSubmit, asPage = false, onToast }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photos, setPhotos] = useState([]);
   const [location, setLocation] = useState(null);
@@ -79,7 +79,6 @@ const AddReminderForm = ({ onDismiss, onSubmit, asPage = false }) => {
   const onSubmitForm = async (data) => {
     setIsSubmitting(true);
     try {
-      // Filter out empty checklist items
       const validChecklist = checklist.filter(item => item.text.trim() !== '');
       const payload = {
         ...data,
@@ -89,8 +88,11 @@ const AddReminderForm = ({ onDismiss, onSubmit, asPage = false }) => {
         checklist: validChecklist
       };
       await onSubmit(payload);
+      onDismiss();
+      if (onToast) onToast('Reminder created', 'success');
     } catch (error) {
       console.error('Error creating reminder:', error);
+      if (onToast) onToast(error.message || 'Failed to create reminder', 'error');
     } finally {
       setIsSubmitting(false);
     }

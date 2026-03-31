@@ -5,7 +5,7 @@ import { downloadBackup, restoreFromFile } from '../../utils/backupRestore';
 import { useReminders } from '../../hooks/useReminders';
 import { useJournal } from '../../hooks/useJournal';
 
-const BackupRestorePage = ({ mode = 'backup', onBack }) => {
+const BackupRestorePage = ({ mode = 'backup', onBack, onToast }) => {
   const { reminders } = useReminders();
   const { entries: journalEntries } = useJournal();
 
@@ -43,8 +43,10 @@ const BackupRestorePage = ({ mode = 'backup', onBack }) => {
       downloadBackup(backupData, password);
       setBackupSuccess(true);
       setPassword('');
+      if (onToast) onToast('Backup created successfully', 'success');
     } catch (error) {
       setPasswordError('Backup failed: ' + error.message);
+      if (onToast) onToast('Backup failed: ' + error.message, 'error');
     } finally {
       setProcessing(false);
     }
@@ -68,6 +70,7 @@ const BackupRestorePage = ({ mode = 'backup', onBack }) => {
       setConfirmRestore(true);
     } catch (error) {
       setPasswordError('Restore failed: ' + error.message);
+      if (onToast) onToast('Restore failed: ' + error.message, 'error');
     } finally {
       setProcessing(false);
     }
@@ -94,12 +97,14 @@ const BackupRestorePage = ({ mode = 'backup', onBack }) => {
 
       setRestoreSuccess(true);
       setConfirmRestore(false);
+      if (onToast) onToast('Restore completed successfully', 'success');
       setTimeout(() => {
         if (onBack) onBack();
         else window.location.reload();
       }, 1500);
     } catch (error) {
       setPasswordError('Restore failed: ' + error.message);
+      if (onToast) onToast('Restore failed: ' + error.message, 'error');
       setConfirmRestore(false);
     } finally {
       setProcessing(false);
