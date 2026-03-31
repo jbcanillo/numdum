@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Clock, BookOpen, ArrowLeft, Sun, Moon } from 'lucide-react';
+import { Clock, BookOpen, ArrowLeft, Sun, Moon, Bell } from 'lucide-react';
 import { ToastProvider, useToast } from './components/ui/Toast';
 import { useReminders } from './hooks/useReminders';
 import { useFilteredReminders } from './hooks/useReminders';
@@ -14,6 +14,7 @@ import Stat from './components/features/Stat';
 import AddJournalEntryForm from './components/features/AddJournalEntryForm';
 import BottomNavigation from './components/layout/BottomNavigation';
 import BackupRestorePage from './components/features/BackupRestorePage';
+import { upsertAlarm, deleteAlarm, requestNotificationPermission } from './utils/notificationSync';
 
 function AppContent() {
   const location = useLocation();
@@ -63,6 +64,21 @@ function AppContent() {
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
   }, [darkMode]);
 
+  // Sync alarms when reminders change
+  useEffect(() => {
+    const sync = async () => {
+      if (!reminders || reminders.length === 0) return;
+      for (const r of reminders) {
+        if (r.completed || !r.dueDate || new Date(r.dueDate) < new Date()) {
+          await deleteAlarm(r.id);
+        } else {
+          await upsertAlarm(r);
+        }
+      }
+    };
+    sync();
+  }, [reminders]);
+
   const toggleDarkMode = () => {
     setDarkMode(prev => !prev);
   };
@@ -79,8 +95,18 @@ function AppContent() {
 
   const handleDeleteReminder = async (id) => {
     await deleteReminder(id);
+    await deleteAlarm(id);
     setEditingReminder(null);
     toast.addToast('Reminder deleted', 'success');
+  };
+
+  const enableNotifications = async () => {
+    const result = await requestNotificationPermission();
+    if (result === 'granted') {
+      toast.addToast('Notifications enabled', 'success');
+    } else {
+      toast.addToast('Notifications not enabled', 'error');
+    }
   };
 
   const handleCompleteReminder = async (id) => {
@@ -147,6 +173,16 @@ function AppContent() {
               >
                 {darkMode ? <Sun size={18} /> : <Moon size={18} />}
               </button>
+              {'Notification' in window && Notification.permission !== 'granted' && (
+                <button
+                  onClick={enableNotifications}
+                  className="btn btn-outline btn-sm flex items-center gap-2 px-4 py-2"
+                  aria-label="Enable notifications"
+                >
+                  <Bell size={18} />
+                  <span className="hidden sm:inline">Enable Notifications</span>
+                </button>
+              )}
               <button
                 onClick={handleAddJournal}
                 className="btn btn-secondary btn-sm flex items-center gap-2 px-4 py-2"
