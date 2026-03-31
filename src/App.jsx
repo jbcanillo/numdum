@@ -84,8 +84,10 @@ function AppContent() {
   };
 
   const handleCompleteReminder = async (id) => {
+    const reminder = reminders.find(r => r.id === id);
+    const wasCompleted = reminder?.completed;
     await completeReminder(id);
-    toast.addToast('Reminder completed', 'success');
+    toast.addToast(wasCompleted ? 'Reminder marked undone' : 'Reminder completed', 'success');
   };
 
   const handleToggleChecklist = async (reminderId, itemId) => {
@@ -185,7 +187,6 @@ function AppContent() {
                   await addJournalEntry(data);
                 }
                 handleBack();
-                toast.addToast(editingJournal ? 'Journal entry updated' : 'Journal entry added', 'success');
               }}
               initialDate={activeDate}
               asPage={true}
@@ -197,7 +198,6 @@ function AppContent() {
               onSubmit={async (data) => {
                 await createReminder(data);
                 handleBack();
-                toast.addToast('Reminder created', 'success');
               }}
               asPage={true}
               onToast={toast.addToast}
