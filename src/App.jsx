@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'; // rebuild
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Clock, BookOpen, ArrowLeft, Sun, Moon } from 'lucide-react';
 import { useReminders } from './hooks/useReminders';
 import { useFilteredReminders } from './hooks/useReminders';
@@ -8,14 +9,25 @@ import CalendarView from './components/ui/CalendarView';
 import ReminderList from './components/features/ReminderList';
 import AddReminderForm from './components/features/AddReminderForm';
 import EditReminderFormModal from './components/features/EditReminderFormModal';
-import Dashboard from './components/features/Dashboard';
+import Stat from './components/features/Stat';
 import AddJournalEntryForm from './components/features/AddJournalEntryForm';
 import BottomNavigation from './components/layout/BottomNavigation';
+import BackupRestorePage from './components/features/BackupRestorePage';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('calendar');
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Derive activeTab from route path
+  const getTabFromPath = (path) => {
+    if (path === '/' || path === '') return 'calendar';
+    // Remove leading slash
+    const tab = path.replace(/^\//, '');
+    return ['calendar', 'list', 'stat'].includes(tab) ? tab : 'calendar';
+  };
+  
+  const activeTab = getTabFromPath(location.pathname);
   const [darkMode, setDarkMode] = useState(() => {
-    // Check system preference or localStorage
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('darkMode');
       if (saved) return JSON.parse(saved);
@@ -35,6 +47,12 @@ function App() {
   const [editingJournal, setEditingJournal] = useState(null);
   const [currentPage, setCurrentPage] = useState(null); // 'journal', 'reminder', or null
 
+  // Sync tab changes from BottomNavigation
+  const handleTabChange = (tabId) => {
+    setCurrentPage(null);
+    navigate(`/${tabId}`);
+  };
+
   // Toggle dark mode and update DOM
   useEffect(() => {
     const root = document.documentElement;
@@ -52,9 +70,10 @@ function App() {
 
   const handleAddJournal = () => { setEditingJournal(null); setCurrentPage('journal'); };
   const handleAddReminder = () => setCurrentPage('reminder');
+  const handleOpenBackup = () => setCurrentPage({ type: 'backup-restore', mode: 'backup' });
+  const handleOpenRestore = () => setCurrentPage({ type: 'backup-restore', mode: 'restore' });
   const handleBack = () => setCurrentPage(null);
 
-  // Reminder action handlers
   const handleEditReminder = (reminder) => {
     setEditingReminder(reminder);
   };
@@ -151,7 +170,13 @@ function App() {
       {/* Main Content */}
       <main className="pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mt-6">
         <div className="animate-fade-in">
-          {currentPage === 'journal' ? (
+          {/* Backup/Restore full page */}
+          {currentPage && typeof currentPage === 'object' && currentPage.type === 'backup-restore' ? (
+            <BackupRestorePage
+              mode={currentPage.mode}
+              onBack={handleBack}
+            />
+          ) : currentPage === 'journal' ? (
             <AddJournalEntryForm
               entry={editingJournal}
               onDismiss={handleBack}
@@ -203,7 +228,7 @@ function App() {
                   onDeleteJournal={handleDeleteJournal}
                 />
               )}
-              {activeTab === 'dashboard' && <Dashboard />}
+              {activeTab === 'stat' && <Stat onOpenBackup={handleOpenBackup} onOpenRestore={handleOpenRestore} />}
             </>
           )}
         </div>
@@ -211,7 +236,7 @@ function App() {
 
       {/* Bottom Navigation */}
       {!currentPage && (
-        <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+        <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
       )}
 
       {/* Edit Reminder Modal */}
