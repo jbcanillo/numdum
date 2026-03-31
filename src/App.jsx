@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Clock, BookOpen, ArrowLeft, Sun, Moon } from 'lucide-react';
+import { ToastProvider, useToast } from './components/ui/Toast';
 import { useReminders } from './hooks/useReminders';
 import { useFilteredReminders } from './hooks/useReminders';
 import { useSortedReminders } from './hooks/useReminders';
@@ -14,18 +15,18 @@ import AddJournalEntryForm from './components/features/AddJournalEntryForm';
 import BottomNavigation from './components/layout/BottomNavigation';
 import BackupRestorePage from './components/features/BackupRestorePage';
 
-function App() {
+function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
-  
+  const toast = useToast();
+
   // Derive activeTab from route path
   const getTabFromPath = (path) => {
     if (path === '/' || path === '') return 'calendar';
-    // Remove leading slash
     const tab = path.replace(/^\//, '');
     return ['calendar', 'list', 'stat'].includes(tab) ? tab : 'calendar';
   };
-  
+
   const activeTab = getTabFromPath(location.pathname);
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -45,15 +46,13 @@ function App() {
   const [activeDate, setActiveDate] = useState(new Date());
   const [editingReminder, setEditingReminder] = useState(null);
   const [editingJournal, setEditingJournal] = useState(null);
-  const [currentPage, setCurrentPage] = useState(null); // 'journal', 'reminder', or null
+  const [currentPage, setCurrentPage] = useState(null);
 
-  // Sync tab changes from BottomNavigation
   const handleTabChange = (tabId) => {
     setCurrentPage(null);
     navigate(`/${tabId}`);
   };
 
-  // Toggle dark mode and update DOM
   useEffect(() => {
     const root = document.documentElement;
     if (darkMode) {
@@ -81,23 +80,26 @@ function App() {
   const handleDeleteReminder = async (id) => {
     await deleteReminder(id);
     setEditingReminder(null);
+    toast.addToast('Reminder deleted', 'success');
   };
 
   const handleCompleteReminder = async (id) => {
+    const reminder = reminders.find(r => r.id === id);
+    const wasCompleted = reminder?.completed;
     await completeReminder(id);
+    toast.addToast(wasCompleted ? 'Reminder marked undone' : 'Reminder completed', 'success');
   };
 
   const handleToggleChecklist = async (reminderId, itemId) => {
     const reminder = reminders.find(r => r.id === reminderId);
     if (reminder && reminder.checklist) {
-      const updatedChecklist = reminder.checklist.map(item => 
+      const updatedChecklist = reminder.checklist.map(item =>
         item.id === itemId ? { ...item, completed: !item.completed } : item
       );
       await updateReminder({ ...reminder, checklist: updatedChecklist });
     }
   };
 
-  // Journal action handlers
   const handleEditJournal = (entry) => {
     setEditingJournal(entry);
     setCurrentPage('journal');
@@ -106,11 +108,11 @@ function App() {
   const handleDeleteJournal = async (id) => {
     await removeJournalEntry(id);
     setEditingJournal(null);
+    toast.addToast('Journal entry deleted', 'success');
   };
 
   return (
     <div className="app-container min-h-screen">
-      {/* Header */}
       <header className="sticky top-0 z-30 glass border-b border-[var(--border)] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -125,7 +127,7 @@ function App() {
                   <span className="hidden sm:inline">Back</span>
                 </button>
               )}
-              <h1 className="text-2xl font-bold" style={{ 
+              <h1 className="text-2xl font-bold" style={{
                 background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -135,7 +137,6 @@ function App() {
               }}>Numdum</h1>
             </div>
             <div className="flex items-center gap-2">
-              {/* Dark Mode Toggle */}
               <button
                 onClick={toggleDarkMode}
                 className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
@@ -167,14 +168,13 @@ function App() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mt-6">
         <div className="animate-fade-in">
-          {/* Backup/Restore full page */}
           {currentPage && typeof currentPage === 'object' && currentPage.type === 'backup-restore' ? (
             <BackupRestorePage
               mode={currentPage.mode}
               onBack={handleBack}
+              onToast={toast.addToast}
             />
           ) : currentPage === 'journal' ? (
             <AddJournalEntryForm
@@ -190,6 +190,7 @@ function App() {
               }}
               initialDate={activeDate}
               asPage={true}
+              onToast={toast.addToast}
             />
           ) : currentPage === 'reminder' ? (
             <AddReminderForm
@@ -199,6 +200,7 @@ function App() {
                 handleBack();
               }}
               asPage={true}
+              onToast={toast.addToast}
             />
           ) : (
             <>
@@ -234,12 +236,10 @@ function App() {
         </div>
       </main>
 
-      {/* Bottom Navigation */}
       {!currentPage && (
         <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
       )}
 
-      {/* Edit Reminder Modal */}
       {editingReminder && (
         <EditReminderFormModal
           reminder={editingReminder}
@@ -248,9 +248,18 @@ function App() {
             await updateReminder({ ...editingReminder, ...data });
             setEditingReminder(null);
           }}
+          onToast={toast.addToast}
         />
       )}
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
   );
 }
 

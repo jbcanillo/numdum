@@ -9,7 +9,7 @@ const MOODS = [
   { emoji: '😲', label: 'Surprised' }
 ];
 
-const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate, asPage = false, entry = null }) => {
+const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate, asPage = false, entry = null, onToast }) => {
   const { photoLibrary } = usePhotoLibrary();
   const { openPhotoLibrary } = photoLibrary;
   const isEditing = !!entry;
@@ -63,8 +63,12 @@ const AddJournalEntryForm = ({ onDismiss, onSubmit, initialDate, asPage = false,
         setDate(new Date().toISOString().slice(0, 16));
       }
       onDismiss();
+      if (onToast) {
+        onToast(isEditing ? 'Journal entry updated' : 'Journal entry added', 'success');
+      }
     } catch (err) {
       alert(err.message);
+      if (onToast) onToast(err.message || 'Failed to save journal entry', 'error');
     } finally {
       setIsSubmitting(false);
     }

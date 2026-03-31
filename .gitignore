@@ -125,4 +125,4 @@ typings/
 .vscode/tasks.json
 
 # Stores VSCode snippets
-.vscode/snippets/
+.vscode/snippets/.openclaw/

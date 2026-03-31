@@ -1,7 +1,7 @@
 import React from 'react';
 import EditReminderForm from './EditReminderForm';
 
-const EditReminderFormModal = ({ reminder, onDismiss, onSubmit }) => {
+const EditReminderFormModal = ({ reminder, onDismiss, onSubmit, onToast }) => {
   const [showForm, setShowForm] = React.useState(true);
 
   const handleDismiss = () => {
@@ -13,8 +13,10 @@ const EditReminderFormModal = ({ reminder, onDismiss, onSubmit }) => {
     try {
       await onSubmit(data);
       handleDismiss();
+      if (onToast) onToast('Reminder updated', 'success');
     } catch (error) {
       console.error('Error updating reminder:', error);
+      if (onToast) onToast(error.message || 'Failed to update reminder', 'error');
     }
   };
 
