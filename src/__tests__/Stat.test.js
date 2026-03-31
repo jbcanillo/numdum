@@ -29,21 +29,22 @@ jest.mock('../utils/db', () => ({
   createJournalEntry: jest.fn()
 }));
 
-jest.mock('../../hooks/useReminders', () => ({
+jest.mock('../hooks/useReminders', () => ({
   useReminders: () => mockUseReminders,
   useFilteredReminders: (r) => r,
   useSortedReminders: (r) => r
 }));
 
-jest.mock('../../hooks/useJournal', () => ({
+jest.mock('../hooks/useJournal', () => ({
   useJournal: () => mockUseJournal
 }));
 
-jest.mock('../../hooks/useAnalytics', () => ({
-  default: () => mockUseAnalytics
+jest.mock('../hooks/useAnalytics', () => ({
+  __esModule: true,
+  default: jest.fn(() => mockUseAnalytics)
 }));
 
-jest.mock('../../utils/backupRestore', () => ({
+jest.mock('../utils/backupRestore', () => ({
   downloadBackup: jest.fn(),
   restoreFromFile: jest.fn()
 }));
