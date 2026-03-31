@@ -126,3 +126,11 @@ typings/
 
 # Stores VSCode snippets
 .vscode/snippets/.openclaw/
+.openclaw/
+AGENTS.md
+HEARTBEAT.md
+IDENTITY.md
+MEMORY.md
+SOUL.md
+TOOLS.md
+USER.md
