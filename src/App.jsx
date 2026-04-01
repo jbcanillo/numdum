@@ -121,6 +121,24 @@ function AppContent() {
     toast.addToast('Reminder deleted', 'success');
   };
 
+  const enableNotifications = async () => {
+    const result = await requestNotificationPermission();
+    if (result === 'granted') {
+      toast.addToast('Notifications enabled', 'success');
+      setTimeout(() => {
+        if (Notification.permission === 'granted') {
+          try {
+            new Notification('Test', { body: 'Permission works!', icon: '/favicon.ico' });
+          } catch (e) {
+            console.error('Test notification failed:', e);
+          }
+        }
+      }, 500);
+    } else {
+      toast.addToast('Notifications not enabled', 'error');
+    }
+  };
+
   const [deferInstall, setDeferInstall] = useState(null);
   const [showInstallButton, setShowInstallButton] = useState(false);
 
@@ -146,11 +164,16 @@ function AppContent() {
   const testNotification = () => {
     console.log('testNotification clicked, permission:', Notification.permission, 'SW controller:', !!navigator.serviceWorker.controller);
     if (Notification.permission === 'granted') {
-      new Notification('Test Notification', {
-        body: 'This is a test from Numdum',
-        icon: '/favicon.ico'
-      });
-      toast.addToast('Test notification sent', 'success');
+      try {
+        new Notification('Test Notification', {
+          body: 'This is a test from Numdum',
+          icon: '/favicon.ico'
+        });
+        toast.addToast('Test notification sent', 'success');
+      } catch (err) {
+        console.error('Notification error:', err);
+        toast.addToast('Failed to show notification: ' + err.message, 'error');
+      }
     } else {
       toast.addToast('Notifications not granted', 'error');
     }
