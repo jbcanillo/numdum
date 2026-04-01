@@ -70,11 +70,15 @@ self.addEventListener('notificationclick', (event) => {
 
 function handleTestNotification() {
   console.log('Showing test notification');
+  if (!self.registration) {
+    console.error('No registration available');
+    return;
+  }
   self.registration.showNotification('Test', {
     body: 'Test notification from service worker',
     icon: '/favicon.ico',
     badge: '/favicon.ico'
-  });
+  }).catch(err => console.error('Notification failed:', err));
 }
 
 function openAlarmsDB() {
