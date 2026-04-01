@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Clock, BookOpen, ArrowLeft, Sun, Moon, Bell } from 'lucide-react';
+import { Clock, BookOpen, ArrowLeft, Sun, Moon, Bell, Download } from 'lucide-react';
 import { ToastProvider, useToast } from './components/ui/Toast';
 import { useReminders } from './hooks/useReminders';
 import { useFilteredReminders } from './hooks/useReminders';
@@ -20,6 +20,27 @@ function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
+
+  // PWA install
+  const [deferInstall, setDeferInstall] = useState(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferInstall(e);
+      setShowInstallButton(true);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+  const handleInstallClick = async () => {
+    if (!deferInstall) return;
+    deferInstall.prompt();
+    const { outcome } = await deferInstall.userChoice;
+    console.log('Install outcome:', outcome);
+    setDeferInstall(null);
+    setShowInstallButton(false);
+  };
 
   // Derive activeTab from route path
   const getTabFromPath = (path) => {
@@ -100,13 +121,26 @@ function AppContent() {
     toast.addToast('Reminder deleted', 'success');
   };
 
-  const enableNotifications = async () => {
-    const result = await requestNotificationPermission();
-    if (result === 'granted') {
-      toast.addToast('Notifications enabled', 'success');
-    } else {
-      toast.addToast('Notifications not enabled', 'error');
-    }
+  const [deferInstall, setDeferInstall] = useState(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstall = (e) => {
+      e.preventDefault();
+      setDeferInstall(e);
+      setShowInstallButton(true);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferInstall) return;
+    deferInstall.prompt();
+    const { outcome } = await deferInstall.userChoice;
+    console.log('Install outcome:', outcome);
+    setDeferInstall(null);
+    setShowInstallButton(false);
   };
 
   const testNotification = () => {
@@ -207,6 +241,16 @@ function AppContent() {
                   aria-label="Test notification"
                 >
                   Test Notif
+                </button>
+              )}
+              {showInstallButton && (
+                <button
+                  onClick={handleInstallClick}
+                  className="btn btn-primary btn-sm flex items-center gap-2 px-4 py-2"
+                  aria-label="Install app"
+                >
+                  <Download size={18} />
+                  <span className="hidden sm:inline">Install</span>
                 </button>
               )}
               <button
