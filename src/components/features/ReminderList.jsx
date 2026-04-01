@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { BookOpen, Search, Filter, Calendar as CalendarIcon } from 'lucide-react';
 import ReminderItem from './ReminderItem';
 
-const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onComplete, onDelete, onToggleChecklist, onEditJournal, onDeleteJournal }) => {
+const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onComplete, onDelete, onToggleChecklist, onEditJournal, onDeleteJournal, onSnooze }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all'); // 'all', 'reminders', 'journal'
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
@@ -175,6 +175,7 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
                   onComplete={onComplete} 
                   onDelete={onDelete}
                   onToggleChecklist={onToggleChecklist}
+                  onSnooze={onSnooze}
                 />
               );
             } else {

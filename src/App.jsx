@@ -38,7 +38,7 @@ function AppContent() {
     return false;
   });
 
-  const { reminders, loading, error, createReminder, updateReminder, deleteReminder, completeReminder } = useReminders();
+  const { reminders, loading, error, createReminder, updateReminder, deleteReminder, completeReminder, snoozeReminder } = useReminders();
   const filteredReminders = useFilteredReminders(reminders);
   const sortedReminders = useSortedReminders(filteredReminders);
 
@@ -109,6 +109,20 @@ function AppContent() {
     }
   };
 
+  const testNotification = async () => {
+    if ('serviceWorker' in navigator) {
+      try {
+        const sw = await navigator.serviceWorker.ready;
+        sw.postMessage({ type: 'TEST_NOTIFICATION' });
+      } catch (e) {
+        // fallback
+        new Notification('Test', { body: 'Direct test', icon: '/favicon.ico' });
+      }
+    } else {
+      new Notification('Test', { body: 'Direct test', icon: '/favicon.ico' });
+    }
+  };
+
   const handleCompleteReminder = async (id) => {
     const reminder = reminders.find(r => r.id === id);
     const wasCompleted = reminder?.completed;
@@ -124,6 +138,10 @@ function AppContent() {
       );
       await updateReminder({ ...reminder, checklist: updatedChecklist });
     }
+  };
+
+  const handleSnooze = async (id, snoozedUntil) => {
+    await snoozeReminder(id, snoozedUntil);
   };
 
   const handleEditJournal = (entry) => {
@@ -185,12 +203,7 @@ function AppContent() {
               )}
               {'Notification' in window && Notification.permission === 'granted' && (
                 <button
-                  onClick={() => {
-                    new Notification('Test Notification', {
-                      body: 'This is a test',
-                      icon: '/favicon.ico'
-                    });
-                  }}
+                  onClick={testNotification}
                   className="btn btn-outline btn-sm flex items-center gap-2 px-4 py-2"
                   aria-label="Test notification"
                 >
@@ -278,6 +291,7 @@ function AppContent() {
                   onToggleChecklist={handleToggleChecklist}
                   onEditJournal={handleEditJournal}
                   onDeleteJournal={handleDeleteJournal}
+                  onSnooze={handleSnooze}
                 />
               )}
               {activeTab === 'stat' && <Stat onOpenBackup={handleOpenBackup} onOpenRestore={handleOpenRestore} />}
