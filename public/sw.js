@@ -137,6 +137,7 @@ function deleteAlarmFromDB(id) {
 }
 
 async function handleUpsertAlarm(alarm) {
+  console.log('Upserting alarm:', alarm);
   await upsertAlarmToDB(alarm);
   if (activeTimers.has(alarm.id)) {
     clearTimeout(activeTimers.get(alarm.id));
@@ -169,8 +170,11 @@ function scheduleAlarm(alarm) {
 }
 
 function triggerNow(alarm) {
-  self.registration.showNotification(alarm.title || 'Reminder', {
-    body: alarm.description || 'Your reminder is due!',
+  console.log('Triggering notification for alarm:', alarm);
+  const title = alarm.title || 'Reminder';
+  const body = alarm.description || 'Your reminder is due!';
+  self.registration.showNotification(title, {
+    body,
     icon: '/favicon.ico',
     badge: '/favicon.ico',
     tag: alarm.id,
@@ -180,5 +184,5 @@ function triggerNow(alarm) {
       { action: 'snooze-60', title: 'Snooze 1 hr' }
     ],
     data: { reminderId: alarm.id }
-  });
+  }).catch(err => console.error('Show notification error:', err));
 }

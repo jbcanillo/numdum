@@ -1,4 +1,5 @@
 export const upsertAlarm = async (reminder) => {
+  console.log('upsertAlarm called with reminder:', reminder);
   if (!reminder.dueDate && !reminder.snoozedUntil) return;
   let triggerTime;
   if (reminder.snoozedUntil && new Date(reminder.snoozedUntil) > new Date()) {
@@ -8,20 +9,19 @@ export const upsertAlarm = async (reminder) => {
   } else {
     return;
   }
+  const payload = {
+    id: reminder.id,
+    title: reminder.title,
+    description: reminder.description || '',
+    triggerTime
+  };
+  console.log('Sending to SW:', payload);
   try {
     const sw = await navigator.serviceWorker.ready;
     sw.postMessage({
       type: 'UPSERT_ALARM',
-      payload: {
-        alarm: {
-          id: reminder.id,
-          title: reminder.title,
-          description: reminder.description || '',
-          triggerTime
-        }
-      }
+      payload: { alarm: payload }
     });
-    console.log('Alarm upsert message sent to SW for', reminder.id, 'trigger', new Date(triggerTime).toISOString());
   } catch (err) {
     console.warn('Failed to schedule alarm via SW', err);
   }
