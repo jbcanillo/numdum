@@ -149,15 +149,6 @@ function AppContent() {
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
   }, []);
 
-  const handleInstallClick = async () => {
-    if (!deferInstall) return;
-    deferInstall.prompt();
-    const { outcome } = await deferInstall.userChoice;
-    console.log('Install outcome:', outcome);
-    setDeferInstall(null);
-    setShowInstallButton(false);
-  };
-
   const testNotification = () => {
     console.log('testNotification clicked, permission:', Notification.permission, 'SW controller:', !!navigator.serviceWorker.controller);
     if (Notification.permission === 'granted') {
