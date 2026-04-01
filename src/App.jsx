@@ -139,9 +139,6 @@ function AppContent() {
     }
   };
 
-  const [deferInstall, setDeferInstall] = useState(null);
-  const [showInstallButton, setShowInstallButton] = useState(false);
-
   useEffect(() => {
     const handleBeforeInstall = (e) => {
       e.preventDefault();
