@@ -2,7 +2,7 @@ const CACHE_NAME = 'numdum-cache-v1';
 const STATIC_ASSETS = ['/', '/index.html', '/manifest.json', '/static/js/', '/static/css/'];
 
 let alarmsDB;
-const activeTimers = new Map(); // alarmId -> { timeout, timerId }
+const activeTimers = new Map();
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS)));
@@ -35,6 +35,9 @@ self.addEventListener('message', (event) => {
   if (type === 'DELETE_ALARM') {
     return handleDeleteAlarm(payload.id);
   }
+  if (type === 'TEST_NOTIFICATION') {
+    return handleTestNotification();
+  }
 });
 
 self.addEventListener('notificationclick', (event) => {
@@ -44,10 +47,9 @@ self.addEventListener('notificationclick', (event) => {
   if (action && action.startsWith('snooze-')) {
     const minutes = parseInt(action.split('-')[1], 10);
     const newTrigger = Date.now() + minutes * 60000;
-    // Get existing alarm to preserve title/description
     getAlarm(reminderId).then(alarm => {
       const updated = { ...alarm, triggerTime: newTrigger };
-      return upsertAlarmToDB(updated).then(() => {
+      upsertAlarmToDB(updated).then(() => {
         scheduleAlarm(updated);
         self.registration.showNotification('Snoozed', {
           body: `Reminder snoozed for ${minutes} minutes`,
@@ -65,7 +67,14 @@ self.addEventListener('notificationclick', (event) => {
   }
 });
 
-// IDB helpers
+function handleTestNotification() {
+  self.registration.showNotification('Test', {
+    body: 'Test notification from service worker',
+    icon: '/favicon.ico',
+    badge: '/favicon.ico'
+  });
+}
+
 function openAlarmsDB() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open('numdum-alarms', 1);
@@ -130,7 +139,7 @@ async function handleUpsertAlarm(alarm) {
 async function handleDeleteAlarm(id) {
   await deleteAlarmFromDB(id);
   if (activeTimers.has(id)) {
-    clearTimeout(activeTimers.get(alarm.id));
+    clearTimeout(activeTimers.get(id));
     activeTimers.delete(id);
   }
 }

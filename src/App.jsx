@@ -183,6 +183,22 @@ function AppContent() {
                   <span className="hidden sm:inline">Enable Notifications</span>
                 </button>
               )}
+              {'Notification' in window && Notification.permission === 'granted' && (
+                <button
+                  onClick={async () => {
+                    if ('serviceWorker' in navigator) {
+                      const sw = await navigator.serviceWorker.ready;
+                      sw.postMessage({ type: 'TEST_NOTIFICATION' });
+                    } else {
+                      new Notification('Test', { body: 'Test notification', icon: '/favicon.ico' });
+                    }
+                  }}
+                  className="btn btn-outline btn-sm flex items-center gap-2 px-4 py-2"
+                  aria-label="Test notification"
+                >
+                  Test Notif
+                </button>
+              )}
               <button
                 onClick={handleAddJournal}
                 className="btn btn-secondary btn-sm flex items-center gap-2 px-4 py-2"
