@@ -69,7 +69,7 @@ function AppContent() {
     const sync = async () => {
       if (!reminders || reminders.length === 0) return;
       for (const r of reminders) {
-        if (r.completed || !r.dueDate || new Date(r.dueDate) < new Date()) {
+        if (r.completed) {
           await deleteAlarm(r.id);
         } else {
           await upsertAlarm(r);
@@ -185,13 +185,11 @@ function AppContent() {
               )}
               {'Notification' in window && Notification.permission === 'granted' && (
                 <button
-                  onClick={async () => {
-                    if ('serviceWorker' in navigator) {
-                      const sw = await navigator.serviceWorker.ready;
-                      sw.postMessage({ type: 'TEST_NOTIFICATION' });
-                    } else {
-                      new Notification('Test', { body: 'Test notification', icon: '/favicon.ico' });
-                    }
+                  onClick={() => {
+                    new Notification('Test Notification', {
+                      body: 'This is a test',
+                      icon: '/favicon.ico'
+                    });
                   }}
                   className="btn btn-outline btn-sm flex items-center gap-2 px-4 py-2"
                   aria-label="Test notification"

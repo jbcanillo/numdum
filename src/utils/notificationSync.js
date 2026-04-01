@@ -1,6 +1,14 @@
 export const upsertAlarm = async (reminder) => {
-  if (!reminder.dueDate) return;
-  const triggerTime = new Date(reminder.dueDate).getTime();
+  if (!reminder.dueDate && !reminder.snoozedUntil) return;
+  // Prefer snoozedUntil if set and in the future; otherwise use dueDate
+  let triggerTime;
+  if (reminder.snoozedUntil && new Date(reminder.snoozedUntil) > new Date()) {
+    triggerTime = new Date(reminder.snoozedUntil).getTime();
+  } else if (reminder.dueDate) {
+    triggerTime = new Date(reminder.dueDate).getTime();
+  } else {
+    return;
+  }
   try {
     const sw = await navigator.serviceWorker.ready;
     sw.postMessage({
