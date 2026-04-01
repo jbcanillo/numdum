@@ -5,15 +5,18 @@ let alarmsDB;
 const activeTimers = new Map();
 
 self.addEventListener('install', (event) => {
+  console.log('SW install');
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS)));
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
+  console.log('SW activate');
   event.waitUntil(
     (async () => {
       alarmsDB = await openAlarmsDB();
       const alarms = await getAllAlarms();
+      console.log('SW activated, alarms loaded:', alarms.length);
       alarms.forEach(scheduleAlarm);
     })()
   );

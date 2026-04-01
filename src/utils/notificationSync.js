@@ -1,6 +1,5 @@
 export const upsertAlarm = async (reminder) => {
   if (!reminder.dueDate && !reminder.snoozedUntil) return;
-  // Prefer snoozedUntil if set and in the future; otherwise use dueDate
   let triggerTime;
   if (reminder.snoozedUntil && new Date(reminder.snoozedUntil) > new Date()) {
     triggerTime = new Date(reminder.snoozedUntil).getTime();
@@ -22,6 +21,7 @@ export const upsertAlarm = async (reminder) => {
         }
       }
     });
+    console.log('Alarm upsert message sent to SW for', reminder.id, 'trigger', new Date(triggerTime).toISOString());
   } catch (err) {
     console.warn('Failed to schedule alarm via SW', err);
   }

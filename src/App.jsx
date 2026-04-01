@@ -110,6 +110,7 @@ function AppContent() {
   };
 
   const testNotification = () => {
+    console.log('testNotification clicked, permission:', Notification.permission, 'SW controller:', !!navigator.serviceWorker.controller);
     if (Notification.permission === 'granted') {
       new Notification('Test Notification', {
         body: 'This is a test from Numdum',
