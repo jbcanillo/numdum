@@ -1,5 +1,4 @@
 import React from 'react';
-import { useReminders } from '../../hooks/useReminders';
 
 const SNOOZE_OPTIONS = [
   { label: '15 minutes', value: 15 },
@@ -12,8 +11,7 @@ const SNOOZE_OPTIONS = [
   { label: 'Pick date/time...', value: 'datetime' }
 ];
 
-const SnoozeSelector = ({ reminderId, onDismiss }) => {
-  const { snoozeReminder } = useReminders();
+const SnoozeSelector = ({ reminderId, onDismiss, onSnooze }) => {
   const [showCustom, setShowCustom] = React.useState(false);
   const [customMinutes, setCustomMinutes] = React.useState(60);
   const [showDateTime, setShowDateTime] = React.useState(false);
@@ -23,8 +21,7 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
     try {
       const snoozeUntil = new Date();
       snoozeUntil.setMinutes(snoozeUntil.getMinutes() + minutes);
-      
-      await snoozeReminder(reminderId, snoozeUntil.toISOString());
+      await onSnooze(reminderId, snoozeUntil.toISOString());
       onDismiss();
     } catch (error) {
       console.error('Error snoozing reminder:', error);
@@ -33,9 +30,7 @@ const SnoozeSelector = ({ reminderId, onDismiss }) => {
 
   const handleDateTimeSnooze = async (dateTimeStr) => {
     try {
-      const snoozeUntil = new Date(dateTimeStr);
-      if (isNaN(snoozeUntil.getTime())) throw new Error('Invalid date');
-      await snoozeReminder(reminderId, snoozeUntil.toISOString());
+      await onSnooze(reminderId, dateTimeStr);
       onDismiss();
     } catch (error) {
       console.error('Error snoozing reminder:', error);

@@ -3,7 +3,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Clock, Calendar as CalendarIcon } from 'lucide-react';
 import SnoozeSelector from './SnoozeSelector';
 
-const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklist, compact = false, showExpandButton = false }) => {
+const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklist, onSnooze, compact = false, showExpandButton = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showSnooze, setShowSnooze] = useState(false);
 
@@ -309,6 +309,7 @@ const ReminderItem = ({ reminder, onEdit, onComplete, onDelete, onToggleChecklis
         <SnoozeSelector
           reminderId={reminder.id}
           onDismiss={() => setShowSnooze(false)}
+          onSnooze={onSnooze}
         />
       )}
     </div>

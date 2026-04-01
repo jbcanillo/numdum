@@ -64,7 +64,8 @@ const useReminders = () => {
     try {
       const current = reminders.find(r => r.id === id);
       if (!current) throw new Error('Reminder not found');
-      const updated = { ...current, snoozedUntil };
+      const newDueDate = new Date(snoozedUntil).toISOString();
+      const updated = { ...current, dueDate: newDueDate, snoozedUntil: null };
       const saved = await db.updateReminder(updated);
       setReminders(prev => prev.map(r => r.id === id ? saved : r));
       return saved;
