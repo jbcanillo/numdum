@@ -29,6 +29,7 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('message', (event) => {
   const { type, payload } = event.data || {};
+  console.log('SW received message:', type, payload);
   if (type === 'UPSERT_ALARM') {
     return handleUpsertAlarm(payload.alarm);
   }
@@ -68,6 +69,7 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 function handleTestNotification() {
+  console.log('Showing test notification');
   self.registration.showNotification('Test', {
     body: 'Test notification from service worker',
     icon: '/favicon.ico',
