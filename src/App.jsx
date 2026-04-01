@@ -109,24 +109,15 @@ function AppContent() {
     }
   };
 
-  const testNotification = async () => {
-    console.log('Test notification triggered');
-    if ('serviceWorker' in navigator) {
-      try {
-        const sw = await navigator.serviceWorker.ready;
-        console.log('SW ready, sending TEST_NOTIFICATION');
-        sw.postMessage({ type: 'TEST_NOTIFICATION' });
-        // Fallback after 2 seconds if no notification appears
-        setTimeout(() => {
-          console.log('Fallback direct notification');
-          new Notification('Test (fallback)', { body: 'Direct fallback', icon: '/favicon.ico' });
-        }, 2000);
-      } catch (e) {
-        console.error('SW not ready, fallback direct', e);
-        new Notification('Test (direct)', { body: 'Direct fallback', icon: '/favicon.ico' });
-      }
+  const testNotification = () => {
+    if (Notification.permission === 'granted') {
+      new Notification('Test Notification', {
+        body: 'This is a test from Numdum',
+        icon: '/favicon.ico'
+      });
+      toast.addToast('Test notification sent', 'success');
     } else {
-      new Notification('Test (no SW)', { body: 'Direct fallback', icon: '/favicon.ico' });
+      toast.addToast('Notifications not granted', 'error');
     }
   };
 
