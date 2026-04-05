@@ -150,20 +150,12 @@ function AppContent() {
   }, []);
 
   const testNotification = () => {
-    console.log('testNotification clicked, permission:', Notification.permission, 'SW controller:', !!navigator.serviceWorker.controller);
-    if (Notification.permission === 'granted') {
-      try {
-        new Notification('Test Notification', {
-          body: 'This is a test from Numdum',
-          icon: '/favicon.ico'
-        });
-        toast.addToast('Test notification sent', 'success');
-      } catch (err) {
-        console.error('Notification error:', err);
-        toast.addToast('Failed to show notification: ' + err.message, 'error');
-      }
+    console.log('testNotification clicked, SW controller:', !!navigator.serviceWorker.controller);
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'TEST_NOTIFICATION' });
+      toast.addToast('Test notification sent via SW', 'success');
     } else {
-      toast.addToast('Notifications not granted', 'error');
+      toast.addToast('Service worker not active. Reload page to activate.', 'error');
     }
   };
 
