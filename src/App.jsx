@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Clock, BookOpen, ArrowLeft, Sun, Moon, Bell, Download } from 'lucide-react';
+import { Clock, BookOpen, ArrowLeft, Sun, Moon, Bell } from 'lucide-react';
 import { ToastProvider, useToast } from './components/ui/Toast';
 import { useReminders } from './hooks/useReminders';
 import { useFilteredReminders } from './hooks/useReminders';
@@ -112,7 +112,6 @@ function AppContent() {
 
   // PWA install
   const [deferInstall, setDeferInstall] = useState(null);
-  const [showInstallButton, setShowInstallButton] = useState(false);
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [hasEngaged, setHasEngaged] = useState(false);
 
@@ -120,7 +119,6 @@ function AppContent() {
     const handleBeforeInstall = (e) => {
       e.preventDefault();
       setDeferInstall(e);
-      setShowInstallButton(true);
     };
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
@@ -140,7 +138,6 @@ function AppContent() {
     const { outcome } = await deferInstall.userChoice;
     console.log('Install outcome:', outcome);
     setDeferInstall(null);
-    setShowInstallButton(false);
     setShowInstallModal(false);
   };
 
