@@ -42,9 +42,6 @@ self.addEventListener('message', (event) => {
   if (type === 'TEST_NOTIFICATION') {
     return handleTestNotification();
   }
-  if (type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
 });
 
 self.addEventListener('notificationclick', (event) => {
