@@ -149,7 +149,7 @@ function AppContent() {
       navigator.serviceWorker.controller.postMessage({ type: 'TEST_NOTIFICATION' });
       toast.addToast('Test notification sent via SW', 'success');
     } else {
-      toast.addToast('Service worker not active. Reload page to activate.', 'error');
+      toast.addToast('Service worker not active. Please reload the page.', 'error');
     }
   };
 
