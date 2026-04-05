@@ -7,7 +7,7 @@ const activeTimers = new Map();
 self.addEventListener('install', (event) => {
   console.log('SW install');
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS)));
-  self.skipWaiting();
+  // Do not skip waiting; let new SW activate on next navigation
 });
 
 self.addEventListener('activate', (event) => {
