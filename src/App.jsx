@@ -14,33 +14,13 @@ import Stat from './components/features/Stat';
 import AddJournalEntryForm from './components/features/AddJournalEntryForm';
 import BottomNavigation from './components/layout/BottomNavigation';
 import BackupRestorePage from './components/features/BackupRestorePage';
+import InstallModal from './components/ui/InstallModal';
 import { upsertAlarm, deleteAlarm, requestNotificationPermission } from './utils/notificationSync';
 
 function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
-
-  // PWA install
-  const [deferInstall, setDeferInstall] = useState(null);
-  const [showInstallButton, setShowInstallButton] = useState(false);
-  useEffect(() => {
-    const handler = (e) => {
-      e.preventDefault();
-      setDeferInstall(e);
-      setShowInstallButton(true);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
-  const handleInstallClick = async () => {
-    if (!deferInstall) return;
-    deferInstall.prompt();
-    const { outcome } = await deferInstall.userChoice;
-    console.log('Install outcome:', outcome);
-    setDeferInstall(null);
-    setShowInstallButton(false);
-  };
 
   // Derive activeTab from route path
   const getTabFromPath = (path) => {
@@ -125,19 +105,16 @@ function AppContent() {
     const result = await requestNotificationPermission();
     if (result === 'granted') {
       toast.addToast('Notifications enabled', 'success');
-      setTimeout(() => {
-        if (Notification.permission === 'granted') {
-          try {
-            new Notification('Test', { body: 'Permission works!', icon: '/favicon.ico' });
-          } catch (e) {
-            console.error('Test notification failed:', e);
-          }
-        }
-      }, 500);
     } else {
       toast.addToast('Notifications not enabled', 'error');
     }
   };
+
+  // PWA install
+  const [deferInstall, setDeferInstall] = useState(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+  const [showInstallModal, setShowInstallModal] = useState(false);
+  const [hasEngaged, setHasEngaged] = useState(false);
 
   useEffect(() => {
     const handleBeforeInstall = (e) => {
@@ -148,6 +125,26 @@ function AppContent() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
   }, []);
+
+  // Show install modal after user engages (visits any tab)
+  useEffect(() => {
+    if (activeTab && !hasEngaged && deferInstall) {
+      setHasEngaged(true);
+      setTimeout(() => setShowInstallModal(true), 2000);
+    }
+  }, [activeTab, hasEngaged, deferInstall]);
+
+  const handleInstallClick = async () => {
+    if (!deferInstall) return;
+    deferInstall.prompt();
+    const { outcome } = await deferInstall.userChoice;
+    console.log('Install outcome:', outcome);
+    setDeferInstall(null);
+    setShowInstallButton(false);
+    setShowInstallModal(false);
+  };
+
+  const closeInstallModal = () => setShowInstallModal(false);
 
   const testNotification = () => {
     console.log('testNotification clicked, SW controller:', !!navigator.serviceWorker.controller);
@@ -246,16 +243,6 @@ function AppContent() {
                   Test Notif
                 </button>
               )}
-              {showInstallButton && (
-                <button
-                  onClick={handleInstallClick}
-                  className="btn btn-primary btn-sm flex items-center gap-2 px-4 py-2"
-                  aria-label="Install app"
-                >
-                  <Download size={18} />
-                  <span className="hidden sm:inline">Install</span>
-                </button>
-              )}
               <button
                 onClick={handleAddJournal}
                 className="btn btn-secondary btn-sm flex items-center gap-2 px-4 py-2"
@@ -313,6 +300,12 @@ function AppContent() {
             />
           ) : (
             <>
+              {showInstallModal && (
+                <InstallModal
+                  onInstall={handleInstallClick}
+                  onDismiss={closeInstallModal}
+                />
+              )}
               {activeTab === 'calendar' && (
                 <CalendarView
                   reminders={sortedReminders}
