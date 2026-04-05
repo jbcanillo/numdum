@@ -14,6 +14,7 @@ import Stat from './components/features/Stat';
 import AddJournalEntryForm from './components/features/AddJournalEntryForm';
 import BottomNavigation from './components/layout/BottomNavigation';
 import BackupRestorePage from './components/features/BackupRestorePage';
+import InstallModal from './components/ui/InstallModal';
 import { upsertAlarm, deleteAlarm, requestNotificationPermission } from './utils/notificationSync';
 
 function AppContent() {
@@ -109,16 +110,46 @@ function AppContent() {
     }
   };
 
+  // PWA install
+  const [deferInstall, setDeferInstall] = useState(null);
+  const [showInstallModal, setShowInstallModal] = useState(false);
+  const [hasEngaged, setHasEngaged] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstall = (e) => {
+      e.preventDefault();
+      setDeferInstall(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  // Show install modal after user engages (visits any tab)
+  useEffect(() => {
+    if (activeTab && !hasEngaged && deferInstall) {
+      setHasEngaged(true);
+      setTimeout(() => setShowInstallModal(true), 2000);
+    }
+  }, [activeTab, hasEngaged, deferInstall]);
+
+  const handleInstallClick = async () => {
+    if (!deferInstall) return;
+    deferInstall.prompt();
+    const { outcome } = await deferInstall.userChoice;
+    console.log('Install outcome:', outcome);
+    setDeferInstall(null);
+    setShowInstallModal(false);
+  };
+
+  const closeInstallModal = () => setShowInstallModal(false);
+
   const testNotification = () => {
-    console.log('testNotification clicked, permission:', Notification.permission, 'SW controller:', !!navigator.serviceWorker.controller);
-    if (Notification.permission === 'granted') {
-      new Notification('Test Notification', {
-        body: 'This is a test from Numdum',
-        icon: '/favicon.ico'
-      });
-      toast.addToast('Test notification sent', 'success');
+    console.log('testNotification clicked, SW controller:', !!navigator.serviceWorker.controller);
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'TEST_NOTIFICATION' });
+      toast.addToast('Test notification sent via SW', 'success');
     } else {
-      toast.addToast('Notifications not granted', 'error');
+      toast.addToast('Service worker not active. Please reload the page.', 'error');
     }
   };
 
@@ -266,6 +297,12 @@ function AppContent() {
             />
           ) : (
             <>
+              {showInstallModal && (
+                <InstallModal
+                  onInstall={handleInstallClick}
+                  onDismiss={closeInstallModal}
+                />
+              )}
               {activeTab === 'calendar' && (
                 <CalendarView
                   reminders={sortedReminders}

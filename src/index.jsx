@@ -25,13 +25,19 @@ if ('serviceWorker' in navigator) {
         if (reg.waiting) {
           console.log('SW waiting, sending skipWaiting');
           reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-        }
-        // Do NOT auto-reload; wait for user to manually reload or use controllerchange event
-        if (!navigator.serviceWorker.controller) {
-          console.log('SW not active yet. Reload the page to activate.');
-          // Optionally show a non-intrusive banner or toast here if desired
-        } else {
-          console.log('SW controller active');
+          // Reload when new controller activates
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log('SW controller activated, reloading');
+            window.location.reload();
+          }, { once: true });
+        } else if (!navigator.serviceWorker.controller) {
+          // If no waiting and no controller yet, wait a bit then reload
+          setTimeout(() => {
+            if (!navigator.serviceWorker.controller) {
+              console.log('No controller after wait, reloading to activate');
+              window.location.reload();
+            }
+          }, 1500);
         }
       })
       .catch(err => console.error('SW registration failed:', err));
