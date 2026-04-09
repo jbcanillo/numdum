@@ -33,6 +33,13 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', (event) => {
   const { type, payload } = event.data || {};
   console.log('SW received message:', type, payload);
+  
+  if (type === 'SKIP_WAITING') {
+    // Handle skip waiting message from the page
+    self.skipWaiting();
+    return;
+  }
+  
   if (type === 'UPSERT_ALARM') {
     return handleUpsertAlarm(payload.alarm);
   }
@@ -89,7 +96,7 @@ function openAlarmsDB() {
     const req = indexedDB.open('numdum-alarms', 1);
     req.onupgradeneeded = (e) => {
       const db = e.target.result;
-      if (!db.objectStoreNames.contains('alarms')) db.createObjectStore('alarms', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('alarms')) db.createObjectStore('alarms',{ keyPath: 'id' });
     };
     req.onsuccess = (e) => resolve(e.target.result);
     req.onerror = (e) => reject(e.target.error);
