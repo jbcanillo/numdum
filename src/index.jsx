@@ -22,28 +22,19 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
       .then(reg => {
         console.log('SW registered:', reg);
+        
+        // If there's a waiting SW, activate it and reload once
         if (reg.waiting) {
           console.log('SW waiting, sending skipWaiting');
           reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-          // Reload when new controller activates
+          
+          // Listen for controller change and reload ONCE
           navigator.serviceWorker.addEventListener('controllerchange', () => {
-            console.log('SW controller activated, reloading');
+            console.log('SW controller changed, reloading');
             window.location.reload();
           }, { once: true });
-        } else if (!navigator.serviceWorker.controller) {
-          // If no waiting and no controller yet, wait a bit then reload
-          setTimeout(() => {
-            if (!navigator.serviceWorker.controller) {
-              console.log('No controller after wait, reloading to activate');
-              window.location.reload();
-            }
-          }, 1500);
         }
       })
       .catch(err => console.error('SW registration failed:', err));
-  });
-
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    console.log('SW controller changed:', navigator.serviceWorker.controller);
   });
 }
