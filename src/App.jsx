@@ -12,10 +12,12 @@ import AddReminderForm from './components/features/AddReminderForm';
 import EditReminderFormModal from './components/features/EditReminderFormModal';
 import Stat from './components/features/Stat';
 import AddJournalEntryForm from './components/features/AddJournalEntryForm';
+import NotificationManager from './components/features/NotificationManager';
 import BottomNavigation from './components/layout/BottomNavigation';
 import BackupRestorePage from './components/features/BackupRestorePage';
 import InstallModal from './components/ui/InstallModal';
 import { upsertAlarm, deleteAlarm, requestNotificationPermission } from './utils/notificationSync';
+import { initializeNotifications, addNotificationForReminder, removeNotificationForReminder, updateNotificationForReminder } from './utils/notifications';
 
 function AppContent() {
   const location = useLocation();
@@ -50,6 +52,43 @@ function AppContent() {
   const [editingJournal, setEditingJournal] = useState(null);
   const [currentPage, setCurrentPage] = useState(null);
 
+  // Initialize notifications when reminders are loaded
+  useEffect(() => {
+    if (!loading && reminders.length > 0) {
+      initializeNotifications(reminders);
+    }
+  }, [loading, reminders]);
+
+  // Handle reminder events for notifications
+  useEffect(() => {
+    const handleCompleteReminderApp = (event) => {
+      const { reminderId } = event.detail;
+      completeReminder(reminderId);
+    };
+
+    const handleSnoozeReminderApp = (event) => {
+      const { reminderId, snoozeUntil } = event.detail;
+      const reminder = reminders.find(r => r.id === reminderId);
+      if (reminder) {
+        const updatedReminder = { ...reminder, snoozedUntil: snoozeUntil };
+        updateReminder(updatedReminder);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('complete-reminder-app', handleCompleteReminderApp);
+      window.addEventListener('snooze-reminder-app', handleSnoozeReminderApp);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('complete-reminder-app', handleCompleteReminderApp);
+        window.removeEventListener('snooze-reminder-app', handleSnoozeReminderApp);
+      }
+    };
+  }, [reminders, completeReminder, updateReminder]);
+
+  // Sync tab changes from BottomNavigation
   const handleTabChange = (tabId) => {
     setCurrentPage(null);
     navigate(`/${tabId}`);
@@ -95,6 +134,8 @@ function AppContent() {
   };
 
   const handleDeleteReminder = async (id) => {
+    // Remove notification before deleting
+    removeNotificationForReminder(id);
     await deleteReminder(id);
     await deleteAlarm(id);
     setEditingReminder(null);
@@ -154,6 +195,8 @@ function AppContent() {
   };
 
   const handleCompleteReminder = async (id) => {
+    // Remove notification before completing
+    removeNotificationForReminder(id);
     const reminder = reminders.find(r => r.id === id);
     const wasCompleted = reminder?.completed;
     await completeReminder(id);
@@ -166,7 +209,9 @@ function AppContent() {
       const updatedChecklist = reminder.checklist.map(item =>
         item.id === itemId ? { ...item, completed: !item.completed } : item
       );
-      await updateReminder({ ...reminder, checklist: updatedChecklist });
+      const updatedReminder = { ...reminder, checklist: updatedChecklist };
+      await updateReminder(updatedReminder);
+      updateNotificationForReminder(updatedReminder);
     }
   };
 
@@ -336,6 +381,10 @@ function AppContent() {
         </div>
       </main>
 
+      {/* Notification Manager */}
+      <NotificationManager />
+
+      {/* Bottom Navigation */}
       {!currentPage && (
         <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
       )}
@@ -345,7 +394,9 @@ function AppContent() {
           reminder={editingReminder}
           onDismiss={() => setEditingReminder(null)}
           onSubmit={async (data) => {
-            await updateReminder({ ...editingReminder, ...data });
+            const updatedReminder = { ...editingReminder, ...data };
+            await updateReminder(updatedReminder);
+            updateNotificationForReminder(updatedReminder);
             setEditingReminder(null);
           }}
           onToast={toast.addToast}
