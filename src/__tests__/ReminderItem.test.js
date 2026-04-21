@@ -24,6 +24,8 @@ describe('ReminderItem', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Mock window.confirm to return true for delete tests
+    window.confirm = jest.fn(() => true);
   });
 
   test('renders reminder title', () => {

@@ -11,7 +11,9 @@ import AddReminderForm from './components/features/AddReminderForm';
 import EditReminderFormModal from './components/features/EditReminderFormModal';
 import Dashboard from './components/features/Dashboard';
 import AddJournalEntryForm from './components/features/AddJournalEntryForm';
+import NotificationManager from './components/features/NotificationManager';
 import BottomNavigation from './components/layout/BottomNavigation';
+import { initializeNotifications, addNotificationForReminder, removeNotificationForReminder, updateNotificationForReminder } from './utils/notifications';
 
 function App() {
   const location = useLocation();
@@ -46,6 +48,42 @@ function App() {
   const [editingJournal, setEditingJournal] = useState(null);
   const [currentPage, setCurrentPage] = useState(null); // 'journal', 'reminder', or null
 
+  // Initialize notifications when reminders are loaded
+  useEffect(() => {
+    if (!loading && reminders.length > 0) {
+      initializeNotifications(reminders);
+    }
+  }, [loading, reminders]);
+
+  // Handle reminder events for notifications
+  useEffect(() => {
+    const handleCompleteReminderApp = (event) => {
+      const { reminderId } = event.detail;
+      completeReminder(reminderId);
+    };
+
+    const handleSnoozeReminderApp = (event) => {
+      const { reminderId, snoozeUntil } = event.detail;
+      const reminder = reminders.find(r => r.id === reminderId);
+      if (reminder) {
+        const updatedReminder = { ...reminder, snoozedUntil: snoozeUntil };
+        updateReminder(updatedReminder);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('complete-reminder-app', handleCompleteReminderApp);
+      window.addEventListener('snooze-reminder-app', handleSnoozeReminderApp);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('complete-reminder-app', handleCompleteReminderApp);
+        window.removeEventListener('snooze-reminder-app', handleSnoozeReminderApp);
+      }
+    };
+  }, [reminders, completeReminder, updateReminder]);
+
   // Sync tab changes from BottomNavigation
   const handleTabChange = (tabId) => {
     navigate(`/${tabId}`);
@@ -75,11 +113,15 @@ function App() {
   };
 
   const handleDeleteReminder = async (id) => {
+    // Remove notification before deleting
+    removeNotificationForReminder(id);
     await deleteReminder(id);
     setEditingReminder(null);
   };
 
   const handleCompleteReminder = async (id) => {
+    // Remove notification before completing
+    removeNotificationForReminder(id);
     await completeReminder(id);
   };
 
@@ -89,7 +131,9 @@ function App() {
       const updatedChecklist = reminder.checklist.map(item => 
         item.id === itemId ? { ...item, completed: !item.completed } : item
       );
-      await updateReminder({ ...reminder, checklist: updatedChecklist });
+      const updatedReminder = { ...reminder, checklist: updatedChecklist };
+      await updateReminder(updatedReminder);
+      updateNotificationForReminder(updatedReminder);
     }
   };
 
@@ -224,6 +268,9 @@ function App() {
         </div>
       </main>
 
+      {/* Notification Manager */}
+      <NotificationManager />
+
       {/* Bottom Navigation */}
       {!currentPage && (
         <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
@@ -235,7 +282,9 @@ function App() {
           reminder={editingReminder}
           onDismiss={() => setEditingReminder(null)}
           onSubmit={async (data) => {
-            await updateReminder({ ...editingReminder, ...data });
+            const updatedReminder = { ...editingReminder, ...data };
+            await updateReminder(updatedReminder);
+            updateNotificationForReminder(updatedReminder);
             setEditingReminder(null);
           }}
         />

@@ -6,60 +6,74 @@ import {
   readFileAsText
 } from '../utils/backupRestore';
 
-// Mock CryptoJS for deterministic tests
-jest.mock('crypto-js', () => {
-  // Simple reversible "encryption" for testing
-  return {
-    AES: {
-      encrypt: jest.fn((data, password) => {
-        // Combine data and password into a string, then base64
-        const payload = JSON.stringify(data) + '|' + password;
-        return {
-          toString: () => Buffer.from(payload).toString('base64')
-        };
-      }),
-      decrypt: jest.fn((cipherText, password) => {
-        // cipherText is the base64 string from encrypt().toString()
-        if (typeof cipherText !== 'string') {
-          throw new Error('Invalid ciphertext');
-        }
-        try {
-          const payload = Buffer.from(cipherText, 'base64').toString('utf8');
-          const [jsonStr, pwd] = payload.split('|');
-          if (pwd !== password) {
-            throw new Error('Incorrect password');
-          }
-          return {
-            toString: () => jsonStr
-          };
-        } catch (e) {
-          throw new Error('Decryption failed');
-        }
-      })
-    },
-    enc: {
-      Utf8: {
-        stringify: (data) => data,
-        parse: (str) => str
-      }
-    }
-  };
-});
-
 // Mock document.createElement and URL.createObjectURL
 const mockClick = jest.fn();
 const mockRevoke = jest.fn();
+
 beforeEach(() => {
   global.document.createElement = jest.fn(() => ({
     click: mockClick,
     remove: jest.fn()
   }));
+  
+  // Mock document.body using jest.spyOn to avoid DOM errors
+  const mockBody = {
+    appendChild: jest.fn(),
+    removeChild: jest.fn()
+  };
+  jest.spyOn(document, 'body', 'get').mockReturnValue(mockBody);
+  
   global.URL.createObjectURL = jest.fn(() => 'blob:test');
   global.URL.revokeObjectURL = mockRevoke;
+  
+  // Mock CryptoJS module
+  const mockEncrypt = (data, password) => {
+    const payload = JSON.stringify(data);
+    return {
+      toString: () => btoa(payload + '|' + password)
+    };
+  };
+  
+  const mockDecrypt = (cipherText, password) => {
+    if (typeof cipherText !== 'string') {
+      throw new Error('Invalid ciphertext');
+    }
+    try {
+      const decoded = atob(cipherText);
+      const [jsonStr, pwd] = decoded.split('|');
+      if (pwd !== password) {
+        throw new Error('Incorrect password');
+      }
+      return {
+        toString: (enc) => {
+          if (enc && enc.toString === 'stringify') {
+            return jsonStr;
+          }
+          return jsonStr;
+        }
+      };
+    } catch (e) {
+      throw new Error('Decryption failed');
+    }
+  };
+  
+  // Mock the crypto-js module
+  jest.mock('crypto-js', () => ({
+    AES: {
+      encrypt: mockEncrypt,
+      decrypt: mockDecrypt
+    },
+    enc: {
+      Utf8: {
+        stringify: (val) => val?.toString?.() || ''
+      }
+    }
+  }));
 });
 
 afterEach(() => {
   jest.clearAllMocks();
+  jest.restoreAllMocks();
 });
 
 describe('Backup/Restore Utilities', () => {

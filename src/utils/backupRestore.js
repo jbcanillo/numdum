@@ -51,9 +51,17 @@ export const downloadBackup = (backupData, password, filename = 'backup-numdum.j
   const link = document.createElement('a');
   link.href = url;
   link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  
+  // Check if we're in a test environment or if document.body exists
+  if (typeof document !== 'undefined' && document.body) {
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    // Fallback for test environment or non-browser contexts
+    link.click();
+  }
+  
   URL.revokeObjectURL(url);
 };
 
