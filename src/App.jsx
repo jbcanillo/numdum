@@ -334,7 +334,10 @@ function AppContent() {
             <AddReminderForm
               onDismiss={handleBack}
               onSubmit={async (data) => {
-                await createReminder(data);
+                const newReminder = await createReminder(data);
+                if (newReminder) {
+                  addNotificationForReminder(newReminder);
+                }
                 handleBack();
               }}
               asPage={true}

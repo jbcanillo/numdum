@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import Dashboard from '../components/features/Dashboard';
+import Stat from '../components/features/Stat';
 
 // Mock Recharts ResponsiveContainer to avoid ResizeObserver issues
 jest.mock('recharts', () => ({
@@ -62,7 +62,7 @@ describe('Dashboard', () => {
   });
 
   test('renders without crashing', () => {
-    const { container } = render(<Dashboard />);
+    const { container } = render(<Stat />);
     expect(container).toBeInTheDocument();
     expect(container.querySelector('[class*="p-4"]')).toBeInTheDocument();
   });
