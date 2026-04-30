@@ -57,7 +57,8 @@
   "devDependencies": {
     "@craco/craco": "^7.1.0",
     "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2"
+    "@testing-library/react": "^16.3.2",
+    "webpack-cli": "^7.0.2"
   },
   "jest": {
     "transformIgnorePatterns": [
