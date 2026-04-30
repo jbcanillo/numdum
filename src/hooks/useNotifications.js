@@ -171,7 +171,7 @@ export const scheduleReminderNotification = (reminder) => {
     // Check if notifications are supported and permission is granted
     if ('Notification' in window && Notification.permission === 'granted') {
       try {
-        const notification = new Notification(`Reminder: ${reminder.title}`, {
+        new Notification(`Reminder: ${reminder.title}`, {
           body: reminder.description || 'Time to complete your reminder',
           icon: '/favicon.ico',
           badge: '/favicon.ico',

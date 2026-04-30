@@ -1,172 +1,195 @@
-// Service Worker for Push Notifications
-const CACHE_NAME = 'numdum-v1';
-const urlsToCache = [
-  '/',
-  '/manifest.json',
-  '/favicon.ico'
-];
+const CACHE_NAME = 'numdum-cache-v1';
+const STATIC_ASSETS = ['/', '/index.html', '/manifest.json', '/static/js/', '/static/css/'];
 
-// Install event - cache assets
-self.addEventListener('install', event => {
+let alarmsDB;
+const activeTimers = new Map();
+
+self.addEventListener('install', (event) => {
+  console.log('SW install');
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS)));
+  // Do not skip waiting; let new SW activate on next navigation
+});
+
+self.addEventListener('activate', (event) => {
+  console.log('SW activate');
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+    (async () => {
+      alarmsDB = await openAlarmsDB();
+      const alarms = await getAllAlarms();
+      console.log('SW activated, alarms loaded:', alarms.length);
+      alarms.forEach(scheduleAlarm);
+    })()
   );
+  self.clients.claim();
 });
 
-// Fetch event - serve cached assets
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
+    caches.match(event.request).then(cached => cached || fetch(event.request).catch(() => caches.match('/index.html')))
   );
 });
 
-// Background Sync for reminder notifications
-self.addEventListener('sync', event => {
-  if (event.tag === 'send-notification') {
-    event.waitUntil(syncNotifications());
+self.addEventListener('message', (event) => {
+  const { type, payload } = event.data || {};
+  console.log('SW received message:', type, payload);
+  
+  if (type === 'SKIP_WAITING') {
+    // Handle skip waiting message from the page
+    self.skipWaiting();
+    return;
+  }
+  
+  if (type === 'UPSERT_ALARM') {
+    return handleUpsertAlarm(payload.alarm);
+  }
+  if (type === 'DELETE_ALARM') {
+    return handleDeleteAlarm(payload.id);
+  }
+  if (type === 'TEST_NOTIFICATION') {
+    return handleTestNotification();
   }
 });
 
-// Push notification handler
-self.addEventListener('push', event => {
-  if (event.data) {
-    const data = event.data.json();
-    const options = {
-      body: data.body,
-      icon: '/favicon.ico',
-      badge: '/favicon.ico',
-      tag: 'reminder',
-      data: {
-        url: data.url || '/',
-        reminderId: data.reminderId
-      },
-      actions: [
-        {
-          action: 'complete',
-          title: 'Complete',
-          icon: '/favicon.ico'
-        },
-        {
-          action: 'snooze',
-          title: 'Snooze',
-          icon: '/favicon.ico'
-        }
-      ]
-    };
-
-    event.waitUntil(
-      self.registration.showNotification(data.title, options)
-    );
-  }
-});
-
-// Handle notification clicks
-self.addEventListener('notificationclick', event => {
+self.addEventListener('notificationclick', (event) => {
+  const { action, reminderId } = event.notification.data || {};
   event.notification.close();
 
-  const action = event.action;
-  const notificationData = event.notification.data;
-
-  if (action === 'complete') {
-    // Send a message to the main thread to complete the reminder
-    self.clients.matchAll().then(clientList => {
-      if (clientList.length > 0) {
-        clientList[0].postMessage({
-          type: 'COMPLETE_REMINDER',
-          reminderId: notificationData.reminderId
+  if (action && action.startsWith('snooze-')) {
+    const minutes = parseInt(action.split('-')[1], 10);
+    const newTrigger = Date.now() + minutes * 60000;
+    getAlarm(reminderId).then(alarm => {
+      const updated = { ...alarm, triggerTime: newTrigger };
+      upsertAlarmToDB(updated).then(() => {
+        scheduleAlarm(updated);
+        self.registration.showNotification('Snoozed', {
+          body: `Reminder snoozed for ${minutes} minutes`,
+          icon: '/favicon.ico'
         });
-      }
+      });
     });
-  } else if (action === 'snooze') {
-    // Send a message to the main thread to snooze the reminder
-    self.clients.matchAll().then(clientList => {
-      if (clientList.length > 0) {
-        clientList[0].postMessage({
-          type: 'SNOOZE_REMINDER',
-          reminderId: notificationData.reminderId
-        });
-      }
-    });
-  } else if (notificationData && notificationData.url) {
-    // Open the app when notification is clicked
+  } else {
     event.waitUntil(
-      clients.openWindow(notificationData.url)
+      self.clients.matchAll().then(clients => {
+        if (clients.length > 0) return clients[0].focus();
+        return self.clients.openWindow('/');
+      })
     );
   }
 });
 
-// Sync notifications function
-async function syncNotifications() {
-  try {
-    // Get reminders that need notifications
-    const reminders = await getRemindersNeedingNotification();
-    
-    for (const reminder of reminders) {
-      await scheduleNotification(reminder);
-    }
-  } catch (error) {
-    console.error('Failed to sync notifications:', error);
+function handleTestNotification() {
+  console.log('Showing test notification');
+  if (!self.registration) {
+    console.error('No registration available');
+    return;
+  }
+  self.registration.showNotification('Test', {
+    body: 'Test notification from service worker',
+    icon: '/favicon.ico',
+    badge: '/favicon.ico'
+  }).catch(err => console.error('Notification failed:', err));
+}
+
+function openAlarmsDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('numdum-alarms', 1);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('alarms')) db.createObjectStore('alarms',{ keyPath: 'id' });
+    };
+    req.onsuccess = (e) => resolve(e.target.result);
+    req.onerror = (e) => reject(e.target.error);
+  });
+}
+
+function getAllAlarms() {
+  return new Promise((resolve, reject) => {
+    const tx = alarmsDB.transaction('alarms', 'readonly');
+    const store = tx.objectStore('alarms');
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function getAlarm(id) {
+  return new Promise((resolve, reject) => {
+    const tx = alarmsDB.transaction('alarms', 'readonly');
+    const store = tx.objectStore('alarms');
+    const req = store.get(id);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function upsertAlarmToDB(alarm) {
+  return new Promise((resolve, reject) => {
+    const tx = alarmsDB.transaction('alarms', 'readwrite');
+    const store = tx.objectStore('alarms');
+    store.put(alarm);
+    tx.oncomplete = () => resolve(alarm);
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function deleteAlarmFromDB(id) {
+  return new Promise((resolve, reject) => {
+    const tx = alarmsDB.transaction('alarms', 'readwrite');
+    const store = tx.objectStore('alarms');
+    store.delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function handleUpsertAlarm(alarm) {
+  console.log('Upserting alarm:', alarm);
+  await upsertAlarmToDB(alarm);
+  if (activeTimers.has(alarm.id)) {
+    clearTimeout(activeTimers.get(alarm.id));
+    activeTimers.delete(alarm.id);
+  }
+  scheduleAlarm(alarm);
+}
+
+async function handleDeleteAlarm(id) {
+  await deleteAlarmFromDB(id);
+  if (activeTimers.has(id)) {
+    clearTimeout(activeTimers.get(id));
+    activeTimers.delete(id);
   }
 }
 
-// Mock function to get reminders that need notifications
-async function getRemindersNeedingNotification() {
-  // This would normally fetch from IndexedDB
-  // For now, we'll return an empty array
-  // In a real implementation, you'd query for reminders that are:
-  // 1. Not completed
-  // 2. Not snoozed
-  // 3. Due within the next 5 minutes
-  // 4. Haven't been notified recently
-  return [];
+function scheduleAlarm(alarm) {
+  const now = Date.now();
+  const delay = alarm.triggerTime - now;
+  if (delay <= 0) {
+    triggerNow(alarm);
+    return;
+  }
+  const timerId = setTimeout(() => {
+    triggerNow(alarm);
+    activeTimers.delete(alarm.id);
+    deleteAlarmFromDB(alarm.id);
+  }, delay);
+  activeTimers.set(alarm.id, timerId);
 }
 
-// Function to schedule a notification
-async function scheduleNotification(reminder) {
-  const now = new Date();
-  const dueDate = new Date(reminder.dueDate);
-  const timeUntilDue = dueDate - now;
-
-  // Only schedule if reminder is due within next 5 minutes
-  if (timeUntilDue > 0 && timeUntilDue <= 5 * 60 * 1000) {
-    try {
-      await self.registration.showNotification('Reminder: ' + reminder.title, {
-        body: reminder.description || 'Time to complete your reminder',
-        icon: '/favicon.ico',
-        badge: '/favicon.ico',
-        tag: 'reminder-' + reminder.id,
-        data: {
-          reminderId: reminder.id,
-          url: '/'
-        },
-        actions: [
-          {
-            action: 'complete',
-            title: 'Complete',
-            icon: '/favicon.ico'
-          },
-          {
-            action: 'snooze',
-            title: 'Snooze',
-            icon: '/favicon.ico'
-          }
-        ]
-      });
-
-      // Mark reminder as notified
-      // This would update the reminder in IndexedDB
-      console.log('Notification sent for reminder:', reminder.id);
-    } catch (error) {
-      console.error('Failed to send notification:', error);
-    }
-  }
+function triggerNow(alarm) {
+  console.log('Triggering notification for alarm:', alarm);
+  const title = alarm.title || 'Reminder';
+  const body = alarm.description || 'Your reminder is due!';
+  self.registration.showNotification(title, {
+    body,
+    icon: '/favicon.ico',
+    badge: '/favicon.ico',
+    tag: alarm.id,
+    requireInteraction: true,
+    actions: [
+      { action: 'snooze-10', title: 'Snooze 10 min' },
+      { action: 'snooze-60', title: 'Snooze 1 hr' }
+    ],
+    data: { reminderId: alarm.id }
+  }).catch(err => console.error('Show notification error:', err));
 }

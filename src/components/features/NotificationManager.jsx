@@ -8,8 +8,7 @@ const NotificationManager = () => {
     supported, 
     isSubscribed, 
     requestPermission, 
-    unsubscribeFromNotifications,
-    requestNotificationPermissionIfNeeded
+    unsubscribeFromNotifications
   } = useNotifications();
   
   const [showModal, setShowModal] = useState(false);
