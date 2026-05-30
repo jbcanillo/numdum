@@ -9,8 +9,12 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Expose port
-EXPOSE 4356
+# Set defaults for node environment and port, can be overridden at build time
+ARG NODE_ENV=development
+ARG PORT=4356
+ENV NODE_ENV=${NODE_ENV}
+ENV PORT=${PORT}
+EXPOSE $PORT
 
 # Start the app
 CMD ["npm", "start"]
