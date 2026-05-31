@@ -75,9 +75,15 @@ export const useNotifications = () => {
 
       setIsSubscribed(true);
       
-      // Here you would typically send the subscription to your backend
+      // Send subscription to your backend
+      await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(subscription)
+      });
+
       console.log('Notification subscription:', subscription);
-      
+
       return true;
     } catch (error) {
       console.error('Error subscribing to notifications:', error);
