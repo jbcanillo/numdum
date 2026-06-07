@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useEffect } from 'react-router-dom';
 import {
   Calendar as CalendarIcon,
   List as ListIcon,
@@ -8,6 +8,36 @@ import {
 
 const BottomNavigation = ({ activeTab, onTabChange }) => {
   const navigate = useNavigate();
+
+  // Add mouse move effect for interactive buttons
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      const buttons = document.querySelectorAll('.BottomNavigation button');
+      buttons.forEach(button => {
+        const rect = button.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        button.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+        button.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+      });
+    };
+
+    const handleMouseLeave = (e) => {
+      const buttons = document.querySelectorAll('.BottomNavigation button');
+      buttons.forEach(button => {
+        button.style.setProperty('--mouse-x', '50%');
+        button.style.setProperty('--mouse-y', '50%');
+      });
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
 
   const tabs = [
     { id: 'calendar', label: 'Calendar', Icon: CalendarIcon },
@@ -21,11 +51,12 @@ const BottomNavigation = ({ activeTab, onTabChange }) => {
   };
 
   return (
-    <nav 
-      className="fixed bottom-0 left-0 right-0 z-40 
-                 bg-[var(--bg-elevated)]/80 backdrop-blur-xl 
-                 border-t border-[var(--border)] 
-                 shadow-[var(--shadow-md)] safe-area-inset-bottom"
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-40
+                 bg-[var(--bg-elevated)]/80 backdrop-blur-xl
+                 border-t border-[var(--border)]
+                 shadow-[var(--shadow-md)] safe-area-inset-bottom
+                 BottomNavigation"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -53,16 +84,16 @@ const BottomNavigation = ({ activeTab, onTabChange }) => {
                     absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1
                     rounded-b-full transition-all duration-300
                     ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}
-                    bg-gradient-to-r from-[var(--primary)] to-[var(--accent)]`
-                  }
+                    bg-gradient-to-r from-[var(--nebula-purple)] to-[var(--nebula-blue)]
+                  `}
                 />
 
                 {/* Icon container */}
                 <div
                   className={`
                     p-2 rounded-full transition-all duration-300
-                    ${isActive 
-                      ? 'bg-[var(--primary-light)] scale-110' 
+                    ${isActive
+                      ? 'bg-[var(--primary-light)] scale-110 animate-galaxy-pulse'
                       : 'hover:bg-[var(--bg-tertiary)] scale-100'
                     }
                   `}
@@ -75,7 +106,7 @@ const BottomNavigation = ({ activeTab, onTabChange }) => {
                 </div>
 
                 {/* Label */}
-                <span 
+                <span
                   className={`
                     text-xs font-medium transition-all duration-300
                     ${isActive ? 'font-semibold scale-105' : 'scale-100'}

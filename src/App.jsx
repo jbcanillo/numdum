@@ -16,6 +16,7 @@ import NotificationManager from './components/features/NotificationManager';
 import BottomNavigation from './components/layout/BottomNavigation';
 import BackupRestorePage from './components/features/BackupRestorePage';
 import InstallModal from './components/ui/InstallModal';
+import useGalaxyEffects from './hooks/useGalaxyEffects';
 import { upsertAlarm, deleteAlarm, requestNotificationPermission } from './utils/notificationSync';
 import { initializeNotifications, addNotificationForReminder, removeNotificationForReminder, updateNotificationForReminder } from './utils/notifications';
 
@@ -23,6 +24,9 @@ function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
+
+  // Initialize galaxy effects
+  useGalaxyEffects();
 
   // Derive activeTab from route path
   const getTabFromPath = (path) => {
@@ -252,8 +256,20 @@ function AppContent() {
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
                 color: 'transparent',
-                letterSpacing: '-0.03em'
-              }}>Numdum</h1>
+                letterSpacing: '-0.03em',
+                position: 'relative'
+              }}>
+              Numdum
+              <span className="absolute inset-0" style={{
+                background: 'linear-gradient(90deg, #8b5cf6, #ec4899, #8b5cf6)',
+                backgroundSize: '200% 200%',
+                animation: 'gradientShift 3s ease infinite',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                opacity: 0.7
+              }}></span>
+            </h1>
             </div>
             <div className="flex items-center gap-2">
               <button
