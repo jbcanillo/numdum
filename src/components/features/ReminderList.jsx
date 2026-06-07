@@ -158,11 +158,21 @@ const ReminderList = ({ reminders, journalEntries, loading, error, onEdit, onCom
         {/* Items List or Empty State */}
         {combined.length === 0 ? (
           <div className="p-16 text-center animate-fade-in">
-            <div className="text-6xl mb-4">📭</div>
-            <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No entries found</h3>
+            <div className="text-6xl mb-4 animate-galaxy-pulse">
+              <span role="img" aria-label="Galaxy">🌌</span>
+            </div>
+            <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+              Your Cosmic Reminders Await
+            </h3>
             <p className="max-w-md mx-auto" style={{ color: 'var(--text-tertiary)' }}>
-              Try adjusting your search or filters to find what you're looking for.
+              Create your first reminder to begin your journey through time and space.
             </p>
+            <button 
+              onClick={handleAddReminder}
+              className="btn btn-primary mt-6 animate-stellar-shine"
+            >
+              Create First Reminder
+            </button>
           </div>
         ) : (
           combined.map((item) => {
