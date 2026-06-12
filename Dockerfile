@@ -4,16 +4,16 @@ WORKDIR /app
 
 # Install dependencies
 COPY package*.json ./
+# Set NODE_ENV for npm install (affects whether devDependencies are installed)
+ARG NODE_ENV=development
+ENV NODE_ENV=${NODE_ENV}
 RUN npm install
 
 # Copy source code
 COPY . .
 
-# Set defaults for node environment and port, can be overridden at build time
-ARG NODE_ENV=development
+# Set defaults for port (runtime only)
 ARG PORT=4356
-ENV NODE_ENV=${NODE_ENV}
-ENV PORT=${PORT}
 EXPOSE $PORT
 
 # Start the app
